@@ -54,3 +54,11 @@ def current_streak(state: StreakState, today: date) -> int:
     if gap == 2 and refill_freezes(state, today).freezes_left > 0:
         return state.weeks
     return 0
+
+
+def resume_after_pause(state: StreakState, paused_on: date, resumed_on: date) -> StreakState:
+    """Сдвигает серию на длину паузы в целых неделях, чтобы пауза не считалась пропуском."""
+    if state.last_week is None:
+        return state
+    paused_weeks = max(0, (week_start(resumed_on) - week_start(paused_on)).days // 7)
+    return replace(state, last_week=state.last_week + timedelta(weeks=paused_weeks))

@@ -16,7 +16,7 @@ from app.config import settings
 from app.db import Base, get_db
 from app.game_rules import config as rules
 from app.main import app
-from app.models import Exercise, Quest
+from app.models import Exercise, Task
 
 BOT_TOKEN = "123456:TEST-TOKEN"
 
@@ -93,12 +93,13 @@ def exercises(client):
 
 
 @pytest.fixture
-def quests_seeded(client):
+def tasks_seeded(client):
     with client.session_factory() as session:
-        for q in rules.QUEST_TEMPLATES:
+        for q in rules.TASK_TEMPLATES:
             session.add(
-                Quest(
+                Task(
                     code=q["code"],
+                    period=q["period"],
                     kind=q["kind"],
                     condition={"metric": q["metric"], "target": q["target"]},
                     xp_reward=q["xp_reward"],
@@ -119,4 +120,5 @@ def clock(monkeypatch):
     monkeypatch.setattr("app.workouts.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.metrics.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.reminders.utcnow", lambda: Clock.now)
+    monkeypatch.setattr("app.tasks_routes.utcnow", lambda: Clock.now)
     return Clock

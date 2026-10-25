@@ -24,8 +24,10 @@ WORKOUT_STATUSES = ("planned", "in_progress", "finished")
 XP_WORKOUT = 50
 XP_PER_SET = 5
 XP_WEIGHT_ENTRY = 5
-XP_DAILY_QUEST = 20
-XP_WEEKLY_QUEST = 100
+XP_DAILY_TASK = 20
+XP_WEEKLY_TASK = 100
+XP_TASK_MINOR = 10
+XP_TASK_RECOVERY = 10
 XP_WEEK_GOAL = 50
 
 MAX_COUNTED_WORKOUTS_PER_DAY = 2
@@ -46,22 +48,52 @@ FREEZES_PER_MONTH = 1
 # --- Источники XP в журнале ---
 SRC_WORKOUT = "workout"
 SRC_SETS = "sets"
-SRC_QUEST_DAILY = "quest_daily"
-SRC_QUEST_WEEKLY = "quest_weekly"
+SRC_TASK = "task"
 SRC_WEEK_GOAL = "week_goal"
 SRC_WEIGHT = "weight"
 
-# --- Квесты: условия хранятся как данные (metric + target) ---
-QUEST_METRICS = ("workouts_finished", "sets_logged")
-QUEST_TEMPLATES = (
-    {"code": "daily_workout", "kind": "daily", "metric": "workouts_finished", "target": 1,
-     "xp_reward": XP_DAILY_QUEST},
-    {"code": "daily_sets_10", "kind": "daily", "metric": "sets_logged", "target": 10,
-     "xp_reward": XP_DAILY_QUEST},
-    {"code": "weekly_workouts_3", "kind": "weekly", "metric": "workouts_finished", "target": 3,
-     "xp_reward": XP_WEEKLY_QUEST},
-    {"code": "weekly_sets_40", "kind": "weekly", "metric": "sets_logged", "target": 40,
-     "xp_reward": XP_WEEKLY_QUEST},
+# --- Задания: условия хранятся как данные (metric + target) ---
+TASK_PERIODS = ("daily", "weekly")
+TASK_KINDS = ("main", "minor", "recovery")
+# manual — подтверждается явно (задание восстановления), остальные считаются по журналу.
+TASK_METRICS = ("workouts_finished", "sets_logged", "weight_entries", "manual")
+TASK_TEMPLATES = (
+    {"code": "daily_workout", "period": "daily", "kind": "main", "metric": "workouts_finished",
+     "target": 1, "xp_reward": XP_DAILY_TASK},
+    {"code": "daily_weight", "period": "daily", "kind": "minor", "metric": "weight_entries",
+     "target": 1, "xp_reward": XP_TASK_MINOR},
+    {"code": "daily_recovery", "period": "daily", "kind": "recovery", "metric": "manual",
+     "target": 1, "xp_reward": XP_TASK_RECOVERY},
+    {"code": "weekly_workouts_3", "period": "weekly", "kind": "main",
+     "metric": "workouts_finished", "target": 3, "xp_reward": XP_WEEKLY_TASK},
+    {"code": "weekly_sets_40", "period": "weekly", "kind": "minor", "metric": "sets_logged",
+     "target": 40, "xp_reward": XP_WEEKLY_TASK},
+)
+
+# --- Ранги: код и минимальный уровень (стартовые границы, подлежат пересмотру по данным MVP) ---
+RANKS = (
+    ("novice", 1),
+    ("amateur", 10),
+    ("practitioner", 20),
+    ("athlete", 30),
+    ("master", 40),
+    ("expert", 50),
+)
+LEVEL_POINTS_PER_LEVEL = 1
+
+# --- Режим пользователя ---
+USER_MODES = ("active", "paused")
+
+# --- Достижения: код, метрика (из статистики пользователя) и порог ---
+ACHIEVEMENTS = (
+    {"code": "first_workout", "metric": "workouts", "target": 1},
+    {"code": "workouts_10", "metric": "workouts", "target": 10},
+    {"code": "workouts_50", "metric": "workouts", "target": 50},
+    {"code": "sets_100", "metric": "sets", "target": 100},
+    {"code": "streak_4", "metric": "streak_weeks", "target": 4},
+    {"code": "streak_12", "metric": "streak_weeks", "target": 12},
+    {"code": "tasks_30", "metric": "tasks", "target": 30},
+    {"code": "level_10", "metric": "level", "target": 10},
 )
 
 # --- Вес ---
@@ -75,6 +107,8 @@ DEFAULT_REMINDER_TIME = "19:00"
 # Окно после заданного времени, в котором напоминание ещё можно отправить
 # (на случай, если бот был недоступен).
 REMINDER_WINDOW_MIN = 180
+# Сколько напоминаний в сутки можно отправить одному пользователю.
+MAX_REMINDERS_PER_DAY = 1
 
 # --- ИИ-корректировка ---
 AI_DECISIONS = ("keep_weight", "reduce_weight", "change_volume", "replace_exercise")

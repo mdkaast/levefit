@@ -13,7 +13,6 @@ from app.schemas import (
     ExerciseCreate,
     ExerciseOut,
     FinishOut,
-    RewardOut,
     SetCreate,
     SetOut,
     WorkoutCreate,
@@ -21,6 +20,7 @@ from app.schemas import (
     WorkoutOut,
     WorkoutSummary,
 )
+from app.serializers import reward_out
 
 router = APIRouter()
 
@@ -175,18 +175,5 @@ def finish_workout(
         raise HTTPException(status.HTTP_409_CONFLICT, "workout is already finished") from None
     return FinishOut(
         **WorkoutOut.model_validate(workout).model_dump(),
-        reward=RewardOut(
-            counted=reward.counted,
-            xp_gained=reward.xp_gained,
-            workout_xp=reward.workout_xp,
-            sets_xp=reward.sets_xp,
-            quest_xp=reward.quest_xp,
-            week_xp=reward.week_xp,
-            level_before=reward.level_before,
-            level_after=reward.level_after,
-            leveled_up=reward.level_after > reward.level_before,
-            quests_completed=reward.quests_completed,
-            week_closed=reward.week_closed,
-            streak_weeks=reward.streak_weeks,
-        ),
+        reward=reward_out(reward),
     )

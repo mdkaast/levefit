@@ -8,7 +8,8 @@ from app.models import (
     Exercise,
     Streak,
     User,
-    UserQuest,
+    UserAchievement,
+    UserTask,
     Workout,
     WorkoutSet,
     XpEvent,
@@ -78,14 +79,14 @@ def test_patch_requires_auth(client):
 # ---------- удаление аккаунта ----------
 
 
-def test_delete_me_removes_everything(client, auth_headers, exercises, quests_seeded, clock):
+def test_delete_me_removes_everything(client, auth_headers, exercises, tasks_seeded, clock):
     a = auth_headers({"id": 1, "username": "a"})
     b = auth_headers({"id": 2, "username": "b"})
     for headers in (a, b):
         make_character(client, headers, per_week=1)
         do_workout(client, headers, exercises["strength"])
         client.put("/metrics/weight", json={"weight_kg": 80}, headers=headers)
-        client.get("/quests", headers=headers)
+        client.get("/tasks", headers=headers)
     client.post(
         "/exercises",
         json={"name": "Моё", "category": "strength", "muscle_group": "arms"},
@@ -105,7 +106,8 @@ def test_delete_me_removes_everything(client, auth_headers, exercises, quests_se
             (Character, Character.user_id),
             (Workout, Workout.user_id),
             (XpEvent, XpEvent.user_id),
-            (UserQuest, UserQuest.user_id),
+            (UserTask, UserTask.user_id),
+            (UserAchievement, UserAchievement.user_id),
             (BodyMetric, BodyMetric.user_id),
             (Streak, Streak.user_id),
         ):
@@ -146,7 +148,11 @@ def test_reminder_sent_at_set_time_once_per_day(client, auth_headers, clock):
 
     clock.now = datetime(2026, 10, 20, 19, 0, tzinfo=UTC)
     first = due(client)
-    assert first == [{"telegram_id": 77, "kind": "workout", "streak_weeks": 0, "needed": 3}]
+    assert len(first) == 1
+    assert {k: first[0][k] for k in ("telegram_id", "kind", "streak_weeks", "needed")} == {
+        "telegram_id": 77, "kind": "workout", "streak_weeks": 0, "needed": 3,
+    }
+    assert first[0]["reward_xp"] == 50 and first[0]["days_left"] == 6  # вторник
     assert due(client) == []  # повторно в тот же день не шлём
 
     clock.now = datetime(2026, 10, 21, 19, 5, tzinfo=UTC)
@@ -199,7 +205,10 @@ def test_streak_risk_reminder(client, auth_headers, exercises, clock):
     # следующая неделя: в воскресенье 1 тренировка нужна, день последний
     clock.now = datetime(2026, 10, 25, 19, 0, tzinfo=UTC) + timedelta(days=7)
     result = due(client)
-    assert result == [{"telegram_id": 1001, "kind": "streak_risk", "streak_weeks": 1, "needed": 1}]
+    assert len(result) == 1
+    assert (result[0]["kind"], result[0]["streak_weeks"], result[0]["needed"]) == (
+        "streak_risk", 1, 1)
+    assert result[0]["days_left"] == 1 and result[0]["freezes_left"] == 1
     # в начале той же недели серия жива, но времени достаточно: обычное напоминание
     client.patch("/me", json={"reminder_time": "19:00"}, headers=headers)  # сброс отметки дня
     clock.now = datetime(2026, 10, 26, 19, 0, tzinfo=UTC)  # понедельник новой недели

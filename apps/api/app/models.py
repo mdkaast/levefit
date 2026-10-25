@@ -35,6 +35,10 @@ class User(Base):
     # IANA-имя часового пояса; пусто, пока клиент его не сообщил (тогда считаем UTC).
     timezone: Mapped[str | None] = mapped_column(String(64))
     last_reminder_date: Mapped[date | None] = mapped_column(Date)
+    reminders_today: Mapped[int] = mapped_column(Integer, default=0)
+    # Режим паузы (болезнь, травма): заданий с нагрузкой нет, серия не сгорает.
+    mode: Mapped[str] = mapped_column(String(8), default="active")
+    paused_at: Mapped[date | None] = mapped_column(Date)
 
     character: Mapped["Character | None"] = relationship(
         back_populates="user", cascade="all, delete-orphan", passive_deletes=True
@@ -52,6 +56,8 @@ class Character(Base):
     )
     name: Mapped[str] = mapped_column(String(30))
     level: Mapped[int] = mapped_column(Integer, default=1)
+    rank: Mapped[str] = mapped_column(String(16), default="novice")
+    level_points: Mapped[int] = mapped_column(Integer, default=0)
     xp: Mapped[int] = mapped_column(Integer, default=0)
     strength: Mapped[int] = mapped_column(Integer, default=0)
     endurance: Mapped[int] = mapped_column(Integer, default=0)
@@ -136,30 +142,32 @@ class XpEvent(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
 
 
-class Quest(Base):
-    __tablename__ = "quests"
+class Task(Base):
+    __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     code: Mapped[str] = mapped_column(String(32), unique=True)
-    kind: Mapped[str] = mapped_column(String(8))
+    # Период (daily/weekly) и вид (main/minor/recovery).
+    period: Mapped[str] = mapped_column(String(8))
+    kind: Mapped[str] = mapped_column(String(12))
     condition: Mapped[dict] = mapped_column(JSON)
     xp_reward: Mapped[int] = mapped_column(Integer)
 
 
-class UserQuest(Base):
-    __tablename__ = "user_quests"
+class UserTask(Base):
+    __tablename__ = "user_tasks"
     __table_args__ = (
-        UniqueConstraint("user_id", "quest_id", "period_start", name="uq_user_quest_period"),
+        UniqueConstraint("user_id", "task_id", "period_start", name="uq_user_task_period"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
-    quest_id: Mapped[int] = mapped_column(ForeignKey("quests.id"))
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"))
     period_start: Mapped[date] = mapped_column(Date)
     progress: Mapped[int] = mapped_column(Integer, default=0)
     status: Mapped[str] = mapped_column(String(16), default="active")
 
-    quest: Mapped[Quest] = relationship()
+    task: Mapped[Task] = relationship()
 
 
 class Streak(Base):
@@ -201,3 +209,13 @@ class AiAdjustment(Base):
     result: Mapped[dict] = mapped_column(JSON)
     model: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+
+class UserAchievement(Base):
+    __tablename__ = "user_achievements"
+    __table_args__ = (UniqueConstraint("user_id", "code", name="uq_user_achievement"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    code: Mapped[str] = mapped_column(String(32))
+    earned_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

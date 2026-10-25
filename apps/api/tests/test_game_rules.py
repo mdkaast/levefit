@@ -2,7 +2,6 @@ from datetime import date
 
 from app.game_rules import config as rules
 from app.game_rules.levels import level_from_total_xp, xp_for_next_level
-from app.game_rules.quests import clamp_progress, is_complete, period_end, period_start
 from app.game_rules.rewards import counted_sets, sets_xp, stat_gains, workout_is_counted
 from app.game_rules.streaks import (
     StreakState,
@@ -11,6 +10,7 @@ from app.game_rules.streaks import (
     refill_freezes,
     week_start,
 )
+from app.game_rules.tasks import clamp_progress, is_complete, period_end, period_start
 
 
 def test_level_thresholds():
@@ -107,23 +107,14 @@ def test_current_streak_display():
     assert current_streak(StreakState(), MON) == 0
 
 
-def test_quest_periods():
+def test_task_periods():
     assert period_start("daily", date(2026, 10, 22)) == date(2026, 10, 22)
     assert period_start("weekly", date(2026, 10, 22)) == MON
     assert period_end("daily", date(2026, 10, 22)) == date(2026, 10, 23)
     assert period_end("weekly", MON) == date(2026, 10, 26)
 
 
-def test_quest_progress():
+def test_task_progress():
     assert clamp_progress(5, 3) == 3
     assert clamp_progress(-1, 3) == 0
     assert is_complete(3, 3) and not is_complete(2, 3)
-
-
-def test_quest_templates_are_valid_data():
-    codes = [q["code"] for q in rules.QUEST_TEMPLATES]
-    assert len(codes) == len(set(codes))
-    for q in rules.QUEST_TEMPLATES:
-        assert q["kind"] in ("daily", "weekly")
-        assert q["metric"] in rules.QUEST_METRICS
-        assert q["target"] > 0

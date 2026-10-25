@@ -87,7 +87,8 @@ def test_example_workout_80x8x3(client, auth_headers, exercises, use_llm):
     response = client.post(f"/workouts/{wid}/adjust", json=plan_for(bench), headers=headers)
     assert response.status_code == 200
     body = response.json()
-    assert set(body) == {"changes", "decision", "next_workout", "rationale"}
+    assert set(body) == {"changes", "decision", "next_workout", "rationale", "health_flag"}
+    assert body["health_flag"] is False
     assert body["decision"] in rules.AI_DECISIONS
     assert body["rationale"] and body["changes"]
     assert body["next_workout"] == [
@@ -362,3 +363,31 @@ def test_live_model_returns_valid_adjustment(monkeypatch):
     result = AnthropicProvider(settings.llm_model, 120).generate_adjustment(snapshot)
     validate_adjustment(result, snapshot)
     assert result.rationale
+
+
+def test_plan_endpoint_returns_last_recommendation(client, auth_headers, exercises, use_llm):
+    headers = auth_headers()
+    bench = exercises["strength"]
+    assert client.get("/plan", headers=headers).json() == {"workout_id": None, "items": []}
+    wid = setup_workout(client, headers, bench)
+    use_llm(FakeLLM(adjustment(bench, weight=80.0, sets=3, reps=8)))
+    client.post(f"/workouts/{wid}/adjust", headers=headers)
+    plan = client.get("/plan", headers=headers).json()
+    assert plan["workout_id"] == wid
+    assert plan["items"] == [
+        {"exercise_id": bench, "name": "Жим лёжа", "target_weight_kg": 80.0, "sets": 3, "reps": 8}
+    ]
+    assert client.get("/plan").status_code == 401
+
+
+def test_pain_note_sets_health_flag_in_response(client, auth_headers, exercises, use_llm):
+    headers = auth_headers()
+    bench = exercises["strength"]
+    wid = setup_workout(client, headers, bench, notes="Болит плечо")
+    safe = adjustment(
+        bench, weight=70.0, decision="reduce_weight",
+        rationale="Вы упомянули боль. Снизим вес и обратитесь к врачу.",
+    )
+    use_llm(FakeLLM(safe))
+    assert client.post(f"/workouts/{wid}/adjust", headers=headers).json()["health_flag"] is True
+    assert client.post(f"/workouts/{wid}/adjust", headers=headers).json()["health_flag"] is True

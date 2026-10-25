@@ -24,15 +24,15 @@ def do_workout(client, headers, exercise_id, sets=3, **set_fields):
     return response.json()["reward"]
 
 
-def test_finish_awards_xp_by_rules(client, auth_headers, exercises, quests_seeded, clock):
+def test_finish_awards_xp_by_rules(client, auth_headers, exercises, tasks_seeded, clock):
     headers = auth_headers()
     make_character(client, headers)
     reward = do_workout(client, headers, exercises["strength"], sets=3)
     assert reward["counted"] is True
     assert reward["workout_xp"] == 50
     assert reward["sets_xp"] == 15
-    assert reward["quest_xp"] == 20  # дневной квест «одна тренировка»
-    assert reward["quests_completed"] == ["daily_workout"]
+    assert reward["task_xp"] == 20  # основное задание дня «тренировка»
+    assert reward["tasks_completed"] == ["daily_workout"]
     assert reward["xp_gained"] == 85
 
     character = client.get("/me", headers=headers).json()["character"]
@@ -41,7 +41,7 @@ def test_finish_awards_xp_by_rules(client, auth_headers, exercises, quests_seede
     assert character["strength"] == 3 and character["discipline"] == 1
 
 
-def test_level_up_and_journal_recompute(client, auth_headers, exercises, quests_seeded, clock):
+def test_level_up_and_journal_recompute(client, auth_headers, exercises, tasks_seeded, clock):
     headers = auth_headers()
     make_character(client, headers)
     do_workout(client, headers, exercises["strength"], sets=3)
@@ -102,7 +102,7 @@ def test_grant_is_idempotent(client, auth_headers, clock):
 
 
 def test_weekly_goal_extends_streak_and_freeze_saves_it(
-    client, auth_headers, exercises, quests_seeded, clock
+    client, auth_headers, exercises, tasks_seeded, clock
 ):
     headers = auth_headers()
     make_character(client, headers, per_week=1)
@@ -138,28 +138,30 @@ def test_week_goal_is_paid_once_per_week(client, auth_headers, exercises, clock)
     assert second["week_closed"] is False and second["week_xp"] == 0
 
 
-def test_quests_progress(client, auth_headers, exercises, quests_seeded, clock):
+def test_tasks_progress(client, auth_headers, exercises, tasks_seeded, clock):
     headers = auth_headers()
     make_character(client, headers)
     do_workout(client, headers, exercises["strength"], sets=4)
-    quests = {q["code"]: q for q in client.get("/quests", headers=headers).json()}
-    assert quests["daily_workout"]["status"] == "completed"
-    assert quests["daily_sets_10"]["progress"] == 4
-    assert quests["weekly_workouts_3"]["progress"] == 1
-    assert quests["weekly_workouts_3"]["target"] == 3
-    assert quests["daily_sets_10"]["status"] == "active"
+    tasks = {t["code"]: t for t in client.get("/tasks", headers=headers).json()}
+    assert tasks["daily_workout"]["status"] == "completed"
+    assert tasks["daily_workout"]["kind"] == "main" and tasks["daily_workout"]["period"] == "daily"
+    assert tasks["daily_weight"]["kind"] == "minor" and tasks["daily_weight"]["status"] == "active"
+    assert "daily_recovery" not in tasks  # в тренировочный день восстановления нет
+    assert tasks["weekly_workouts_3"]["progress"] == 1
+    assert tasks["weekly_workouts_3"]["target"] == 3
+    assert tasks["weekly_sets_40"]["progress"] == 4
 
 
-def test_weekly_quest_pays_once(client, auth_headers, exercises, quests_seeded, clock):
+def test_weekly_task_pays_once(client, auth_headers, exercises, tasks_seeded, clock):
     headers = auth_headers()
     make_character(client, headers, per_week=7)
     for day in range(3):
         clock.now = clock.now.replace(day=20 + day)  # вт, ср, чт той же недели
         reward = do_workout(client, headers, exercises["strength"], sets=1)
-    assert "weekly_workouts_3" in reward["quests_completed"]
-    assert reward["quest_xp"] == 100 + 20  # недельный + дневной «тренировка»
-    quests = {q["code"]: q for q in client.get("/quests", headers=headers).json()}
-    assert quests["weekly_workouts_3"]["status"] == "completed"
+    assert "weekly_workouts_3" in reward["tasks_completed"]
+    assert reward["task_xp"] == 100 + 20  # недельное + дневное «тренировка»
+    tasks = {t["code"]: t for t in client.get("/tasks", headers=headers).json()}
+    assert tasks["weekly_workouts_3"]["status"] == "completed"
 
 
 def test_user_without_character_gets_nothing(client, auth_headers, exercises, clock):

@@ -6,6 +6,7 @@ from app.config import settings
 from app.metrics import router as metrics_router
 from app.reminders import router as reminders_router
 from app.routers import router
+from app.tasks_routes import router as tasks_router
 from app.workouts import router as workouts_router
 
 app = FastAPI(title="Levefit API")
@@ -16,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+app.include_router(tasks_router)
 app.include_router(workouts_router)
 app.include_router(metrics_router)
 app.include_router(adjust_router)

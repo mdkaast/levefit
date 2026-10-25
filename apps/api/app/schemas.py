@@ -1,4 +1,5 @@
 from datetime import date as date_type
+from datetime import datetime
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -64,6 +65,8 @@ class CharacterOut(BaseModel):
 
     name: str
     level: int
+    rank: str
+    level_points: int
     xp: int
     strength: int
     endurance: int
@@ -96,6 +99,7 @@ class UserOut(BaseModel):
     id: int
     username: str | None
     locale: str | None
+    mode: str
     reminders_enabled: bool
     reminder_time: str
     timezone: str | None
@@ -105,6 +109,7 @@ class UserPatch(BaseModel):
     """Частичное обновление настроек: не переданные поля не меняются."""
 
     reminders_enabled: bool | None = None
+    mode: Literal["active", "paused"] | None = None
     reminder_time: str | None = None
     timezone: str | None = Field(default=None, max_length=64)
 
@@ -227,12 +232,19 @@ class RewardOut(BaseModel):
     xp_gained: int
     workout_xp: int
     sets_xp: int
-    quest_xp: int
+    task_xp: int
     week_xp: int
+    weight_xp: int
     level_before: int
     level_after: int
     leveled_up: bool
-    quests_completed: list[str]
+    rank_before: str
+    rank_after: str
+    rank_changed: bool
+    level_points_gained: int
+    stat_gains: dict[str, int]
+    tasks_completed: list[str]
+    achievements_earned: list[str]
     week_closed: bool
     streak_weeks: int
 
@@ -241,14 +253,23 @@ class FinishOut(WorkoutOut):
     reward: RewardOut
 
 
-class QuestOut(BaseModel):
+class TaskOut(BaseModel):
     id: int
     code: str
+    period: str
     kind: str
     progress: int
     target: int
     xp_reward: int
     status: str
+
+
+class AchievementOut(BaseModel):
+    code: str
+    earned: bool
+    earned_at: datetime | None
+    progress: int
+    target: int
 
 
 class PlanItem(BaseModel):

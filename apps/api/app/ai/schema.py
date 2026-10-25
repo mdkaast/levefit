@@ -20,3 +20,16 @@ class Adjustment(BaseModel):
     next_workout: list[NextExercise]
     # Объяснение решения простым языком.
     rationale: str
+
+
+class AdjustmentOut(Adjustment):
+    """Ответ API: решение ИИ и признак того, что в заметках упомянуты боль или травма."""
+
+    health_flag: bool = False
+
+
+class PlanOut(BaseModel):
+    """План следующей тренировки из последнего решения ИИ."""
+
+    workout_id: int | None
+    items: list[NextExercise]

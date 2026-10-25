@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.ai.provider import AdjustmentUnavailable, LLMProvider, get_llm
 from app.ai.safety import InvalidAdjustment, validate_adjustment
-from app.ai.schema import Adjustment
+from app.ai.schema import Adjustment, AdjustmentOut, PlanOut
 from app.ai.snapshot import build_snapshot, previous_plan
 from app.db import get_db
 from app.deps import current_user
@@ -30,14 +30,14 @@ def llm_dependency() -> LLMProvider:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "ai is not configured") from None
 
 
-@router.post("/workouts/{workout_id}/adjust", response_model=Adjustment)
+@router.post("/workouts/{workout_id}/adjust", response_model=AdjustmentOut)
 def adjust_workout(
     workout_id: int,
     body: AdjustRequest | None = None,
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
     llm: LLMProvider = Depends(llm_dependency),
-) -> Adjustment:
+) -> AdjustmentOut:
     workout = db.scalar(
         select(Workout).where(Workout.id == workout_id, Workout.user_id == user.id)
     )
@@ -48,7 +48,7 @@ def adjust_workout(
 
     stored = db.scalar(select(AiAdjustment).where(AiAdjustment.workout_id == workout.id))
     if stored is not None:  # повторный запрос не тратит вызов модели
-        return Adjustment.model_validate(stored.result)
+        return _out(stored)
 
     now = utcnow()
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -95,8 +95,32 @@ def adjust_workout(
         stored = db.scalar(select(AiAdjustment).where(AiAdjustment.workout_id == workout.id))
         if stored is None:
             raise
-        return Adjustment.model_validate(stored.result)
-    return adjustment
+        return _out(stored)
+    return AdjustmentOut(**adjustment.model_dump(), health_flag=snapshot["health_flag"])
+
+
+def _out(stored: AiAdjustment) -> AdjustmentOut:
+    return AdjustmentOut(
+        **Adjustment.model_validate(stored.result).model_dump(),
+        health_flag=bool(stored.input_snapshot.get("health_flag")),
+    )
+
+
+@router.get("/plan", response_model=PlanOut)
+def next_plan(user: User = Depends(current_user), db: Session = Depends(get_db)) -> PlanOut:
+    """План следующей тренировки: последняя сохранённая рекомендация ИИ."""
+    last = db.scalar(
+        select(AiAdjustment)
+        .join(Workout, Workout.id == AiAdjustment.workout_id)
+        .where(Workout.user_id == user.id)
+        .order_by(AiAdjustment.id.desc())
+        .limit(1)
+    )
+    if last is None:
+        return PlanOut(workout_id=None, items=[])
+    return PlanOut(
+        workout_id=last.workout_id, items=Adjustment.model_validate(last.result).next_workout
+    )
 
 
 def _generate_valid(llm: LLMProvider, snapshot: dict) -> Adjustment:

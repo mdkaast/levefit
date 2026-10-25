@@ -52,13 +52,13 @@ def save_weight(
         db.add(entry)
     else:
         entry.weight_kg = body.weight_kg
-    gained = award_weight(db, user, day, now)
+    reward = award_weight(db, user, day, now)
     try:
         db.commit()
     except IntegrityError:
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "concurrent update, try again") from None
-    return WeightSaved(date=entry.date, weight_kg=entry.weight_kg, xp_gained=gained)
+    return WeightSaved(date=entry.date, weight_kg=entry.weight_kg, xp_gained=reward.xp_gained)
 
 
 @router.get("/metrics/weight", response_model=list[WeightOut])

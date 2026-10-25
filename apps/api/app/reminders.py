@@ -25,6 +25,10 @@ class DueReminder(BaseModel):
     kind: str  # workout | streak_risk
     streak_weeks: int
     needed: int  # сколько тренировок осталось до недельной цели
+    days_left: int  # дней до конца недели, включая сегодня
+    freezes_left: int
+    reward_xp: int
+    muscles: list[str]
 
 
 def require_internal_key(x_internal_key: str = Header(default="")) -> None:
@@ -55,14 +59,17 @@ def collect_due(db: Session, now: datetime) -> list[DueReminder]:
     напоминание не уйдёт, даже если бот не смог его отправить.
     """
     users = db.scalars(
-        select(User).join(Character, Character.user_id == User.id).where(User.reminders_enabled)
+        select(User)
+        .join(Character, Character.user_id == User.id)
+        .where(User.reminders_enabled, User.mode == "active")
     ).all()
     due = []
     for user in users:
         tz = ZoneInfo(user.timezone or "UTC")
         local = now.astimezone(tz)
         today = local.date()
-        if user.last_reminder_date == today or not in_window(local, user.reminder_time):
+        sent_today = user.reminders_today if user.last_reminder_date == today else 0
+        if sent_today >= rules.MAX_REMINDERS_PER_DAY or not in_window(local, user.reminder_time):
             continue
 
         day_start = _local_midnight_utc(today, tz)
@@ -85,12 +92,17 @@ def collect_due(db: Session, now: datetime) -> list[DueReminder]:
         if kind is None:
             continue
         user.last_reminder_date = today
+        user.reminders_today = sent_today + 1
         due.append(
             DueReminder(
                 telegram_id=user.telegram_id,
                 kind=kind,
                 streak_weeks=streak_weeks,
                 needed=goal - week_done,
+                days_left=7 - today.weekday(),
+                freezes_left=state.freezes_left,
+                reward_xp=rules.XP_WORKOUT,
+                muscles=list(user.character.target_muscles or []),
             )
         )
     db.commit()
