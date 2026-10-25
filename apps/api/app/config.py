@@ -6,6 +6,12 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://pfo:change-me@localhost:5432/pfo"
     bot_token: str = ""
+    # Ключ подписи собственных токенов API; обязателен в продакшене.
+    app_secret: str = ""
+    # Через сколько секунд после выдачи initData считается устаревшим.
+    init_data_max_age_s: int = 3600
+    access_token_ttl_s: int = 3600
+    cors_origins: str = "http://localhost:5173"
 
 
 settings = Settings()
