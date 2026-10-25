@@ -2,14 +2,18 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.deps import current_user
+from app.game import award_workout, utcnow
 from app.models import Exercise, User, Workout, WorkoutSet
 from app.schemas import (
     ExerciseCreate,
     ExerciseOut,
+    FinishOut,
+    RewardOut,
     SetCreate,
     SetOut,
     WorkoutCreate,
@@ -146,13 +150,13 @@ def add_set(
     return workout_set
 
 
-@router.post("/workouts/{workout_id}/finish", response_model=WorkoutOut)
+@router.post("/workouts/{workout_id}/finish", response_model=FinishOut)
 def finish_workout(
     workout_id: int,
     body: WorkoutFinish | None = None,
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
-) -> Workout:
+) -> FinishOut:
     workout = _get_workout(db, user, workout_id)
     if workout.status == "finished":
         raise HTTPException(status.HTTP_409_CONFLICT, "workout is already finished")
@@ -161,5 +165,26 @@ def finish_workout(
     workout.status = "finished"
     if body and body.duration_min:
         workout.duration_min = body.duration_min
-    db.commit()
-    return workout
+    reward = award_workout(db, user, workout, utcnow())
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "workout is already finished") from None
+    return FinishOut(
+        **WorkoutOut.model_validate(workout).model_dump(),
+        reward=RewardOut(
+            counted=reward.counted,
+            xp_gained=reward.xp_gained,
+            workout_xp=reward.workout_xp,
+            sets_xp=reward.sets_xp,
+            quest_xp=reward.quest_xp,
+            week_xp=reward.week_xp,
+            level_before=reward.level_before,
+            level_after=reward.level_after,
+            leveled_up=reward.level_after > reward.level_before,
+            quests_completed=reward.quests_completed,
+            week_closed=reward.week_closed,
+            streak_weeks=reward.streak_weeks,
+        ),
+    )

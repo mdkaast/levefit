@@ -5,12 +5,15 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.db import get_db
 from app.deps import current_user
+from app.game import ensure_user_quests, streak_view, utcnow
 from app.models import Character, User
 from app.schemas import (
     AuthRequest,
     CharacterCreate,
     CharacterOut,
     MeOut,
+    QuestOut,
+    StreakOut,
     TokenResponse,
     UserOut,
 )
@@ -45,11 +48,31 @@ def auth_telegram(body: AuthRequest, db: Session = Depends(get_db)) -> TokenResp
 
 
 @router.get("/me", response_model=MeOut)
-def me(user: User = Depends(current_user)) -> MeOut:
+def me(user: User = Depends(current_user), db: Session = Depends(get_db)) -> MeOut:
+    character = user.character
     return MeOut(
         user=UserOut.model_validate(user),
-        character=CharacterOut.model_validate(user.character) if user.character else None,
+        character=CharacterOut.model_validate(character) if character else None,
+        streak=StreakOut(**streak_view(db, user, utcnow().date())) if character else None,
     )
+
+
+@router.get("/quests", response_model=list[QuestOut])
+def quests(user: User = Depends(current_user), db: Session = Depends(get_db)) -> list[QuestOut]:
+    items = ensure_user_quests(db, user.id, utcnow().date())
+    db.commit()
+    return [
+        QuestOut(
+            id=uq.id,
+            code=uq.quest.code,
+            kind=uq.quest.kind,
+            progress=uq.progress,
+            target=uq.quest.condition["target"],
+            xp_reward=uq.quest.xp_reward,
+            status=uq.status,
+        )
+        for uq in items
+    ]
 
 
 @router.post("/characters", response_model=CharacterOut, status_code=status.HTTP_201_CREATED)

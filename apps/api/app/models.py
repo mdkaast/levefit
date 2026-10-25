@@ -1,6 +1,17 @@
 from datetime import UTC, date, datetime
 
-from sqlalchemy import BigInteger, Date, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    BigInteger,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -92,3 +103,57 @@ class WorkoutSet(Base):
     rir: Mapped[int | None] = mapped_column(Integer)
     duration_s: Mapped[int | None] = mapped_column(Integer)
     distance_m: Mapped[int | None] = mapped_column(Integer)
+
+
+class XpEvent(Base):
+    """Журнал начислений XP: уровень и XP персонажа можно пересчитать из него."""
+
+    __tablename__ = "xp_events"
+    __table_args__ = (UniqueConstraint("user_id", "source", "ref_id", name="uq_xp_event_ref"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    source: Mapped[str] = mapped_column(String(32))
+    amount: Mapped[int] = mapped_column(Integer)
+    # Идемпотентность: одно начисление на (пользователь, источник, объект-основание).
+    ref_id: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+
+class Quest(Base):
+    __tablename__ = "quests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    code: Mapped[str] = mapped_column(String(32), unique=True)
+    kind: Mapped[str] = mapped_column(String(8))
+    condition: Mapped[dict] = mapped_column(JSON)
+    xp_reward: Mapped[int] = mapped_column(Integer)
+
+
+class UserQuest(Base):
+    __tablename__ = "user_quests"
+    __table_args__ = (
+        UniqueConstraint("user_id", "quest_id", "period_start", name="uq_user_quest_period"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    quest_id: Mapped[int] = mapped_column(ForeignKey("quests.id"))
+    period_start: Mapped[date] = mapped_column(Date)
+    progress: Mapped[int] = mapped_column(Integer, default=0)
+    status: Mapped[str] = mapped_column(String(16), default="active")
+
+    quest: Mapped[Quest] = relationship()
+
+
+class Streak(Base):
+    __tablename__ = "streaks"
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    weeks: Mapped[int] = mapped_column(Integer, default=0)
+    freezes_left: Mapped[int] = mapped_column(Integer, default=1)
+    last_week: Mapped[date | None] = mapped_column(Date)
+    # Месяц последнего восстановления заморозок (в ТЗ нет, нужен для «одна в месяц»).
+    freeze_month: Mapped[date | None] = mapped_column(Date)

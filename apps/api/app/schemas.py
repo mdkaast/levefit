@@ -1,9 +1,10 @@
 from datetime import date as date_type
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from app.game_rules import config as rules
+from app.game_rules.levels import level_from_total_xp, xp_for_next_level
 
 Appearance = Literal[rules.APPEARANCES]  # type: ignore[valid-type]
 Goal = Literal[rules.GOALS]  # type: ignore[valid-type]
@@ -54,6 +55,16 @@ class CharacterOut(BaseModel):
     workouts_per_week: int
     equipment: str
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def xp_in_level(self) -> int:
+        return level_from_total_xp(self.xp)[1]
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def xp_to_next(self) -> int:
+        return xp_for_next_level(self.level)
+
 
 class UserOut(BaseModel):
     model_config = {"from_attributes": True}
@@ -63,9 +74,17 @@ class UserOut(BaseModel):
     locale: str | None
 
 
+class StreakOut(BaseModel):
+    weeks: int
+    freezes_left: int
+    week_workouts: int
+    weekly_goal: int
+
+
 class MeOut(BaseModel):
     user: UserOut
     character: CharacterOut | None
+    streak: StreakOut | None
 
 
 ExerciseCategory = Literal[rules.EXERCISE_CATEGORIES]  # type: ignore[valid-type]
@@ -148,3 +167,32 @@ class WorkoutOut(BaseModel):
     duration_min: int | None
     notes: str | None
     sets: list[SetOut]
+
+
+class RewardOut(BaseModel):
+    counted: bool
+    xp_gained: int
+    workout_xp: int
+    sets_xp: int
+    quest_xp: int
+    week_xp: int
+    level_before: int
+    level_after: int
+    leveled_up: bool
+    quests_completed: list[str]
+    week_closed: bool
+    streak_weeks: int
+
+
+class FinishOut(WorkoutOut):
+    reward: RewardOut
+
+
+class QuestOut(BaseModel):
+    id: int
+    code: str
+    kind: str
+    progress: int
+    target: int
+    xp_reward: int
+    status: str

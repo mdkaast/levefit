@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import json
 import time
+from datetime import UTC, datetime
 from urllib.parse import urlencode
 
 import pytest
@@ -13,7 +14,9 @@ from sqlalchemy.pool import StaticPool
 from app import models  # noqa: F401
 from app.config import settings
 from app.db import Base, get_db
+from app.game_rules import config as rules
 from app.main import app
+from app.models import Exercise, Quest
 
 BOT_TOKEN = "123456:TEST-TOKEN"
 
@@ -53,7 +56,9 @@ def client():
             yield session
 
     app.dependency_overrides[get_db] = override_db
-    yield TestClient(app)
+    test_client = TestClient(app)
+    test_client.session_factory = factory
+    yield test_client
     app.dependency_overrides.clear()
 
 
@@ -65,3 +70,45 @@ def auth_headers(client):
         return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
     return _login
+
+
+@pytest.fixture
+def exercises(client):
+    """Общие упражнения: в тестах без миграции справочник создаём сами."""
+    with client.session_factory() as session:
+        items = [
+            Exercise(name="Жим лёжа", category="strength", muscle_group="chest"),
+            Exercise(name="Бег", category="cardio", muscle_group="full_body"),
+            Exercise(name="Кошка-корова", category="mobility", muscle_group="back"),
+        ]
+        session.add_all(items)
+        session.commit()
+        return {e.category: e.id for e in items}
+
+
+@pytest.fixture
+def quests_seeded(client):
+    with client.session_factory() as session:
+        for q in rules.QUEST_TEMPLATES:
+            session.add(
+                Quest(
+                    code=q["code"],
+                    kind=q["kind"],
+                    condition={"metric": q["metric"], "target": q["target"]},
+                    xp_reward=q["xp_reward"],
+                )
+            )
+        session.commit()
+
+
+@pytest.fixture
+def clock(monkeypatch):
+    """Управляемое «сейчас» для игровой логики; clock.now можно менять."""
+
+    class Clock:
+        now = datetime(2026, 10, 20, 12, tzinfo=UTC)  # вторник
+
+    monkeypatch.setattr("app.game.utcnow", lambda: Clock.now)
+    monkeypatch.setattr("app.routers.utcnow", lambda: Clock.now)
+    monkeypatch.setattr("app.workouts.utcnow", lambda: Clock.now)
+    return Clock

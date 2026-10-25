@@ -12,9 +12,22 @@ export type Character = {
   goal: string | null;
   workouts_per_week: number;
   equipment: string;
+  xp_in_level: number;
+  xp_to_next: number;
 };
 
-export type Me = { user: { id: number; username: string | null }; character: Character | null };
+export type Streak = {
+  weeks: number;
+  freezes_left: number;
+  week_workouts: number;
+  weekly_goal: number;
+};
+
+export type Me = {
+  user: { id: number; username: string | null };
+  character: Character | null;
+  streak: Streak | null;
+};
 
 export type CharacterInput = {
   name: string;
@@ -101,5 +114,32 @@ export const addSet = (workoutId: number, input: SetInput) =>
     method: "POST",
     body: JSON.stringify(input),
   });
+export type Reward = {
+  counted: boolean;
+  xp_gained: number;
+  workout_xp: number;
+  sets_xp: number;
+  quest_xp: number;
+  week_xp: number;
+  level_before: number;
+  level_after: number;
+  leveled_up: boolean;
+  quests_completed: string[];
+  week_closed: boolean;
+  streak_weeks: number;
+};
+
 export const finishWorkout = (workoutId: number) =>
-  request<Workout>(`/workouts/${workoutId}/finish`, { method: "POST" });
+  request<Workout & { reward: Reward }>(`/workouts/${workoutId}/finish`, { method: "POST" });
+
+export type Quest = {
+  id: number;
+  code: string;
+  kind: "daily" | "weekly";
+  progress: number;
+  target: number;
+  xp_reward: number;
+  status: "active" | "completed";
+};
+
+export const getQuests = () => request<Quest[]>("/quests");

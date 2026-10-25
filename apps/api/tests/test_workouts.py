@@ -1,26 +1,3 @@
-import pytest
-
-from app.db import get_db
-from app.main import app
-from app.models import Exercise
-
-
-@pytest.fixture
-def exercises(client):
-    """Общие упражнения: в тестах без миграции справочник создаём сами."""
-    session = next(app.dependency_overrides[get_db]())
-    items = [
-        Exercise(name="Жим лёжа", category="strength", muscle_group="chest"),
-        Exercise(name="Бег", category="cardio", muscle_group="full_body"),
-        Exercise(name="Кошка-корова", category="mobility", muscle_group="back"),
-    ]
-    session.add_all(items)
-    session.commit()
-    ids = {e.category: e.id for e in items}
-    session.close()
-    return ids
-
-
 def new_workout(client, headers, **body):
     response = client.post("/workouts", json=body, headers=headers)
     assert response.status_code == 201
