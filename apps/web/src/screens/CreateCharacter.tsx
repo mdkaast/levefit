@@ -1,11 +1,17 @@
 import { useState, type FormEvent } from "react";
 import { createCharacter, type Character } from "../api";
+import { Icon, type IconName } from "../icons";
 import { t } from "../i18n";
 import { NAME_MAX_LEN, validateName } from "../validation";
 
 type Props = { onCreated: (character: Character) => void };
 
 const APPEARANCES = ["warrior", "runner", "sage"] as const;
+const APPEARANCE_ICONS: Record<(typeof APPEARANCES)[number], IconName> = {
+  warrior: "dumbbell",
+  runner: "bolt",
+  sage: "leaf",
+};
 const GOALS = ["mass", "strength", "shape"] as const;
 const EQUIPMENT = ["gym", "home", "none"] as const;
 
@@ -40,7 +46,7 @@ export function CreateCharacter({ onCreated }: Props) {
   }
 
   return (
-    <form onSubmit={submit} style={{ display: "grid", gap: 12, padding: 16 }}>
+    <form onSubmit={submit} className="card" style={{ margin: 16, display: "grid", gap: 14 }}>
       <h1>{t.create.title}</h1>
 
       <label>
@@ -54,20 +60,22 @@ export function CreateCharacter({ onCreated }: Props) {
         />
       </label>
 
-      <label>
-        {t.create.appearance}
-        <select
-          value={appearance}
-          onChange={(e) => setAppearance(e.target.value)}
-          style={{ display: "block", width: "100%" }}
-        >
+      <div style={{ display: "grid", gap: 6 }}>
+        <label>{t.create.appearance}</label>
+        <div className="choices">
           {APPEARANCES.map((a) => (
-            <option key={a} value={a}>
+            <button
+              key={a}
+              type="button"
+              aria-pressed={appearance === a}
+              onClick={() => setAppearance(a)}
+            >
+              <Icon name={APPEARANCE_ICONS[a]} />
               {t.appearances[a]}
-            </option>
+            </button>
           ))}
-        </select>
-      </label>
+        </div>
+      </div>
 
       <label>
         {t.create.goal}

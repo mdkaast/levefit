@@ -8,7 +8,7 @@ from app.reminders import router as reminders_router
 from app.routers import router
 from app.workouts import router as workouts_router
 
-app = FastAPI(title="PFO API")
+app = FastAPI(title="Levefit API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],

@@ -26,7 +26,8 @@ export function buildChart(points: WeightPoint[], width: number, height: number,
 
   const dots = points.map((p, i) => ({
     x: points.length === 1 ? width / 2 : pad + ((times[i] - minT) / spanT) * innerW,
-    y: height - pad - ((p.weight_kg - min) / spanW) * innerH,
+    // Если все значения одинаковы, рисуем линию посередине, а не у нижнего края.
+    y: max === min ? height / 2 : height - pad - ((p.weight_kg - min) / spanW) * innerH,
     date: p.date,
     weight: p.weight_kg,
   }));

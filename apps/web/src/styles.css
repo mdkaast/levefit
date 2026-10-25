@@ -1,0 +1,568 @@
+/*
+  Тёмная тема по мотивам референсов: Tap Champion (игровые чипы, вертикальные шкалы, розовый акцент)
+  и Luma (оливково-лаймовое свечение, стеклянные карточки, тонкие линейные графики).
+*/
+:root {
+  color-scheme: dark;
+  --bg: #0a0c07;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.09);
+  --text: #f3f6ea;
+  --hint: #98a287;
+  --lime: #c8e85c;
+  --lime-deep: #7fa30f;
+  --pink: #ff3d9a;
+  --yellow: #e6ff3d;
+  --danger: #ff6b6b;
+  --radius: 22px;
+  --font: "Inter", "SF Pro Display", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-bottom: 104px; /* место под нижнюю панель */
+  background:
+    radial-gradient(120% 55% at 50% -12%, rgba(143, 184, 29, 0.42), transparent 62%),
+    radial-gradient(70% 40% at 100% 100%, rgba(255, 61, 154, 0.12), transparent 70%), var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font: 16px/1.4 var(--font);
+  -webkit-text-size-adjust: 100%;
+}
+
+main {
+  display: grid;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+h3 {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hint);
+}
+
+p {
+  margin: 0;
+}
+
+small,
+.muted {
+  color: var(--hint);
+}
+
+/* ---------- карточки (стекло) ---------- */
+.card,
+main > section,
+main > form,
+main > figure {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+main > section,
+main > form {
+  display: grid;
+  gap: 10px;
+}
+
+/* ---------- формы ---------- */
+label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hint);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font: inherit; /* 16px, чтобы iOS не увеличивал поле при фокусе */
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px rgba(200, 232, 92, 0.18);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6c7560;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+input[type="range"] {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  accent-color: var(--lime);
+}
+
+/* переключатель вместо флажка */
+input[type="checkbox"] {
+  appearance: none;
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  min-height: 0;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, var(--lime), var(--lime-deep));
+}
+
+input[type="checkbox"]:checked::after {
+  transform: translateX(18px);
+}
+
+/* ---------- кнопки ---------- */
+button {
+  min-height: 48px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d9f574, var(--lime-deep));
+  color: #11160a;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(127, 163, 15, 0.35);
+  cursor: pointer;
+  transition: transform 0.08s;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button.ghost,
+.history button {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 500;
+  text-align: left;
+  box-shadow: none;
+}
+
+button.danger {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  color: var(--danger);
+  box-shadow: none;
+}
+
+[role="alert"] {
+  color: var(--danger);
+}
+
+/* ---------- чипы, значки ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.chip.pink {
+  color: var(--pink);
+  border-color: rgba(255, 61, 154, 0.35);
+}
+
+.chip.lime {
+  color: var(--yellow);
+  border-color: rgba(230, 255, 61, 0.3);
+}
+
+.brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+/* ---------- герой на главной ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.hero .chips {
+  grid-column: 1 / -1;
+}
+
+.avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 25%, #e9ff8a, transparent 55%),
+    linear-gradient(145deg, var(--lime-deep), #2c3a05);
+  box-shadow: 0 0 0 3px rgba(200, 232, 92, 0.25), 0 0 32px rgba(143, 184, 29, 0.5);
+  font-size: 30px;
+  font-weight: 800;
+  color: #11160a;
+}
+
+.avatar .lvl {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  min-width: 28px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: #fff;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ---------- полосы ---------- */
+.bar {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lime-deep), var(--lime), var(--yellow));
+  box-shadow: 0 0 14px rgba(200, 232, 92, 0.6);
+}
+
+.bar.thin {
+  height: 6px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* вертикальные шкалы характеристик (как энергия в Tap Champion) */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.stat .tube {
+  position: relative;
+  width: 14px;
+  height: 90px;
+  margin: 0 auto 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.stat .tube > i {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: linear-gradient(to top, var(--yellow), var(--lime), var(--pink));
+  box-shadow: 0 0 12px rgba(255, 61, 154, 0.5);
+}
+
+.stat b {
+  display: block;
+  font-size: 18px;
+}
+
+.stat span {
+  font-size: 11px;
+  color: var(--hint);
+}
+
+/* цель недели: кружки */
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dots i {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+}
+
+.dots i.on {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--lime), var(--yellow));
+  box-shadow: 0 0 12px rgba(200, 232, 92, 0.6);
+}
+
+/* ---------- списки ---------- */
+.list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.quest {
+  display: grid;
+  gap: 8px;
+}
+
+.quest.done {
+  outline: 1px solid rgba(200, 232, 92, 0.5);
+}
+
+.xp {
+  color: var(--yellow);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+ul {
+  margin: 0;
+}
+
+/* ---------- сегменты (период графика) ---------- */
+.segments {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.segments button {
+  min-height: 38px;
+  background: transparent;
+  color: var(--hint);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.segments button[aria-pressed="true"] {
+  background: linear-gradient(135deg, #d9f574, var(--lime-deep));
+  color: #11160a;
+}
+
+/* ---------- выбор внешности ---------- */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.choices button {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 14px 6px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.choices button svg {
+  width: 30px;
+  height: 30px;
+  color: var(--hint);
+}
+
+.choices button[aria-pressed="true"] {
+  border-color: var(--lime);
+  background: rgba(200, 232, 92, 0.12);
+  box-shadow: 0 0 20px rgba(200, 232, 92, 0.25);
+}
+
+.choices button[aria-pressed="true"] svg {
+  color: var(--lime);
+}
+
+/* ---------- награда после тренировки ---------- */
+.reward .big {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--yellow);
+  text-shadow: 0 0 28px rgba(230, 255, 61, 0.45);
+}
+
+.levelup {
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 61, 154, 0.25), rgba(255, 61, 154, 0.08));
+  border: 1px solid rgba(255, 61, 154, 0.5);
+  color: #ffd1e8;
+  font-weight: 700;
+}
+
+/* ---------- нижняя панель ---------- */
+nav {
+  position: fixed;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  max-width: 536px;
+  margin: 0 auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(18, 22, 12, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+nav button {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  justify-items: center;
+  min-height: 52px;
+  padding: 6px 4px;
+  background: transparent;
+  color: var(--hint);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+nav button svg {
+  width: 22px;
+  height: 22px;
+}
+
+nav button[aria-current="page"] {
+  background: rgba(200, 232, 92, 0.16);
+  color: var(--lime);
+}
+
+svg {
+  display: block;
+}
+
+.status-screen {
+  display: grid;
+  min-height: 60vh;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--hint);
+}

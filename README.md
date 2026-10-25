@@ -1,4 +1,4 @@
-# PFO — игровой дневник тренировок (Telegram Mini App)
+# Levefit — игровой дневник тренировок (Telegram Mini App)
 
 Монорепозиторий: `apps/web` (React), `apps/api` (FastAPI), `apps/bot` (aiogram). Решения и ТЗ — в `docs/`.
 

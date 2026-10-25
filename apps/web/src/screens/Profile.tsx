@@ -49,12 +49,12 @@ export function Profile({ onDeleted }: Props) {
   const field = { display: "block", width: "100%" } as const;
 
   return (
-    <main style={{ padding: 16, display: "grid", gap: 12 }}>
+    <main>
       <h1>{t.profile.title}</h1>
 
-      <form onSubmit={save} style={{ display: "grid", gap: 8 }}>
+      <form onSubmit={save}>
         <h2>{t.profile.reminders}</h2>
-        <label>
+        <label style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text)" }}>
           <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />{" "}
           {t.profile.remindersEnabled}
         </label>
@@ -72,10 +72,10 @@ export function Profile({ onDeleted }: Props) {
       {message && <p role="status">{message}</p>}
       {error && <p role="alert">{error}</p>}
 
-      <section style={{ display: "grid", gap: 8 }}>
+      <section>
         <h2>{t.profile.dangerZone}</h2>
         <p>{t.profile.deleteHint}</p>
-        <button type="button" onClick={remove}>
+        <button type="button" onClick={remove} className="danger">
           {t.profile.delete}
         </button>
       </section>

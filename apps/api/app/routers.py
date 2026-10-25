@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -23,6 +24,23 @@ from app.security import InvalidInitData, InvalidToken, create_access_token, val
 router = APIRouter()
 
 
+def _upsert_user(db: Session, telegram_id: int, tg_user: dict) -> User:
+    """Находит или создаёт пользователя; два одновременных первых входа не должны падать."""
+    for _ in range(2):
+        user = db.scalar(select(User).where(User.telegram_id == telegram_id))
+        if user is None:
+            user = User(telegram_id=telegram_id)
+            db.add(user)
+        user.username = tg_user.get("username")
+        user.locale = tg_user.get("language_code")
+        try:
+            db.commit()
+            return user
+        except IntegrityError:  # параллельный запрос успел создать пользователя
+            db.rollback()
+    raise HTTPException(status.HTTP_409_CONFLICT, "concurrent login, try again")
+
+
 @router.post("/auth/telegram", response_model=TokenResponse)
 def auth_telegram(body: AuthRequest, db: Session = Depends(get_db)) -> TokenResponse:
     try:
@@ -33,13 +51,7 @@ def auth_telegram(body: AuthRequest, db: Session = Depends(get_db)) -> TokenResp
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid init data") from None
 
     telegram_id = int(tg_user["id"])
-    user = db.scalar(select(User).where(User.telegram_id == telegram_id))
-    if user is None:
-        user = User(telegram_id=telegram_id)
-        db.add(user)
-    user.username = tg_user.get("username")
-    user.locale = tg_user.get("language_code")
-    db.commit()
+    user = _upsert_user(db, telegram_id, tg_user)
 
     try:
         token = create_access_token(user.id, settings.app_secret, settings.access_token_ttl_s)

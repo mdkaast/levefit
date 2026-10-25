@@ -39,3 +39,8 @@ test("одинаковый вес не даёт NaN", () => {
   );
   expect(chart.dots.every((d) => Number.isFinite(d.x) && Number.isFinite(d.y))).toBe(true);
 });
+
+test("одна точка по вертикали посередине", () => {
+  const chart = buildChart([{ date: "2026-10-01", weight_kg: 80 }], 300, 100);
+  expect(chart.dots[0].y).toBe(50);
+});

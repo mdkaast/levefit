@@ -13,6 +13,7 @@ function errorMessage(error: unknown): string {
   const text = error instanceof Error ? error.message : "";
   if (text.includes("429")) return t.adjust.limit;
   if (text.includes("422")) return t.adjust.noStrength;
+  if (text.includes("503")) return t.adjust.unavailable;
   return t.adjust.error;
 }
 
@@ -42,21 +43,21 @@ export function AdjustmentView({ workoutId }: Props) {
 
   const { adjustment } = state;
   return (
-    <section style={{ display: "grid", gap: 8 }}>
+    <section>
       <h2>{t.adjust.title}</h2>
-      <p>
-        <strong>{t.adjust.decisions[adjustment.decision]}</strong>
-      </p>
+      <div className="chips">
+        <span className="chip lime">{t.adjust.decisions[adjustment.decision]}</span>
+      </div>
 
       <h3>{t.adjust.changes}</h3>
-      <ul style={{ paddingLeft: 16 }}>
+      <ul className="list">
         {adjustment.changes.map((change) => (
           <li key={change}>{change}</li>
         ))}
       </ul>
 
       <h3>{t.adjust.next}</h3>
-      <ul style={{ paddingLeft: 16 }}>
+      <ul className="list">
         {adjustment.next_workout.map((item) => (
           <li key={item.exercise_id}>
             {item.name}:{" "}

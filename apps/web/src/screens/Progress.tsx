@@ -50,10 +50,10 @@ export function Progress({ onOpenWorkout }: Props) {
   const chart = buildChart(points, W, H);
 
   return (
-    <main style={{ padding: 16, display: "grid", gap: 12 }}>
+    <main>
       <h1>{t.progress.title}</h1>
 
-      <form onSubmit={submit} style={{ display: "flex", gap: 8 }}>
+      <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 8 }}>
         <input
           inputMode="decimal"
           placeholder={t.progress.weightPlaceholder}
@@ -65,14 +65,13 @@ export function Progress({ onOpenWorkout }: Props) {
       </form>
       {message && <p role="status">{message}</p>}
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="segments">
         {PERIODS.map((days) => (
           <button
             key={days}
             type="button"
             aria-pressed={period === days}
             onClick={() => setPeriod(days)}
-            style={{ fontWeight: period === days ? "bold" : "normal" }}
           >
             {t.progress.periods[days]}
           </button>
@@ -82,11 +81,23 @@ export function Progress({ onOpenWorkout }: Props) {
       {points.length === 0 ? (
         <p>{t.progress.empty}</p>
       ) : (
-        <figure style={{ margin: 0 }}>
+        <figure>
           <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={t.progress.chartLabel}>
-            <path d={chart.path} fill="none" stroke="#4a8" strokeWidth={2} />
+            <defs>
+              <linearGradient id="weight-area" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#c8e85c" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#c8e85c" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {chart.dots.length > 1 && (
+              <path
+                d={`${chart.path} L${chart.dots[chart.dots.length - 1].x.toFixed(1)} ${H} L${chart.dots[0].x.toFixed(1)} ${H} Z`}
+                fill="url(#weight-area)"
+              />
+            )}
+            <path d={chart.path} fill="none" stroke="var(--lime)" strokeWidth={2.5} />
             {chart.dots.map((d) => (
-              <circle key={d.date} cx={d.x} cy={d.y} r={3} fill="#4a8">
+              <circle key={d.date} cx={d.x} cy={d.y} r={3} fill="var(--yellow)">
                 <title>
                   {d.date}: {d.weight} {t.units.kg}
                 </title>
@@ -99,12 +110,12 @@ export function Progress({ onOpenWorkout }: Props) {
         </figure>
       )}
 
-      <h2>{t.home.history}</h2>
+      <h3>{t.home.history}</h3>
       {history && history.length === 0 && <p>{t.home.historyEmpty}</p>}
-      <ul style={{ paddingLeft: 0, listStyle: "none", display: "grid", gap: 8 }}>
+      <ul className="list history">
         {history?.map((w) => (
           <li key={w.id}>
-            <button type="button" onClick={() => onOpenWorkout(w.id)} style={{ width: "100%" }}>
+            <button type="button" onClick={() => onOpenWorkout(w.id)} className="ghost" style={{ width: "100%" }}>
               {w.date} · {w.title} · {w.sets_count} {t.home.sets}
               {w.status !== "finished" && ` · ${t.home.inProgress}`}
             </button>

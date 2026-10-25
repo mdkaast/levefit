@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMe, login, patchMe, type Character } from "./api";
+import { Icon, type IconName } from "./icons";
 import { t } from "./i18n";
 import { CreateCharacter } from "./screens/CreateCharacter";
 import { Home } from "./screens/Home";
@@ -9,6 +10,8 @@ import { WorkoutScreen } from "./screens/WorkoutScreen";
 import { getInitData } from "./telegram";
 
 type Tab = "home" | "progress" | "profile";
+
+const NAV_ICONS: Record<Tab, IconName> = { home: "home", progress: "chart", profile: "user" };
 
 type State =
   | { kind: "loading" }
@@ -47,11 +50,11 @@ export function App() {
 
   switch (state.kind) {
     case "loading":
-      return <p style={{ padding: 16 }}>{t.loading}</p>;
+      return <p className="status-screen">{t.loading}</p>;
     case "error":
-      return <p style={{ padding: 16 }}>{state.message}</p>;
+      return <p className="status-screen">{state.message}</p>;
     case "deleted":
-      return <p style={{ padding: 16 }}>{t.deleted}</p>;
+      return <p className="status-screen">{t.deleted}</p>;
     case "create":
       return (
         <CreateCharacter
@@ -74,15 +77,15 @@ export function App() {
           {tab === "home" && <Home character={character} onOpenWorkout={open} />}
           {tab === "progress" && <Progress onOpenWorkout={open} />}
           {tab === "profile" && <Profile onDeleted={() => setState({ kind: "deleted" })} />}
-          <nav style={{ display: "flex", gap: 8, padding: 16 }}>
+          <nav>
             {(["home", "progress", "profile"] as const).map((name) => (
               <button
                 key={name}
                 type="button"
                 aria-current={tab === name ? "page" : undefined}
                 onClick={() => setState({ kind: "tabs", character, tab: name })}
-                style={{ flex: 1, fontWeight: tab === name ? "bold" : "normal" }}
               >
+                <Icon name={NAV_ICONS[name]} />
                 {t.nav[name]}
               </button>
             ))}

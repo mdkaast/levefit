@@ -1,40 +1,40 @@
 import type { Reward } from "../api";
+import { Icon } from "../icons";
 import { t } from "../i18n";
 
 export function RewardSummary({ reward }: { reward: Reward }) {
-  if (!reward.counted) return <p>{t.reward.notCounted}</p>;
+  if (!reward.counted) return <p className="muted">{t.reward.notCounted}</p>;
   return (
-    <section>
-      <h2>{t.reward.title}</h2>
-      <p>
-        {t.reward.total}: +{reward.xp_gained}
-      </p>
-      <ul style={{ paddingLeft: 16 }}>
-        <li>
+    <section className="reward">
+      <h3>{t.reward.title}</h3>
+      <p className="big">+{reward.xp_gained} XP</p>
+      <div className="chips">
+        <span className="chip">
           {t.reward.workout}: +{reward.workout_xp}
-        </li>
-        <li>
+        </span>
+        <span className="chip">
           {t.reward.sets}: +{reward.sets_xp}
-        </li>
+        </span>
         {reward.quest_xp > 0 && (
-          <li>
+          <span className="chip lime">
             {t.reward.quests}: +{reward.quest_xp}
-          </li>
+          </span>
         )}
         {reward.week_xp > 0 && (
-          <li>
+          <span className="chip lime">
             {t.reward.week}: +{reward.week_xp}
-          </li>
+          </span>
         )}
-      </ul>
+        <span className="chip pink">
+          <Icon name="flame" />
+          {reward.streak_weeks} {t.home.weeksShort}
+        </span>
+      </div>
       {reward.leveled_up && (
-        <p>
+        <p className="levelup">
           {t.reward.levelUp}: {reward.level_after}
         </p>
       )}
-      <p>
-        {t.reward.streak}: {reward.streak_weeks}
-      </p>
     </section>
   );
 }

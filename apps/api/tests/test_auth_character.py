@@ -61,3 +61,20 @@ def test_users_are_isolated(client, auth_headers):
     b = auth_headers({"id": 2, "username": "b"})
     client.post("/characters", json=CHARACTER, headers=a)
     assert client.get("/me", headers=b).json()["character"] is None
+
+
+def test_concurrent_first_login_does_not_fail(client, auth_headers, monkeypatch):
+    """Гонка: пользователя уже создал параллельный запрос, а наша проверка этого не видела."""
+    from sqlalchemy.orm import Session
+
+    auth_headers()  # пользователь уже существует
+    real_scalar = Session.scalar
+    calls = []
+
+    def blind_first_lookup(self, *args, **kwargs):
+        calls.append(1)
+        return None if len(calls) == 1 else real_scalar(self, *args, **kwargs)
+
+    monkeypatch.setattr(Session, "scalar", blind_first_lookup)
+    response = client.post("/auth/telegram", json={"init_data": make_init_data()})
+    assert response.status_code == 200

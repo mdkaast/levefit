@@ -37,7 +37,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
       .then(([w, list]) => {
         setWorkout(w);
         setExercises(list);
-        setExerciseId(list[0]?.id ?? null);
+        setExerciseId((list.find((e) => e.category === "strength") ?? list[0])?.id ?? null);
       })
       .catch(() => setError(t.workout.error));
   }, [workoutId]);
@@ -87,17 +87,17 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
   }
 
   const nameOf = (id: number) => exercises.find((e) => e.id === id)?.name ?? "";
-  const field = { display: "block", width: "100%" } as const;
+  const field = { width: "100%" } as const;
 
   return (
-    <main style={{ padding: 16, display: "grid", gap: 12 }}>
-      <button type="button" onClick={onClose}>
+    <main>
+      <button type="button" onClick={onClose} className="ghost">
         {t.workout.back}
       </button>
       <h1>{workout?.title}</h1>
 
       {!finished && exercise && (
-        <form onSubmit={submitSet} style={{ display: "grid", gap: 8 }}>
+        <form onSubmit={submitSet}>
           <label>
             {t.workout.exercise}
             <select
@@ -160,7 +160,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
       {reward && <AdjustmentView workoutId={workoutId} />}
 
       {workout && workout.sets.length === 0 && <p>{t.workout.noSets}</p>}
-      <ul style={{ paddingLeft: 16 }}>
+      <ul className="list">
         {workout?.sets.map((s) => (
           <li key={s.id}>
             {nameOf(s.exercise_id)} #{s.set_no}: {formatSet(s)}
