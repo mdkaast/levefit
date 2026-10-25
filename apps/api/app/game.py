@@ -197,6 +197,18 @@ def settle_tasks(db: Session, user: User, today: date, now: datetime) -> tuple[i
     return total, codes
 
 
+def settle_pending(db: Session, user: User, now: datetime) -> Reward:
+    """Засчитывает задания, условия которых уже выполнены (например, вес записан до их выдачи)."""
+    reward = Reward()
+    character = user.character
+    if character is None:
+        return reward
+    reward.task_xp, reward.tasks_completed = settle_tasks(db, user, now.date(), now)
+    if reward.tasks_completed:
+        _finish_rewards(db, user, character, reward, now)
+    return reward
+
+
 def complete_manual_task(db: Session, user: User, user_task: UserTask, now: datetime) -> Reward:
     """Подтверждение задания восстановления (прогулка, мобилизация): малая награда, один раз."""
     reward = Reward()

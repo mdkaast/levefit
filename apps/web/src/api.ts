@@ -3,6 +3,8 @@ const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 export type Character = {
   name: string;
   level: number;
+  rank: string;
+  level_points: number;
   xp: number;
   strength: number;
   endurance: number;
@@ -29,6 +31,7 @@ export type Streak = {
 };
 
 export type UserSettings = {
+  mode: "active" | "paused";
   reminders_enabled: boolean;
   reminder_time: string;
   timezone: string | null;
@@ -136,12 +139,19 @@ export type Reward = {
   xp_gained: number;
   workout_xp: number;
   sets_xp: number;
-  quest_xp: number;
+  task_xp: number;
   week_xp: number;
+  weight_xp: number;
   level_before: number;
   level_after: number;
   leveled_up: boolean;
-  quests_completed: string[];
+  rank_before: string;
+  rank_after: string;
+  rank_changed: boolean;
+  level_points_gained: number;
+  stat_gains: Record<string, number>;
+  tasks_completed: string[];
+  achievements_earned: string[];
   week_closed: boolean;
   streak_weeks: number;
 };
@@ -153,6 +163,7 @@ export const finishWorkout = (workoutId: number, notes?: string) =>
   });
 
 export type Adjustment = {
+  health_flag: boolean;
   changes: string[];
   decision: "keep_weight" | "reduce_weight" | "change_volume" | "replace_exercise";
   next_workout: {
@@ -168,17 +179,40 @@ export type Adjustment = {
 export const adjustWorkout = (workoutId: number) =>
   request<Adjustment>(`/workouts/${workoutId}/adjust`, { method: "POST" });
 
-export type Quest = {
+export type Task = {
   id: number;
   code: string;
-  kind: "daily" | "weekly";
+  period: "daily" | "weekly";
+  kind: "main" | "minor" | "recovery";
   progress: number;
   target: number;
   xp_reward: number;
   status: "active" | "completed";
 };
 
-export const getQuests = () => request<Quest[]>("/quests");
+export const getTasks = () => request<Task[]>("/tasks");
+export const completeTask = (id: number) =>
+  request<Reward>(`/tasks/${id}/complete`, { method: "POST" });
+
+export type Achievement = {
+  code: string;
+  earned: boolean;
+  earned_at: string | null;
+  progress: number;
+  target: number;
+};
+
+export const getAchievements = () => request<Achievement[]>("/achievements");
+
+export type PlanItem = {
+  exercise_id: number;
+  name: string;
+  target_weight_kg: number | null;
+  sets: number;
+  reps: number;
+};
+
+export const getPlan = () => request<{ workout_id: number | null; items: PlanItem[] }>("/plan");
 
 export type WeightEntry = { date: string; weight_kg: number };
 

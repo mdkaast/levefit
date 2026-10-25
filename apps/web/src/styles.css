@@ -418,12 +418,12 @@ button.danger {
   background: var(--surface-2);
 }
 
-.quest {
+.task-item {
   display: grid;
   gap: 8px;
 }
 
-.quest.done {
+.task-item.done {
   outline: 1px solid rgba(185, 255, 28, 0.55);
 }
 

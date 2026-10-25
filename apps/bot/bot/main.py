@@ -15,20 +15,21 @@ from aiogram.types import (
     WebAppInfo,
 )
 
+from bot import texts
 from bot.reminders import fetch_due, run_loop
 
 dp = Dispatcher()
 
 
 def open_app_keyboard(webapp_url: str) -> InlineKeyboardMarkup:
-    button = InlineKeyboardButton(text="Открыть Levefit", web_app=WebAppInfo(url=webapp_url))
+    button = InlineKeyboardButton(text=texts.OPEN_APP, web_app=WebAppInfo(url=webapp_url))
     return InlineKeyboardMarkup(inline_keyboard=[[button]])
 
 
 @dp.message(CommandStart())
 async def start(message: Message) -> None:
     await message.answer(
-        "Привет! Это Levefit: записывай тренировки и прокачивай персонажа.",
+        texts.START,
         reply_markup=open_app_keyboard(os.environ["WEBAPP_URL"]),
     )
 

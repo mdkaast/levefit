@@ -8,6 +8,7 @@ from app.game import (
     achievement_stats,
     complete_manual_task,
     ensure_user_tasks,
+    settle_pending,
     utcnow,
 )
 from app.game_rules import config as rules
@@ -23,6 +24,7 @@ router = APIRouter()
 @router.get("/tasks", response_model=list[TaskOut])
 def list_tasks(user: User = Depends(current_user), db: Session = Depends(get_db)) -> list[TaskOut]:
     """Задания на сегодня и неделю. В режиме паузы выдаётся только восстановление."""
+    settle_pending(db, user, utcnow())
     items = ensure_user_tasks(db, user, utcnow().date())
     db.commit()
     return [

@@ -237,3 +237,29 @@ def test_reminders_limit_per_day_is_configurable(client, auth_headers, clock, mo
         return len(r.json())
 
     assert (due(), due(), due()) == (1, 1, 0)
+
+
+def test_listing_settles_tasks_whose_condition_is_already_met(client, auth_headers, clock):
+    from app.models import Task
+
+    headers = auth_headers()
+    make_character(client, headers)
+    client.put("/metrics/weight", json={"weight_kg": 80}, headers=headers)  # заданий ещё нет
+    with client.session_factory() as session:
+        template = next(t for t in rules.TASK_TEMPLATES if t["code"] == "daily_weight")
+        session.add(
+            Task(
+                code=template["code"],
+                period=template["period"],
+                kind=template["kind"],
+                condition={"metric": template["metric"], "target": template["target"]},
+                xp_reward=template["xp_reward"],
+            )
+        )
+        session.commit()
+    xp_before = client.get("/me", headers=headers).json()["character"]["xp"]
+    assert tasks_by_code(client, headers)["daily_weight"]["status"] == "completed"
+    assert client.get("/me", headers=headers).json()["character"]["xp"] == xp_before + 10
+    # повторный просмотр ничего не начисляет
+    tasks_by_code(client, headers)
+    assert client.get("/me", headers=headers).json()["character"]["xp"] == xp_before + 10

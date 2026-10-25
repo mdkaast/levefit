@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { adjustWorkout, type Adjustment } from "../api";
 import { t } from "../i18n";
+import { targetLine } from "../messages";
 
 type Props = { workoutId: number };
 
@@ -45,6 +46,7 @@ export function AdjustmentView({ workoutId }: Props) {
   return (
     <section>
       <h2>{t.adjust.title}</h2>
+      {adjustment.health_flag && <p className="levelup">{t.adjust.pain}</p>}
       <div className="chips">
         <span className="chip lime">{t.adjust.decisions[adjustment.decision]}</span>
       </div>
@@ -56,15 +58,11 @@ export function AdjustmentView({ workoutId }: Props) {
         ))}
       </ul>
 
-      <h3>{t.adjust.next}</h3>
+      <h3>{t.adjust.target}</h3>
       <ul className="list">
         {adjustment.next_workout.map((item) => (
           <li key={item.exercise_id}>
-            {item.name}:{" "}
-            {item.target_weight_kg !== null
-              ? `${item.target_weight_kg} ${t.units.kg}`
-              : t.adjust.freeWeight}{" "}
-            × {item.reps} × {item.sets}
+            {item.name}: {targetLine(item)}
           </li>
         ))}
       </ul>

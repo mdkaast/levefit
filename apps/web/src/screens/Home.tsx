@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  completeTask,
   createWorkout,
   getMe,
-  getQuests,
+  getPlan,
+  getTasks,
   type Character,
-  type Quest,
+  type PlanItem,
   type Streak,
+  type Task,
 } from "../api";
 import { Icon } from "../icons";
 import { t } from "../i18n";
+import { targetLine } from "../messages";
 
 type Props = { character: Character; onOpenWorkout: (id: number) => void };
 
@@ -16,29 +20,43 @@ const STATS = ["strength", "endurance", "agility", "discipline"] as const;
 
 export function Home({ character: initial, onOpenWorkout }: Props) {
   const [character, setCharacter] = useState(initial);
+  const [paused, setPaused] = useState(false);
   const [streak, setStreak] = useState<Streak | null>(null);
-  const [quests, setQuests] = useState<Quest[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [plan, setPlan] = useState<PlanItem[]>([]);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     getMe()
       .then((me) => {
         if (me.character) setCharacter(me.character);
         setStreak(me.streak);
+        setPaused(me.user.mode === "paused");
       })
       .catch(() => undefined);
-    getQuests()
-      .then(setQuests)
+    getTasks()
+      .then(setTasks)
+      .catch(() => undefined);
+    getPlan()
+      .then((p) => setPlan(p.items))
       .catch(() => undefined);
   }, []);
+
+  useEffect(load, [load]);
 
   async function start() {
     const workout = await createWorkout(t.workout.defaultTitle);
     onOpenWorkout(workout.id);
   }
 
+  async function confirm(task: Task) {
+    await completeTask(task.id).catch(() => undefined);
+    load();
+  }
+
   const percent = Math.min(100, Math.round((character.xp_in_level / character.xp_to_next) * 100));
   const statMax = Math.max(10, ...STATS.map((stat) => character[stat]));
   const goal = streak?.weekly_goal ?? 0;
+  const rankName = t.ranks[character.rank as keyof typeof t.ranks] ?? character.rank;
 
   return (
     <main>
@@ -51,7 +69,7 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
         <div>
           <h1>{character.name}</h1>
           <p className="muted">
-            {t.home.level} {character.level}
+            {rankName} · {t.home.level} {character.level}
           </p>
         </div>
         <div className="chips">
@@ -63,8 +81,17 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
             <Icon name="bolt" />
             {character.xp} {t.home.xp}
           </span>
+          <span className="chip">
+            {t.home.levelPoints}: {character.level_points}
+          </span>
         </div>
       </header>
+
+      {paused && (
+        <section>
+          <p>{t.home.paused}</p>
+        </section>
+      )}
 
       <section>
         <div className="row">
@@ -117,27 +144,51 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
         </section>
       )}
 
-      {(["daily", "weekly"] as const).map((kind) => {
-        const list = quests.filter((q) => q.kind === kind);
+      {plan.length > 0 && (
+        <section>
+          <h3>{t.home.planTitle}</h3>
+          <ul className="list">
+            {plan.map((item) => (
+              <li key={item.exercise_id}>
+                {item.name}: {targetLine(item)}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {(["daily", "weekly"] as const).map((period) => {
+        const list = tasks.filter((task) => task.period === period);
         if (list.length === 0) return null;
         return (
-          <section key={kind}>
-            <h3>{kind === "daily" ? t.home.questsDaily : t.home.questsWeekly}</h3>
+          <section key={period}>
+            <h3>{period === "daily" ? t.home.tasksDaily : t.home.tasksWeekly}</h3>
             <ul className="list">
-              {list.map((q) => (
-                <li key={q.id} className={`quest${q.status === "completed" ? " done" : ""}`}>
+              {list.map((task) => (
+                <li key={task.id} className={`task-item${task.status === "completed" ? " done" : ""}`}>
                   <div className="row">
-                    <span>{t.quests[q.code as keyof typeof t.quests] ?? q.code}</span>
+                    <span>{t.tasks[task.code as keyof typeof t.tasks] ?? task.code}</span>
                     <span className="xp">
-                      +{q.xp_reward} {t.home.xp}
+                      +{task.xp_reward} {t.home.xp}
                     </span>
                   </div>
-                  <div className="bar thin">
-                    <i style={{ width: `${Math.round((q.progress / q.target) * 100)}%` }} />
-                  </div>
-                  <small>
-                    {q.status === "completed" ? t.home.questDone : `${q.progress}/${q.target}`}
-                  </small>
+                  <small>{t.taskKinds[task.kind]}</small>
+                  {task.kind !== "recovery" && (
+                    <div className="bar thin">
+                      <i style={{ width: `${Math.round((task.progress / task.target) * 100)}%` }} />
+                    </div>
+                  )}
+                  {task.status === "completed" ? (
+                    <small>{t.home.taskDone}</small>
+                  ) : task.kind === "recovery" ? (
+                    <button type="button" className="ghost" onClick={() => confirm(task)}>
+                      {t.home.taskConfirm}
+                    </button>
+                  ) : (
+                    <small>
+                      {task.progress}/{task.target}
+                    </small>
+                  )}
                 </li>
               ))}
             </ul>

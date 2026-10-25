@@ -3,14 +3,17 @@ import {
   addSet,
   finishWorkout,
   getExercises,
+  getPlan,
   getWorkout,
   type Exercise,
+  type PlanItem,
   type Reward,
   type SetInput,
   type Workout,
 } from "../api";
 import { formatSet } from "../format";
 import { t } from "../i18n";
+import { targetLine } from "../messages";
 import { AdjustmentView } from "./AdjustmentView";
 import { RewardSummary } from "./RewardSummary";
 
@@ -30,9 +33,13 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [reward, setReward] = useState<Reward | null>(null);
+  const [plan, setPlan] = useState<PlanItem[]>([]);
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
+    getPlan()
+      .then((p) => setPlan(p.items))
+      .catch(() => undefined);
     Promise.all([getWorkout(workoutId), getExercises()])
       .then(([w, list]) => {
         setWorkout(w);
@@ -72,6 +79,12 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
     }
   }
 
+  function applyPlan(item: PlanItem) {
+    setExerciseId(item.exercise_id);
+    setWeight(item.target_weight_kg !== null ? String(item.target_weight_kg) : "");
+    setReps(String(item.reps));
+  }
+
   async function finish() {
     setBusy(true);
     setError(null);
@@ -95,6 +108,27 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
         {t.workout.back}
       </button>
       <h1>{workout?.title}</h1>
+
+      {!finished && plan.length > 0 && (
+        <section>
+          <h3>{t.workout.plan}</h3>
+          <small>{t.workout.planHint}</small>
+          <ul className="list">
+            {plan.map((item) => (
+              <li key={item.exercise_id}>
+                <button
+                  type="button"
+                  className="ghost"
+                  style={{ width: "100%" }}
+                  onClick={() => applyPlan(item)}
+                >
+                  {item.name}: {targetLine(item)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {!finished && exercise && (
         <form onSubmit={submitSet}>

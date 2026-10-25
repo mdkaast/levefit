@@ -7,22 +7,16 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError, TelegramForbiddenError
 from aiogram.types import InlineKeyboardMarkup
 
+from bot import texts
+
 log = logging.getLogger(__name__)
 
 POLL_INTERVAL_S = 60
 
-TEXTS = {
-    "workout": "Пора потренироваться! До недельной цели осталось тренировок: {needed}.",
-    "streak_risk": (
-        "Серия в {streak_weeks} нед. под угрозой: до недельной цели осталось тренировок: "
-        "{needed}, а дней в неделе почти не осталось."
-    ),
-}
-
-
 def render_message(item: dict) -> str:
-    template = TEXTS.get(item["kind"], TEXTS["workout"])
-    return template.format(needed=item["needed"], streak_weeks=item["streak_weeks"])
+    if item["kind"] == "streak_risk":
+        return texts.streak_risk(item)
+    return texts.daily_task(item)
 
 
 async def fetch_due(session: aiohttp.ClientSession, api_url: str, key: str) -> list[dict]:

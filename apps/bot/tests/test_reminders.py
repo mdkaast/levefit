@@ -19,19 +19,53 @@ class FakeBot:
         self.sent.append((chat_id, text))
 
 
-def item(kind="workout", telegram_id=1, needed=2, streak_weeks=0):
+def item(kind="workout", telegram_id=1, needed=2, streak_weeks=0, **extra):
     return {
         "telegram_id": telegram_id,
         "kind": kind,
         "needed": needed,
         "streak_weeks": streak_weeks,
+        "days_left": 3,
+        "freezes_left": 1,
+        "reward_xp": 50,
+        "muscles": [],
+        **extra,
     }
 
 
-def test_render_messages():
-    assert "осталось тренировок: 2" in render_message(item())
-    risk = render_message(item("streak_risk", needed=1, streak_weeks=5))
-    assert "5 нед." in risk and "под угрозой" in risk
+def test_daily_task_text_matches_spec_sample():
+    text = render_message(item(muscles=["chest", "back"]))
+    assert text == "Задание на сегодня: тренировка (грудь и спина). Награда: 50 XP."
+
+
+def test_daily_task_text_without_muscles():
+    assert render_message(item()) == "Задание на сегодня: тренировка. Награда: 50 XP."
+
+
+def test_streak_risk_text_matches_spec_sample():
+    text = render_message(item("streak_risk", needed=1, days_left=1))
+    assert text == (
+        "Серия под угрозой: остались сутки. Осталось тренировок: 1. Доступна заморозка."
+    )
+
+
+def test_streak_risk_without_freeze_and_with_days():
+    text = render_message(item("streak_risk", needed=2, days_left=3, freezes_left=0))
+    assert text == "Серия под угрозой: осталось дней: 3. Осталось тренировок: 2."
+
+
+def test_texts_have_no_pressure_words():
+    for kind in ("workout", "streak_risk"):
+        text = render_message(item(kind)).lower()
+        assert not any(w in text for w in ("лентяй", "стыд", "провал", "!"))
+
+
+def test_muscles_phrase():
+    from bot.texts import muscles_phrase
+
+    assert muscles_phrase([]) == ""
+    assert muscles_phrase(["legs"]) == "ноги"
+    assert muscles_phrase(["legs", "core", "arms"]) == "ноги, пресс и руки"
 
 
 def test_deliver_skips_blocked_users_and_counts_sent():
