@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { adjustWorkout, type Adjustment } from "../api";
+import { adjustWorkout, rateAdjustment, type AdjustRating, type Adjustment } from "../api";
 import { t } from "../i18n";
 import { targetLine } from "../messages";
 
@@ -16,6 +16,32 @@ function errorMessage(error: unknown): string {
   if (text.includes("422")) return t.adjust.noStrength;
   if (text.includes("503")) return t.adjust.unavailable;
   return t.adjust.error;
+}
+
+const RATINGS: AdjustRating[] = ["fits", "too_hard", "too_easy"];
+
+function RatingBar({ workoutId }: Props) {
+  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
+
+  const send = (rating: AdjustRating) =>
+    rateAdjustment(workoutId, rating)
+      .then(() => setStatus("sent"))
+      .catch(() => setStatus("error"));
+
+  if (status === "sent") return <p role="status">{t.adjust.rate.thanks}</p>;
+  return (
+    <div>
+      <h3>{t.adjust.rate.title}</h3>
+      <div className="chips">
+        {RATINGS.map((rating) => (
+          <button key={rating} type="button" className="ghost" onClick={() => send(rating)}>
+            {t.adjust.rate[rating]}
+          </button>
+        ))}
+      </div>
+      {status === "error" && <p role="alert">{t.adjust.rate.error}</p>}
+    </div>
+  );
 }
 
 export function AdjustmentView({ workoutId }: Props) {
@@ -70,6 +96,7 @@ export function AdjustmentView({ workoutId }: Props) {
       <h3>{t.adjust.why}</h3>
       <p>{adjustment.rationale}</p>
       <small>{t.adjust.disclaimer}</small>
+      <RatingBar workoutId={workoutId} />
     </section>
   );
 }

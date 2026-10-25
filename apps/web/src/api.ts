@@ -179,6 +179,14 @@ export type Adjustment = {
 export const adjustWorkout = (workoutId: number) =>
   request<Adjustment>(`/workouts/${workoutId}/adjust`, { method: "POST" });
 
+export type AdjustRating = "fits" | "too_hard" | "too_easy";
+
+export const rateAdjustment = (workoutId: number, rating: AdjustRating) =>
+  request<void>(`/workouts/${workoutId}/adjust/feedback`, {
+    method: "POST",
+    body: JSON.stringify({ rating }),
+  });
+
 export type Task = {
   id: number;
   code: string;
