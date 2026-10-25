@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createCharacter, type Character } from "../api";
 import { NeonAthlete } from "../components/NeonAthlete";
 import { Silhouette } from "../components/Silhouette";
+import { WheelPicker } from "../components/WheelPicker";
 import { Icon } from "../icons";
 import { t } from "../i18n";
 import { NAME_MAX_LEN, parseAge, parseHeight, parseWeight, validateName } from "../validation";
@@ -15,6 +16,7 @@ const STEPS = [
   "body",
   "goal",
   "experience",
+  "lifestyle",
   "schedule",
   "muscles",
 ] as const;
@@ -23,6 +25,7 @@ type Step = (typeof STEPS)[number];
 const GENDERS = ["male", "female", "other"] as const;
 const GOALS = ["mass", "strength", "shape", "weight_loss"] as const;
 const LEVELS = ["beginner", "intermediate", "advanced"] as const;
+const LIFESTYLES = ["sedentary", "light", "active", "very_active"] as const;
 const EQUIPMENT = ["gym", "home", "none"] as const;
 const MUSCLES = ["chest", "back", "shoulders", "arms", "legs", "core"] as const;
 
@@ -34,6 +37,7 @@ type Values = {
   weight: string;
   goal: string;
   experience: string;
+  lifestyle: string;
   perWeek: number;
   equipment: string;
   muscles: string[];
@@ -42,11 +46,12 @@ type Values = {
 const INITIAL: Values = {
   name: "",
   gender: "",
-  age: "",
-  height: "",
-  weight: "",
+  age: "25",
+  height: "170",
+  weight: "70.0",
   goal: "",
   experience: "",
+  lifestyle: "",
   perWeek: 3,
   equipment: "gym",
   muscles: [],
@@ -66,6 +71,8 @@ function canContinue(step: Step, v: Values): boolean {
       return v.goal !== "";
     case "experience":
       return v.experience !== "";
+    case "lifestyle":
+      return v.lifestyle !== "";
     case "schedule":
       return v.perWeek >= 1 && v.perWeek <= 7 && v.equipment !== "";
     case "muscles":
@@ -98,6 +105,34 @@ function SinglePick<T extends string>({ items, value, labels, onPick }: PickProp
   );
 }
 
+type DescribedProps = {
+  items: readonly string[];
+  value: string;
+  labels: Record<string, { title: string; desc: string }>;
+  onPick: (item: string) => void;
+};
+
+function DescribedPick({ items, value, labels, onPick }: DescribedProps) {
+  return (
+    <div className="options described">
+      {items.map((item) => (
+        <button
+          key={item}
+          type="button"
+          className="option"
+          aria-pressed={value === item}
+          onClick={() => onPick(item)}
+        >
+          <span>
+            <b>{labels[item].title}</b>
+            <small>{labels[item].desc}</small>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function Onboarding({ onCreated }: Props) {
   const [index, setIndex] = useState(-1); // -1 — приветствие
   const [values, setValues] = useState<Values>(INITIAL);
@@ -106,6 +141,13 @@ export function Onboarding({ onCreated }: Props) {
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) =>
     setValues((previous) => ({ ...previous, [key]: value }));
+
+  // Целые и десятые вес меняют разные колёса; обновляем от предыдущего значения, чтобы не затирать друг друга.
+  const setWeightPart = (part: "whole" | "tenth", value: number) =>
+    setValues((previous) => {
+      const [whole = "70", tenth = "0"] = previous.weight.split(".");
+      return { ...previous, weight: part === "whole" ? `${value}.${tenth}` : `${whole}.${value}` };
+    });
 
   if (index === -1) {
     return (
@@ -146,6 +188,7 @@ export function Onboarding({ onCreated }: Props) {
         height_cm: parseHeight(values.height),
         weight_kg: parseWeight(values.weight),
         experience: values.experience,
+        lifestyle: values.lifestyle,
         target_muscles: values.muscles,
       });
       onCreated(character);
@@ -209,36 +252,43 @@ export function Onboarding({ onCreated }: Props) {
         )}
 
         {step === "age" && (
-          <div className="big-field" style={{ gridTemplateColumns: "1fr" }}>
-            <input
-              inputMode="numeric"
-              autoFocus
-              value={values.age}
-              placeholder={t.onboarding.age}
-              onChange={(e) => set("age", e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && next()}
+          <div className="wheels">
+            <WheelPicker
+              label={t.onboarding.steps.age.title}
+              min={12}
+              max={100}
+              value={Number(values.age) || 25}
+              unit={t.onboarding.years}
+              onChange={(v) => set("age", String(v))}
             />
           </div>
         )}
 
         {step === "body" && (
-          <div className="big-field">
-            <label>
-              {t.onboarding.height}
-              <input
-                inputMode="numeric"
-                value={values.height}
-                onChange={(e) => set("height", e.target.value)}
-              />
-            </label>
-            <label>
-              {t.onboarding.weight}
-              <input
-                inputMode="decimal"
-                value={values.weight}
-                onChange={(e) => set("weight", e.target.value)}
-              />
-            </label>
+          <div className="wheels three">
+            <WheelPicker
+              label={t.onboarding.height}
+              min={120}
+              max={230}
+              value={Number(values.height) || 170}
+              unit={t.onboarding.cm}
+              onChange={(v) => set("height", String(v))}
+            />
+            <WheelPicker
+              label={t.onboarding.weight}
+              min={30}
+              max={250}
+              value={Math.floor(Number(values.weight)) || 70}
+              onChange={(v) => setWeightPart("whole", v)}
+            />
+            <WheelPicker
+              label={`${t.onboarding.weight}, 0,1`}
+              min={0}
+              max={9}
+              value={Number(values.weight.split(".")[1] ?? 0)}
+              unit={t.onboarding.kg}
+              onChange={(v) => setWeightPart("tenth", v)}
+            />
           </div>
         )}
 
@@ -257,6 +307,15 @@ export function Onboarding({ onCreated }: Props) {
             value={values.experience}
             labels={t.onboarding.experience}
             onPick={(item) => set("experience", item)}
+          />
+        )}
+
+        {step === "lifestyle" && (
+          <DescribedPick
+            items={LIFESTYLES}
+            value={values.lifestyle}
+            labels={t.onboarding.lifestyle}
+            onPick={(item) => set("lifestyle", item)}
           />
         )}
 

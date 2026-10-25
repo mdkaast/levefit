@@ -864,3 +864,102 @@ svg {
   background: var(--surface-2);
   font-size: 12px;
 }
+
+/* ---------- колёса выбора (возраст, рост, вес) ---------- */
+.wheels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.wheels.three {
+  grid-template-columns: 1.2fr 1fr 0.7fr;
+}
+
+.wheel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 28%, #000 72%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 28%, #000 72%, transparent);
+}
+
+.wheel-mark {
+  position: absolute;
+  inset: 50% 10px auto;
+  height: 48px;
+  transform: translateY(-50%);
+  border: 1px solid var(--lime);
+  border-radius: 16px;
+  background: rgba(185, 255, 28, 0.08);
+  box-shadow: 0 0 22px rgba(185, 255, 28, 0.2);
+  pointer-events: none;
+}
+
+.wheel-list {
+  height: 100%;
+  padding: 96px 0;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  outline: none;
+}
+
+.wheel-list::-webkit-scrollbar {
+  display: none;
+}
+
+.wheel-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  scroll-snap-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  opacity: 0.2;
+  cursor: pointer;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+.wheel-item[data-active="true"] {
+  color: var(--lime);
+}
+
+.wheel-unit {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--hint);
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.options.described .option {
+  width: 100%;
+  min-width: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.options.described .option span {
+  display: grid;
+  gap: 4px;
+}
+
+.options.described .option small {
+  color: var(--hint);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.options.described .option[aria-pressed="true"] small {
+  color: var(--text);
+}

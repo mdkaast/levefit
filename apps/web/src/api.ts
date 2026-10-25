@@ -20,6 +20,7 @@ export type Character = {
   age: number | null;
   height_cm: number | null;
   experience: string | null;
+  lifestyle: string | null;
   target_muscles: string[] | null;
 };
 
@@ -54,6 +55,7 @@ export type CharacterInput = {
   height_cm: number | null;
   weight_kg: number | null;
   experience: string | null;
+  lifestyle: string | null;
   target_muscles: string[];
 };
 

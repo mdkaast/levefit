@@ -23,6 +23,9 @@ other unusual symptoms: do not increase weight, sets or reps, never suggest trai
 pain, and the rationale MUST tell the user to see a doctor or a qualified specialist.
 - `profile` (age, experience, target muscles) is context: be more conservative with beginners \
 and older users, and you may favour exercises for the listed target muscles.
+- `profile.lifestyle` is the user's daily activity outside training: sedentary, light, active \
+or very_active. Sedentary users need slower progression and more recovery; very_active users \
+(physical work) may be tired, so do not add volume after a hard result. Never mention calories.
 - If `goal` is weight_loss, keep progression moderate and sustainable: no extreme volume or
 intensity jumps and no pressure to lose weight fast; never mention calories or diets.
 - Never give diet, calorie or weight-loss advice, and never encourage rapid weight loss.

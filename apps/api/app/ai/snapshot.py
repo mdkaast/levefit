@@ -99,6 +99,7 @@ def build_snapshot(
             "age": character.age,
             "gender": character.gender,
             "experience": character.experience,
+            "lifestyle": character.lifestyle,
             "target_muscles": character.target_muscles,
         }
         if character

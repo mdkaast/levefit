@@ -25,6 +25,7 @@ class TokenResponse(BaseModel):
 
 Gender = Literal[rules.GENDERS]  # type: ignore[valid-type]
 Experience = Literal[rules.EXPERIENCE_LEVELS]  # type: ignore[valid-type]
+Lifestyle = Literal[rules.LIFESTYLES]  # type: ignore[valid-type]
 Muscle = Literal[rules.TARGET_MUSCLES]  # type: ignore[valid-type]
 
 
@@ -36,6 +37,7 @@ class CharacterCreate(BaseModel):
     # Стартовый вес попадает в график веса (без XP).
     weight_kg: float | None = Field(default=None, ge=rules.MIN_WEIGHT_KG, le=rules.MAX_WEIGHT_KG)
     experience: Experience | None = None
+    lifestyle: Lifestyle | None = None
     target_muscles: list[Muscle] = Field(default_factory=list, max_length=len(rules.TARGET_MUSCLES))
     appearance: Appearance = rules.APPEARANCES[0]
     goal: Goal | None = None
@@ -80,6 +82,7 @@ class CharacterOut(BaseModel):
     age: int | None
     height_cm: int | None
     experience: str | None
+    lifestyle: str | None
     target_muscles: list[str] | None
 
     @computed_field  # type: ignore[prop-decorator]

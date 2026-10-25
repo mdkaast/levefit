@@ -73,6 +73,7 @@ class Character(Base):
     birth_year: Mapped[int | None] = mapped_column(Integer)
     height_cm: Mapped[int | None] = mapped_column(Integer)
     experience: Mapped[str | None] = mapped_column(String(16))
+    lifestyle: Mapped[str | None] = mapped_column(String(16))
     target_muscles: Mapped[list | None] = mapped_column(JSON)
 
     user: Mapped[User] = relationship(back_populates="character")

@@ -13,6 +13,8 @@ CHARACTER_NAME_MAX_LEN = 30
 # --- Профиль (онбординг) ---
 GENDERS = ("male", "female", "other")
 EXPERIENCE_LEVELS = ("beginner", "intermediate", "advanced")
+# Образ жизни вне тренировок: сидячий, лёгкий, активный, тяжёлый физический труд.
+LIFESTYLES = ("sedentary", "light", "active", "very_active")
 TARGET_MUSCLES = ("chest", "back", "shoulders", "arms", "legs", "core")
 MIN_AGE, MAX_AGE = 12, 100
 MIN_HEIGHT_CM, MAX_HEIGHT_CM = 120, 230

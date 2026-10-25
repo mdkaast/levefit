@@ -96,6 +96,7 @@ def test_onboarding_profile_is_saved(client, auth_headers):
         "weight_kg": 62.5,
         "goal": "shape",
         "experience": "beginner",
+        "lifestyle": "sedentary",
         "workouts_per_week": 4,
         "equipment": "home",
         "target_muscles": ["legs", "core", "legs"],
@@ -105,6 +106,7 @@ def test_onboarding_profile_is_saved(client, auth_headers):
     saved = response.json()
     assert saved["gender"] == "female" and saved["height_cm"] == 170
     assert saved["experience"] == "beginner" and saved["age"] == 30
+    assert saved["lifestyle"] == "sedentary"
     assert saved["target_muscles"] == ["legs", "core"]  # дубликаты убраны
     assert saved["appearance"] == "warrior"  # значение по умолчанию
 
@@ -123,6 +125,7 @@ def test_onboarding_validation(client, auth_headers):
         {"height_cm": 20},
         {"weight_kg": 5},
         {"experience": "god"},
+        {"lifestyle": "couch"},
         {"target_muscles": ["wings"]},
     ):
         assert client.post("/characters", json={**base, **bad}, headers=headers).status_code == 422
