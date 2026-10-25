@@ -1,0 +1,29 @@
+# Общий reverse proxy сервера: единственный, кто занимает порты 80 и 443 и получает сертификаты.
+# Каждый проект (Levefit, OpenClaw, ...) подключается к сети edge и добавляет свой файл в sites/.
+name: proxy
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./sites:/etc/caddy/sites:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+    mem_limit: 256m
+
+networks:
+  edge:
+    # Общая сеть между прокси и «входными» контейнерами проектов (создаётся скриптом bootstrap).
+    name: edge
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:

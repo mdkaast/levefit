@@ -1,0 +1,4 @@
+# Шаблон: при развёртывании __DOMAIN__ заменяется на реальный домен, файл кладётся как sites/levefit.caddy.
+__DOMAIN__ {
+	reverse_proxy levefit-web:80
+}

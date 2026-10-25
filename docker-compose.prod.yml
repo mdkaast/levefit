@@ -1,6 +1,8 @@
-# Боевой стенд: Postgres + API + бот + Caddy (раздаёт web и сам получает HTTPS-сертификат).
+# Боевой стенд Levefit: Postgres + API + бот + web. Живёт в своей сети (levefit_default),
+# наружу портов не публикует: HTTPS и домены обслуживает общий прокси (infra/proxy) через сеть edge.
 # Запуск: docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
-# Наружу открыты только 80 и 443 (Caddy); база и API доступны лишь внутри сети compose.
+name: levefit
+
 services:
   db:
     image: postgres:16-alpine
@@ -16,6 +18,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    mem_limit: 512m
 
   api:
     build: ./apps/api
@@ -32,6 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    mem_limit: 512m
 
   bot:
     build: ./apps/bot
@@ -43,24 +47,25 @@ services:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
     depends_on:
       - api
+    mem_limit: 256m
 
   web:
     build:
       context: ./apps/web
       dockerfile: Dockerfile.prod
     restart: unless-stopped
-    environment:
-      DOMAIN: ${DOMAIN}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
     depends_on:
       - api
+    networks:
+      default: {}
+      edge:
+        # Единственный сервис проекта, видимый общему прокси; другие проекты его имя не пересекают.
+        aliases: [levefit-web]
+    mem_limit: 128m
+
+networks:
+  edge:
+    external: true
 
 volumes:
   pgdata:
-  caddy_data:
-  caddy_config:
