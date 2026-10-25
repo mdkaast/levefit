@@ -22,9 +22,21 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+Gender = Literal[rules.GENDERS]  # type: ignore[valid-type]
+Experience = Literal[rules.EXPERIENCE_LEVELS]  # type: ignore[valid-type]
+Muscle = Literal[rules.TARGET_MUSCLES]  # type: ignore[valid-type]
+
+
 class CharacterCreate(BaseModel):
     name: str = Field(max_length=rules.CHARACTER_NAME_MAX_LEN)
-    appearance: Appearance
+    gender: Gender | None = None
+    age: int | None = Field(default=None, ge=rules.MIN_AGE, le=rules.MAX_AGE)
+    height_cm: int | None = Field(default=None, ge=rules.MIN_HEIGHT_CM, le=rules.MAX_HEIGHT_CM)
+    # Стартовый вес попадает в график веса (без XP).
+    weight_kg: float | None = Field(default=None, ge=rules.MIN_WEIGHT_KG, le=rules.MAX_WEIGHT_KG)
+    experience: Experience | None = None
+    target_muscles: list[Muscle] = Field(default_factory=list, max_length=len(rules.TARGET_MUSCLES))
+    appearance: Appearance = rules.APPEARANCES[0]
     goal: Goal | None = None
     workouts_per_week: int = Field(
         default=rules.DEFAULT_WORKOUTS_PER_WEEK,
@@ -41,6 +53,11 @@ class CharacterCreate(BaseModel):
             raise ValueError("name must not be blank")
         return value
 
+    @field_validator("target_muscles")
+    @classmethod
+    def muscles_unique(cls, value: list[str]) -> list[str]:
+        return list(dict.fromkeys(value))
+
 
 class CharacterOut(BaseModel):
     model_config = {"from_attributes": True}
@@ -56,6 +73,11 @@ class CharacterOut(BaseModel):
     goal: str | None
     workouts_per_week: int
     equipment: str
+    gender: str | None
+    age: int | None
+    height_cm: int | None
+    experience: str | None
+    target_muscles: list[str] | None
 
     @computed_field  # type: ignore[prop-decorator]
     @property

@@ -84,6 +84,15 @@ def build_snapshot(
         "title": workout.title,
         "goal": character.goal if character else None,
         "workouts_per_week": character.workouts_per_week if character else None,
+        # Профиль из онбординга помогает не форсировать нагрузку новичкам и учесть цели.
+        "profile": {
+            "age": character.age,
+            "gender": character.gender,
+            "experience": character.experience,
+            "target_muscles": character.target_muscles,
+        }
+        if character
+        else None,
         "exercises": items,
         "user_notes": notes,
         "health_flag": mentions_health_issue(notes),

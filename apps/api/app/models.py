@@ -62,8 +62,18 @@ class Character(Base):
     goal: Mapped[str | None] = mapped_column(String(16))
     workouts_per_week: Mapped[int] = mapped_column(Integer, default=3)
     equipment: Mapped[str] = mapped_column(String(16), default="gym")
+    # Данные онбординга; все необязательны, чтобы персонажа можно было создать и без них.
+    gender: Mapped[str | None] = mapped_column(String(8))
+    birth_year: Mapped[int | None] = mapped_column(Integer)
+    height_cm: Mapped[int | None] = mapped_column(Integer)
+    experience: Mapped[str | None] = mapped_column(String(16))
+    target_muscles: Mapped[list | None] = mapped_column(JSON)
 
     user: Mapped[User] = relationship(back_populates="character")
+
+    @property
+    def age(self) -> int | None:
+        return datetime.now(UTC).year - self.birth_year if self.birth_year else None
 
 
 class Exercise(Base):

@@ -10,6 +10,13 @@ MAX_WORKOUTS_PER_WEEK = 7
 
 CHARACTER_NAME_MAX_LEN = 30
 
+# --- Профиль (онбординг) ---
+GENDERS = ("male", "female", "other")
+EXPERIENCE_LEVELS = ("beginner", "intermediate", "advanced")
+TARGET_MUSCLES = ("chest", "back", "shoulders", "arms", "legs", "core")
+MIN_AGE, MAX_AGE = 12, 100
+MIN_HEIGHT_CM, MAX_HEIGHT_CM = 120, 230
+
 EXERCISE_CATEGORIES = ("strength", "cardio", "mobility")
 WORKOUT_STATUSES = ("planned", "in_progress", "finished")
 

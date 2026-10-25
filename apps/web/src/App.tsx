@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { getMe, login, patchMe, type Character } from "./api";
 import { Icon, type IconName } from "./icons";
 import { t } from "./i18n";
-import { CreateCharacter } from "./screens/CreateCharacter";
 import { Home } from "./screens/Home";
+import { Onboarding } from "./screens/Onboarding";
 import { Profile } from "./screens/Profile";
 import { Progress } from "./screens/Progress";
 import { WorkoutScreen } from "./screens/WorkoutScreen";
@@ -57,7 +57,7 @@ export function App() {
       return <p className="status-screen">{t.deleted}</p>;
     case "create":
       return (
-        <CreateCharacter
+        <Onboarding
           onCreated={(character) => setState({ kind: "tabs", character, tab: "home" })}
         />
       );

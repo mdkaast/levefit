@@ -14,6 +14,11 @@ export type Character = {
   equipment: string;
   xp_in_level: number;
   xp_to_next: number;
+  gender: string | null;
+  age: number | null;
+  height_cm: number | null;
+  experience: string | null;
+  target_muscles: string[] | null;
 };
 
 export type Streak = {
@@ -37,10 +42,15 @@ export type Me = {
 
 export type CharacterInput = {
   name: string;
-  appearance: string;
   goal: string | null;
   workouts_per_week: number;
   equipment: string;
+  gender: string | null;
+  age: number | null;
+  height_cm: number | null;
+  weight_kg: number | null;
+  experience: string | null;
+  target_muscles: string[];
 };
 
 let token: string | null = null;

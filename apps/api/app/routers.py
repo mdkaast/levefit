@@ -7,7 +7,7 @@ from app.config import settings
 from app.db import get_db
 from app.deps import current_user
 from app.game import ensure_user_quests, streak_view, utcnow
-from app.models import Character, User
+from app.models import BodyMetric, Character, User
 from app.schemas import (
     AuthRequest,
     CharacterCreate,
@@ -116,7 +116,13 @@ def create_character(
 ) -> Character:
     if user.character is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "character already exists")
-    character = Character(user_id=user.id, **body.model_dump())
+    data = body.model_dump(exclude={"age", "weight_kg"})
+    now = utcnow()
+    character = Character(
+        user_id=user.id, birth_year=now.year - body.age if body.age else None, **data
+    )
     db.add(character)
+    if body.weight_kg is not None:  # стартовый вес — первая точка графика, без XP
+        db.add(BodyMetric(user_id=user.id, date=now.date(), weight_kg=body.weight_kg))
     db.commit()
     return character

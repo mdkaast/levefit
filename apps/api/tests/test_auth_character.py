@@ -78,3 +78,45 @@ def test_concurrent_first_login_does_not_fail(client, auth_headers, monkeypatch)
     monkeypatch.setattr(Session, "scalar", blind_first_lookup)
     response = client.post("/auth/telegram", json={"init_data": make_init_data()})
     assert response.status_code == 200
+
+
+def test_onboarding_profile_is_saved(client, auth_headers):
+    headers = auth_headers()
+    body = {
+        "name": "Бодрый",
+        "gender": "female",
+        "age": 30,
+        "height_cm": 170,
+        "weight_kg": 62.5,
+        "goal": "shape",
+        "experience": "beginner",
+        "workouts_per_week": 4,
+        "equipment": "home",
+        "target_muscles": ["legs", "core", "legs"],
+    }
+    response = client.post("/characters", json=body, headers=headers)
+    assert response.status_code == 201
+    saved = response.json()
+    assert saved["gender"] == "female" and saved["height_cm"] == 170
+    assert saved["experience"] == "beginner" and saved["age"] == 30
+    assert saved["target_muscles"] == ["legs", "core"]  # дубликаты убраны
+    assert saved["appearance"] == "warrior"  # значение по умолчанию
+
+    weights = client.get("/metrics/weight", headers=headers).json()
+    assert [w["weight_kg"] for w in weights] == [62.5]
+    assert client.get("/me", headers=headers).json()["character"]["xp"] == 0  # без XP
+
+
+def test_onboarding_validation(client, auth_headers):
+    headers = auth_headers()
+    base = {"name": "Бодрый"}
+    for bad in (
+        {"gender": "robot"},
+        {"age": 5},
+        {"age": 150},
+        {"height_cm": 20},
+        {"weight_kg": 5},
+        {"experience": "god"},
+        {"target_muscles": ["wings"]},
+    ):
+        assert client.post("/characters", json={**base, **bad}, headers=headers).status_code == 422
