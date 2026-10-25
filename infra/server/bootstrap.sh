@@ -33,7 +33,9 @@ log "SSH: только ключи (проверка конфигурации п�
 # Страховка: не закрываем вход по паролю, если у root нет ни одного ключа.
 if [ -s /root/.ssh/authorized_keys ] || ls /home/*/.ssh/authorized_keys >/dev/null 2>&1; then
   mkdir -p /etc/ssh/sshd_config.d
-  cat > /etc/ssh/sshd_config.d/99-hardening.conf <<'EOF'
+  # Имя с 00-: в sshd побеждает первое значение, а cloud-init кладёт 50-cloud-init.conf (PasswordAuthentication yes).
+  rm -f /etc/ssh/sshd_config.d/99-hardening.conf
+  cat > /etc/ssh/sshd_config.d/00-hardening.conf <<'EOF'
 PasswordAuthentication no
 KbdInteractiveAuthentication no
 PermitRootLogin prohibit-password
@@ -42,12 +44,16 @@ X11Forwarding no
 EOF
   sshd -t
   systemctl reload ssh || systemctl reload sshd
+  if [ "$(sshd -T | awk '/^passwordauthentication /{print $2}')" != "no" ]; then
+    echo "ОШИБКА: вход по паролю всё ещё включён"; exit 1
+  fi
+  echo "вход по паролю отключён"
 else
   echo "ПРОПУЩЕНО: нет ни одного authorized_keys, вход по паролю оставлен"
 fi
 
 log "Файрвол ufw: входящие закрыты, открыты только SSH, 80, 443"
-SSH_PORT="$(sshd -T | awk '/^port /{print $2; exit}')"
+SSH_PORT="$(sshd -T | awk '/^port /{p=$2} END{print p}')"
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow "${SSH_PORT:-22}/tcp" comment 'ssh'
@@ -74,7 +80,7 @@ for svc in snapd.socket snapd.service ModemManager.service cups.service cups-bro
            avahi-daemon.socket avahi-daemon.service bluetooth.service rpcbind.socket rpcbind.service \
            apport.service motd-news.timer lxd-agent.service multipathd.socket multipathd.service \
            packagekit.service udisks2.service; do
-  if systemctl list-unit-files "$svc" --no-legend 2>/dev/null | grep -q .; then
+  if [ -n "$(systemctl list-unit-files "$svc" --no-legend 2>/dev/null)" ]; then
     systemctl disable --now "$svc" 2>/dev/null && echo "отключено: $svc" || true
   fi
 done
@@ -113,7 +119,7 @@ install -d -m 750 -o root -g root /opt/proxy /opt/levefit
 
 log "Своп (если памяти мало и свопа нет)"
 MEM_MB="$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)"
-if [ "$MEM_MB" -le 2048 ] && ! swapon --show --noheadings | grep -q .; then
+if [ "$MEM_MB" -le 2048 ] && [ -z "$(swapon --show --noheadings)" ]; then
   SWAP_SIZE="2G"; [ "$MEM_MB" -le 1100 ] && SWAP_SIZE="1G"   # на малых дисках не отдаём лишнее
   fallocate -l "$SWAP_SIZE" /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
   grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
@@ -121,6 +127,6 @@ fi
 
 log "Готово. Состояние после настройки: слушающие порты"
 ss -tulpnH | awk '{print $1, $5, $7}' | sort -u || true
-ufw status verbose | head -12
+ufw status verbose | sed -n '1,14p'
 docker --version
 docker compose version
