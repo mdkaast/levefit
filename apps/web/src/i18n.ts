@@ -140,6 +140,9 @@ export const t = {
       },
       muscles: { title: "Целевые мышцы", hint: "Выберите группы, на которые сделать упор." },
     },
+    viewFront: "Спереди",
+    viewBack: "Сзади",
+    figureHint: "Нажимайте на мышцы на фигуре или в списке",
     age: "лет",
     height: "Рост, см",
     weight: "Вес, кг",
@@ -156,6 +159,6 @@ export const t = {
     },
   },
   appearances: { warrior: "Воин", runner: "Бегун", sage: "Мудрец" },
-  goals: { mass: "Набор массы", strength: "Сила", shape: "Форма" },
+  goals: { mass: "Набор массы", strength: "Сила", shape: "Форма", weight_loss: "Похудение" },
   equipment: { gym: "Спортзал", home: "Дом", none: "Без оборудования" },
 } as const;

@@ -1,7 +1,7 @@
 """Единый конфиг игровых констант. Стартовые значения, подлежат подтверждению владельцем."""
 
 APPEARANCES = ("warrior", "runner", "sage")
-GOALS = ("mass", "strength", "shape")
+GOALS = ("mass", "strength", "shape", "weight_loss")
 EQUIPMENT = ("gym", "home", "none")
 
 DEFAULT_WORKOUTS_PER_WEEK = 3

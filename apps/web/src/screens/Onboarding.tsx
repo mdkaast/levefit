@@ -21,7 +21,7 @@ const STEPS = [
 type Step = (typeof STEPS)[number];
 
 const GENDERS = ["male", "female", "other"] as const;
-const GOALS = ["mass", "strength", "shape"] as const;
+const GOALS = ["mass", "strength", "shape", "weight_loss"] as const;
 const LEVELS = ["beginner", "intermediate", "advanced"] as const;
 const EQUIPMENT = ["gym", "home", "none"] as const;
 const MUSCLES = ["chest", "back", "shoulders", "arms", "legs", "core"] as const;
@@ -292,7 +292,7 @@ export function Onboarding({ onCreated }: Props) {
         )}
 
         {step === "muscles" && (
-          <div className="muscles">
+          <div className="muscles-pick">
             <div className="options multi">
               {MUSCLES.map((muscle) => (
                 <button
@@ -306,7 +306,7 @@ export function Onboarding({ onCreated }: Props) {
                 </button>
               ))}
             </div>
-            <Silhouette selected={values.muscles} />
+            <Silhouette selected={values.muscles} onToggle={toggleMuscle} />
           </div>
         )}
 

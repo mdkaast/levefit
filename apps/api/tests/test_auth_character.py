@@ -56,6 +56,12 @@ def test_character_validation(client, auth_headers):
         assert client.post("/characters", json=bad, headers=headers).status_code == 422
 
 
+def test_weight_loss_goal_is_accepted(client, auth_headers):
+    headers = auth_headers()
+    body = {"name": "Бодрый", "goal": "weight_loss"}
+    assert client.post("/characters", json=body, headers=headers).json()["goal"] == "weight_loss"
+
+
 def test_users_are_isolated(client, auth_headers):
     a = auth_headers({"id": 1, "username": "a"})
     b = auth_headers({"id": 2, "username": "b"})

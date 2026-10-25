@@ -707,20 +707,117 @@ svg {
   margin-top: 18px;
 }
 
-.muscles {
+.muscles-pick {
   display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 8px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 12px;
+  align-items: start;
 }
 
-.silhouette path,
-.silhouette circle {
-  fill: #2a2a2a;
-  transition: fill 0.2s;
+/* ---------- фигура с выбором мышц ---------- */
+.figure-box {
+  display: grid;
+  gap: 10px;
 }
 
-.silhouette .on {
-  fill: var(--lime);
-  filter: drop-shadow(0 0 6px rgba(185, 255, 28, 0.6));
+.figure {
+  width: 100%;
+  max-height: 52vh;
+  overflow: visible;
+}
+
+.figure .static ellipse,
+.figure .static path {
+  fill: #262626;
+}
+
+.figure .muscles {
+  animation: view-in 0.35s ease-out;
+}
+
+.figure .muscle {
+  cursor: pointer;
+  outline: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.figure .muscle .fill {
+  fill: #3a3a3a;
+  /* обводка закрывает щель между зеркальными половинами, чтобы по центру можно было нажать */
+  stroke: #0a0a0a;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  transition: fill 0.35s ease, filter 0.35s ease;
+}
+
+.figure .muscle .detail {
+  fill: none;
+  stroke: #0a0a0a;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  opacity: 0.4;
+  pointer-events: none;
+  transition: stroke 0.35s ease, opacity 0.35s ease;
+}
+
+.figure .muscle:hover .fill,
+.figure .muscle:focus-visible .fill {
+  fill: #505050;
+}
+
+.figure .muscle.on {
+  animation: muscle-pop 0.5s ease-out;
+}
+
+.figure .muscle.on .fill {
+  fill: url(#muscle-on);
+  filter: drop-shadow(0 0 4px rgba(185, 255, 28, 0.75));
+  animation: muscle-glow 2.2s ease-in-out 0.5s infinite alternate;
+}
+
+.figure .muscle.on .detail {
+  stroke: #2b4a00;
+  opacity: 0.8;
+}
+
+@keyframes muscle-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes muscle-glow {
+  from {
+    filter: drop-shadow(0 0 3px rgba(185, 255, 28, 0.55));
+  }
+  to {
+    filter: drop-shadow(0 0 10px rgba(185, 255, 28, 0.95));
+  }
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure .muscles,
+  .figure .muscle.on,
+  .figure .muscle.on .fill {
+    animation: none;
+  }
 }
