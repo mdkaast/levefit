@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     # Ключ для внутренних запросов бота к API; пусто — внутренние эндпоинты отключены.
     internal_api_key: str = ""
+    # Модель для ИИ-корректировки; ключ API читается SDK из ANTHROPIC_API_KEY.
+    llm_model: str = "claude-opus-5-5"
+    anthropic_api_key: str = ""
+    llm_timeout_s: float = 90.0
 
 
 settings = Settings()

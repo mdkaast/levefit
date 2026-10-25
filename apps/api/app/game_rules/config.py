@@ -68,3 +68,16 @@ DEFAULT_REMINDER_TIME = "19:00"
 # Окно после заданного времени, в котором напоминание ещё можно отправить
 # (на случай, если бот был недоступен).
 REMINDER_WINDOW_MIN = 180
+
+# --- ИИ-корректировка ---
+AI_DECISIONS = ("keep_weight", "reduce_weight", "change_volume", "replace_exercise")
+AI_ADJUSTS_PER_DAY = 10  # лимит вызовов ИИ на пользователя в сутки
+AI_MAX_WEIGHT_INCREASE_PCT = 0.10  # нагрузку наращиваем постепенно
+AI_MIN_WEIGHT_STEP_KG = 2.5  # но шаг в 2,5 кг допустим всегда
+AI_MAX_EXERCISES = 8
+AI_MAX_SETS = 8
+AI_MAX_REPS = 30
+AI_MAX_CHANGES = 6
+AI_MAX_TEXT_LEN = 1200
+AI_MAX_NOTES_LEN = 2000
+AI_ALTERNATIVES_PER_EXERCISE = 5

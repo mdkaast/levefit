@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.adjust import router as adjust_router
 from app.config import settings
 from app.metrics import router as metrics_router
 from app.reminders import router as reminders_router
@@ -17,6 +18,7 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(workouts_router)
 app.include_router(metrics_router)
+app.include_router(adjust_router)
 app.include_router(reminders_router)
 
 

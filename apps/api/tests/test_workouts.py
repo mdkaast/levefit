@@ -107,3 +107,16 @@ def test_other_users_data_is_hidden(client, auth_headers, exercises):
 def test_workouts_require_auth(client):
     assert client.get("/workouts").status_code == 401
     assert client.get("/exercises").status_code == 401
+
+
+def test_finish_saves_notes(client, auth_headers, exercises):
+    headers = auth_headers()
+    wid = new_workout(client, headers)
+    add_set(client, headers, wid, exercise_id=exercises["strength"], reps=5)
+    finished = client.post(f"/workouts/{wid}/finish", json={"notes": "Легко"}, headers=headers)
+    assert finished.json()["notes"] == "Легко"
+    too_long = {"notes": "x" * 2001}
+    wid2 = new_workout(client, headers)
+    add_set(client, headers, wid2, exercise_id=exercises["strength"], reps=5)
+    response = client.post(f"/workouts/{wid2}/finish", json=too_long, headers=headers)
+    assert response.status_code == 422

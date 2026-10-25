@@ -154,6 +154,7 @@ class WorkoutCreate(BaseModel):
 
 class WorkoutFinish(BaseModel):
     duration_min: int | None = Field(default=None, ge=1, le=1440)
+    notes: str | None = Field(default=None, max_length=2000)
 
 
 class SetCreate(BaseModel):
@@ -226,3 +227,16 @@ class QuestOut(BaseModel):
     target: int
     xp_reward: int
     status: str
+
+
+class PlanItem(BaseModel):
+    exercise_id: int
+    weight_kg: float | None = Field(default=None, ge=0, le=1000)
+    sets: int = Field(ge=1, le=20)
+    reps: int = Field(ge=1, le=1000)
+
+
+class AdjustRequest(BaseModel):
+    """Необязательный план тренировки; без него берётся прошлая рекомендация ИИ."""
+
+    plan: list[PlanItem] | None = Field(default=None, max_length=30)

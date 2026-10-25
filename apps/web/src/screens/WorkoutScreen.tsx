@@ -11,6 +11,7 @@ import {
 } from "../api";
 import { formatSet } from "../format";
 import { t } from "../i18n";
+import { AdjustmentView } from "./AdjustmentView";
 import { RewardSummary } from "./RewardSummary";
 
 type Props = { workoutId: number; onClose: () => void };
@@ -29,6 +30,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [reward, setReward] = useState<Reward | null>(null);
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     Promise.all([getWorkout(workoutId), getExercises()])
@@ -74,7 +76,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const { reward: earned, ...finishedWorkout } = await finishWorkout(workoutId);
+      const { reward: earned, ...finishedWorkout } = await finishWorkout(workoutId, notes);
       setWorkout(finishedWorkout);
       setReward(earned);
     } catch {
@@ -155,6 +157,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
       {error && <p role="alert">{error}</p>}
       {finished && <p>{t.workout.finished}</p>}
       {reward && <RewardSummary reward={reward} />}
+      {reward && <AdjustmentView workoutId={workoutId} />}
 
       {workout && workout.sets.length === 0 && <p>{t.workout.noSets}</p>}
       <ul style={{ paddingLeft: 16 }}>
@@ -166,9 +169,20 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
       </ul>
 
       {!finished && workout && workout.sets.length > 0 && (
-        <button type="button" onClick={finish} disabled={busy}>
-          {t.workout.finish}
-        </button>
+        <>
+          <label>
+            {t.workout.notes}
+            <textarea
+              value={notes}
+              maxLength={2000}
+              onChange={(e) => setNotes(e.target.value)}
+              style={field}
+            />
+          </label>
+          <button type="button" onClick={finish} disabled={busy}>
+            {t.workout.finish}
+          </button>
+        </>
       )}
     </main>
   );

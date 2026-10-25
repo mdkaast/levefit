@@ -5,3 +5,4 @@ alembic==1.14.0
 psycopg[binary]==3.2.3
 pydantic-settings==2.7.0
 tzdata==2024.2
+anthropic==2.3.0

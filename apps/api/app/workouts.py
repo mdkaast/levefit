@@ -165,6 +165,8 @@ def finish_workout(
     workout.status = "finished"
     if body and body.duration_min:
         workout.duration_min = body.duration_min
+    if body and body.notes is not None:
+        workout.notes = body.notes
     reward = award_workout(db, user, workout, utcnow())
     try:
         db.commit()

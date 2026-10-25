@@ -136,8 +136,27 @@ export type Reward = {
   streak_weeks: number;
 };
 
-export const finishWorkout = (workoutId: number) =>
-  request<Workout & { reward: Reward }>(`/workouts/${workoutId}/finish`, { method: "POST" });
+export const finishWorkout = (workoutId: number, notes?: string) =>
+  request<Workout & { reward: Reward }>(`/workouts/${workoutId}/finish`, {
+    method: "POST",
+    body: JSON.stringify(notes?.trim() ? { notes: notes.trim() } : {}),
+  });
+
+export type Adjustment = {
+  changes: string[];
+  decision: "keep_weight" | "reduce_weight" | "change_volume" | "replace_exercise";
+  next_workout: {
+    exercise_id: number;
+    name: string;
+    target_weight_kg: number | null;
+    sets: number;
+    reps: number;
+  }[];
+  rationale: string;
+};
+
+export const adjustWorkout = (workoutId: number) =>
+  request<Adjustment>(`/workouts/${workoutId}/adjust`, { method: "POST" });
 
 export type Quest = {
   id: number;

@@ -173,3 +173,21 @@ class BodyMetric(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     date: Mapped[date] = mapped_column(Date)
     weight_kg: Mapped[float] = mapped_column(Float)
+
+
+class AiAdjustment(Base):
+    """Решение ИИ по следующей тренировке; одно на тренировку (повторный запрос возвращает его)."""
+
+    __tablename__ = "ai_adjustments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    workout_id: Mapped[int] = mapped_column(
+        ForeignKey("workouts.id", ondelete="CASCADE"), unique=True
+    )
+    input_snapshot: Mapped[dict] = mapped_column(JSON)
+    decision: Mapped[str] = mapped_column(String(24))
+    rationale: Mapped[str] = mapped_column(Text)
+    # Полный проверенный ответ (changes, decision, next_workout, rationale) и модель — для аудита.
+    result: Mapped[dict] = mapped_column(JSON)
+    model: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
