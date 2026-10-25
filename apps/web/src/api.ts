@@ -23,8 +23,14 @@ export type Streak = {
   weekly_goal: number;
 };
 
+export type UserSettings = {
+  reminders_enabled: boolean;
+  reminder_time: string;
+  timezone: string | null;
+};
+
 export type Me = {
-  user: { id: number; username: string | null };
+  user: { id: number; username: string | null } & UserSettings;
   character: Character | null;
   streak: Streak | null;
 };
@@ -48,6 +54,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
 
@@ -153,3 +160,11 @@ export const saveWeight = (weight_kg: number) =>
     method: "PUT",
     body: JSON.stringify({ weight_kg }),
   });
+
+export const patchMe = (settings: Partial<UserSettings>) =>
+  request<Me["user"]>("/me", { method: "PATCH", body: JSON.stringify(settings) });
+
+export async function deleteMe(): Promise<void> {
+  await request<void>("/me", { method: "DELETE" });
+  token = null;
+}

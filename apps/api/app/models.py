@@ -3,6 +3,7 @@ from datetime import UTC, date, datetime
 from sqlalchemy import (
     JSON,
     BigInteger,
+    Boolean,
     Date,
     DateTime,
     Float,
@@ -29,6 +30,11 @@ class User(Base):
     username: Mapped[str | None] = mapped_column(String(64))
     locale: Mapped[str | None] = mapped_column(String(16))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    reminders_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    reminder_time: Mapped[str] = mapped_column(String(5), default="19:00")
+    # IANA-имя часового пояса; пусто, пока клиент его не сообщил (тогда считаем UTC).
+    timezone: Mapped[str | None] = mapped_column(String(64))
+    last_reminder_date: Mapped[date | None] = mapped_column(Date)
 
     character: Mapped["Character | None"] = relationship(
         back_populates="user", cascade="all, delete-orphan", passive_deletes=True

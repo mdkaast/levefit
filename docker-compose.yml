@@ -27,6 +27,8 @@ services:
   bot:
     build: ./apps/bot
     env_file: .env
+    environment:
+      API_URL: http://api:8000
     depends_on:
       - api
 

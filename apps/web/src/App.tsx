@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
-import { getMe, login, type Character } from "./api";
+import { getMe, login, patchMe, type Character } from "./api";
 import { t } from "./i18n";
 import { CreateCharacter } from "./screens/CreateCharacter";
 import { Home } from "./screens/Home";
+import { Profile } from "./screens/Profile";
 import { Progress } from "./screens/Progress";
 import { WorkoutScreen } from "./screens/WorkoutScreen";
 import { getInitData } from "./telegram";
 
-type Tab = "home" | "progress";
+type Tab = "home" | "progress" | "profile";
 
 type State =
   | { kind: "loading" }
   | { kind: "error"; message: string }
+  | { kind: "deleted" }
   | { kind: "create" }
   | { kind: "tabs"; character: Character; tab: Tab }
   | { kind: "workout"; character: Character; workoutId: number; back: Tab };
@@ -27,13 +29,19 @@ export function App() {
     }
     login(initData)
       .then(getMe)
-      .then((me) =>
+      .then((me) => {
+        if (!me.user.timezone) {
+          // Часовой пояс нужен для напоминаний в заданное местное время.
+          patchMe({ timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }).catch(
+            () => undefined,
+          );
+        }
         setState(
           me.character
             ? { kind: "tabs", character: me.character, tab: "home" }
             : { kind: "create" },
-        ),
-      )
+        );
+      })
       .catch(() => setState({ kind: "error", message: t.authFailed }));
   }, []);
 
@@ -42,6 +50,8 @@ export function App() {
       return <p style={{ padding: 16 }}>{t.loading}</p>;
     case "error":
       return <p style={{ padding: 16 }}>{state.message}</p>;
+    case "deleted":
+      return <p style={{ padding: 16 }}>{t.deleted}</p>;
     case "create":
       return (
         <CreateCharacter
@@ -61,13 +71,11 @@ export function App() {
         setState({ kind: "workout", character, workoutId, back: tab });
       return (
         <>
-          {tab === "home" ? (
-            <Home character={character} onOpenWorkout={open} />
-          ) : (
-            <Progress onOpenWorkout={open} />
-          )}
+          {tab === "home" && <Home character={character} onOpenWorkout={open} />}
+          {tab === "progress" && <Progress onOpenWorkout={open} />}
+          {tab === "profile" && <Profile onDeleted={() => setState({ kind: "deleted" })} />}
           <nav style={{ display: "flex", gap: 8, padding: 16 }}>
-            {(["home", "progress"] as const).map((name) => (
+            {(["home", "progress", "profile"] as const).map((name) => (
               <button
                 key={name}
                 type="button"

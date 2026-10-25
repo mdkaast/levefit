@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -41,6 +41,7 @@ def make_init_data(
 def _settings(monkeypatch):
     monkeypatch.setattr(settings, "bot_token", BOT_TOKEN)
     monkeypatch.setattr(settings, "app_secret", "test-secret")
+    monkeypatch.setattr(settings, "internal_api_key", "internal-key")
 
 
 @pytest.fixture
@@ -48,6 +49,11 @@ def client():
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
+
+    @event.listens_for(engine, "connect")
+    def _enable_fk(dbapi_connection, _record):
+        dbapi_connection.execute("PRAGMA foreign_keys=ON")
+
     Base.metadata.create_all(engine)
     factory = sessionmaker(engine, expire_on_commit=False)
 
@@ -112,4 +118,5 @@ def clock(monkeypatch):
     monkeypatch.setattr("app.routers.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.workouts.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.metrics.utcnow", lambda: Clock.now)
+    monkeypatch.setattr("app.reminders.utcnow", lambda: Clock.now)
     return Clock

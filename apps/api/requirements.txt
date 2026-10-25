@@ -4,3 +4,4 @@ sqlalchemy==2.0.36
 alembic==1.14.0
 psycopg[binary]==3.2.3
 pydantic-settings==2.7.0
+tzdata==2024.2

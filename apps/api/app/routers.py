@@ -16,6 +16,7 @@ from app.schemas import (
     StreakOut,
     TokenResponse,
     UserOut,
+    UserPatch,
 )
 from app.security import InvalidInitData, InvalidToken, create_access_token, validate_init_data
 
@@ -55,6 +56,26 @@ def me(user: User = Depends(current_user), db: Session = Depends(get_db)) -> MeO
         character=CharacterOut.model_validate(character) if character else None,
         streak=StreakOut(**streak_view(db, user, utcnow().date())) if character else None,
     )
+
+
+@router.patch("/me", response_model=UserOut)
+def patch_me(
+    body: UserPatch, user: User = Depends(current_user), db: Session = Depends(get_db)
+) -> User:
+    changes = {k: v for k, v in body.model_dump(exclude_unset=True).items() if v is not None}
+    if changes.keys() & {"reminder_time", "timezone"}:
+        user.last_reminder_date = None  # новое время может ещё наступить сегодня
+    for field, value in changes.items():
+        setattr(user, field, value)
+    db.commit()
+    return user
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_me(user: User = Depends(current_user), db: Session = Depends(get_db)) -> None:
+    """Полностью удаляет пользователя; связанные данные удаляются каскадом в БД."""
+    db.delete(user)
+    db.commit()
 
 
 @router.get("/quests", response_model=list[QuestOut])

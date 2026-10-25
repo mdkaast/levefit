@@ -62,3 +62,9 @@ MIN_WEIGHT_KG = 20
 MAX_WEIGHT_KG = 500
 MAX_WEIGHT_BACKDATE_DAYS = 365
 DEFAULT_WEIGHT_RANGE_DAYS = 90
+
+# --- Напоминания ---
+DEFAULT_REMINDER_TIME = "19:00"
+# Окно после заданного времени, в котором напоминание ещё можно отправить
+# (на случай, если бот был недоступен).
+REMINDER_WINDOW_MIN = 180

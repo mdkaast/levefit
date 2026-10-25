@@ -1,10 +1,12 @@
 from datetime import date as date_type
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from app.game_rules import config as rules
 from app.game_rules.levels import level_from_total_xp, xp_for_next_level
+from app.game_rules.reminders import parse_hhmm
 
 Appearance = Literal[rules.APPEARANCES]  # type: ignore[valid-type]
 Goal = Literal[rules.GOALS]  # type: ignore[valid-type]
@@ -72,6 +74,34 @@ class UserOut(BaseModel):
     id: int
     username: str | None
     locale: str | None
+    reminders_enabled: bool
+    reminder_time: str
+    timezone: str | None
+
+
+class UserPatch(BaseModel):
+    """Частичное обновление настроек: не переданные поля не меняются."""
+
+    reminders_enabled: bool | None = None
+    reminder_time: str | None = None
+    timezone: str | None = Field(default=None, max_length=64)
+
+    @field_validator("reminder_time")
+    @classmethod
+    def valid_time(cls, value: str | None) -> str | None:
+        if value is not None:
+            parse_hhmm(value)
+        return value
+
+    @field_validator("timezone")
+    @classmethod
+    def valid_timezone(cls, value: str | None) -> str | None:
+        if value is not None:
+            try:
+                ZoneInfo(value)
+            except (ZoneInfoNotFoundError, ValueError):
+                raise ValueError("unknown timezone") from None
+        return value
 
 
 class StreakOut(BaseModel):
