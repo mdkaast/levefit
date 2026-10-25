@@ -6,7 +6,16 @@ export default defineConfig({
   server: {
     port: 5173,
     // Туннели для проверки Mini App в Telegram (HTTPS-адрес даёт сам туннель).
-    allowedHosts: [".trycloudflare.com", ".ngrok-free.app", ".ngrok.app", ".loca.lt"],
+    allowedHosts: [
+      ".trycloudflare.com",
+      ".ngrok-free.app",
+      ".ngrok.app",
+      ".loca.lt",
+      ".lhr.life",
+      ".localhost.run",
+      ".pinggy.link",
+      ".pinggy.io",
+    ],
     // С одного адреса отдаём и интерфейс, и API: Telegram требует HTTPS, а туннель один.
     proxy: {
       "/api": {

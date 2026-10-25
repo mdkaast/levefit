@@ -4,8 +4,16 @@ import os
 
 import aiohttp
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.exceptions import TelegramNetworkError
 from aiogram.filters import CommandStart
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    MenuButtonWebApp,
+    Message,
+    WebAppInfo,
+)
 
 from bot.reminders import fetch_due, run_loop
 
@@ -25,9 +33,24 @@ async def start(message: Message) -> None:
     )
 
 
+def make_bot() -> Bot:
+    # Если Telegram доступен только через прокси, его адрес берём из окружения.
+    # Запросы бота к нашему API идут отдельной сессией и прокси не используют.
+    proxy = os.environ.get("TELEGRAM_PROXY") or os.environ.get("HTTPS_PROXY") or None
+    return Bot(os.environ["BOT_TOKEN"], session=AiohttpSession(proxy=proxy))
+
+
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    bot = Bot(os.environ["BOT_TOKEN"])
+    bot = make_bot()
+    try:  # кнопка меню чата открывает Mini App без ручной настройки в BotFather
+        await bot.set_chat_menu_button(
+            menu_button=MenuButtonWebApp(
+                text="Levefit", web_app=WebAppInfo(url=os.environ["WEBAPP_URL"])
+            )
+        )
+    except Exception as exc:  # не критично для работы бота
+        logging.warning("menu button was not set: %s", type(exc).__name__)
     api_url = os.environ.get("API_URL", "http://api:8000")
     key = os.environ.get("INTERNAL_API_KEY", "")
 
@@ -41,7 +64,13 @@ async def main() -> None:
         else:
             logging.warning("INTERNAL_API_KEY is empty: reminders are disabled")
         try:
-            await dp.start_polling(bot)
+            while True:  # временные сбои сети не должны останавливать бота
+                try:
+                    await dp.start_polling(bot)
+                    break
+                except TelegramNetworkError:
+                    logging.warning("telegram network error, retrying in 5 s")
+                    await asyncio.sleep(5)
         finally:
             if reminders:
                 reminders.cancel()
