@@ -10,3 +10,4 @@ dist/
 *.db
 .env.local
 .dev-logs/
+.env.prod
