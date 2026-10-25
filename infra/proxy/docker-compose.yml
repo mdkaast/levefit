@@ -16,7 +16,7 @@ services:
       - caddy_config:/config
     networks:
       - edge
-    mem_limit: 256m
+    mem_limit: 128m
 
 networks:
   edge:

@@ -53,6 +53,8 @@ ufw default allow outgoing
 ufw allow "${SSH_PORT:-22}/tcp" comment 'ssh'
 ufw allow 80/tcp comment 'http (acme, redirect)'
 ufw allow 443/tcp comment 'https'
+# Дополнительные порты (например, панель хостера): EXTRA_TCP_PORTS="8080" bash -s
+for extra in ${EXTRA_TCP_PORTS:-}; do ufw allow "${extra}/tcp" comment 'extra'; done
 ufw --force enable
 
 log "fail2ban для SSH"
@@ -112,7 +114,8 @@ install -d -m 750 -o root -g root /opt/proxy /opt/levefit
 log "Своп (если памяти мало и свопа нет)"
 MEM_MB="$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)"
 if [ "$MEM_MB" -le 2048 ] && ! swapon --show --noheadings | grep -q .; then
-  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+  SWAP_SIZE="2G"; [ "$MEM_MB" -le 1100 ] && SWAP_SIZE="1G"   # на малых дисках не отдаём лишнее
+  fallocate -l "$SWAP_SIZE" /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
   grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
 fi
 

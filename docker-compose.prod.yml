@@ -18,7 +18,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    mem_limit: 512m
+    mem_limit: 256m
 
   api:
     build: ./apps/api
@@ -35,7 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    mem_limit: 512m
+    mem_limit: 256m
 
   bot:
     build: ./apps/bot
@@ -47,7 +47,7 @@ services:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
     depends_on:
       - api
-    mem_limit: 256m
+    mem_limit: 128m
 
   web:
     build:
@@ -61,7 +61,7 @@ services:
       edge:
         # Единственный сервис проекта, видимый общему прокси; другие проекты его имя не пересекают.
         aliases: [levefit-web]
-    mem_limit: 128m
+    mem_limit: 64m
 
 networks:
   edge:
