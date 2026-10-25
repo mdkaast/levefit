@@ -9,3 +9,4 @@ dist/
 *.log
 *.db
 .env.local
+.dev-logs/

@@ -1,3 +1,2 @@
 INFO:aiogram.dispatcher:Start polling
 INFO:aiogram.dispatcher:Run polling for bot @levefit_bot id=8717112900 - 'Levefit'
-INFO:aiogram.event:Update id=48883814 is handled. Duration 1414 ms by bot id=8717112900
