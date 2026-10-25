@@ -265,22 +265,5 @@ export type RecentAdjustment = {
   rules_used: number;
 };
 
-export type CoachRule = { id: number; text: string; status: string; source: string };
-
-export type ChangeRequest = { id: number; title: string; prompt: string; status: string };
-
 export const getAdminStats = () => request<AdminStats>("/admin/stats");
 export const getRecentAdjustments = () => request<RecentAdjustment[]>("/admin/ai/recent");
-export const getCoachRules = () => request<CoachRule[]>("/admin/coach/rules");
-export const addCoachRule = (text: string) =>
-  request<CoachRule>("/admin/coach/rules", { method: "POST", body: JSON.stringify({ text }) });
-export const setCoachRuleStatus = (id: number, status: "approved" | "rejected") =>
-  request<CoachRule>(`/admin/coach/rules/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
-export const learnCoachRules = () => request<CoachRule[]>("/admin/coach/learn", { method: "POST" });
-export const getChangeRequests = () => request<ChangeRequest[]>("/admin/requests");
-export const addChangeRequest = (title: string, prompt: string) =>
-  request<ChangeRequest>("/admin/requests", { method: "POST", body: JSON.stringify({ title, prompt }) });
-export const setChangeRequestStatus = (id: number, status: "draft" | "sent" | "done") =>
-  request<ChangeRequest>(`/admin/requests/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
-export const deleteChangeRequest = (id: number) =>
-  request<void>(`/admin/requests/${id}`, { method: "DELETE" });
