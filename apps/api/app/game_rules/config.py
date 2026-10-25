@@ -9,3 +9,6 @@ MIN_WORKOUTS_PER_WEEK = 1
 MAX_WORKOUTS_PER_WEEK = 7
 
 CHARACTER_NAME_MAX_LEN = 30
+
+EXERCISE_CATEGORIES = ("strength", "cardio", "mobility")
+WORKOUT_STATUSES = ("planned", "in_progress", "finished")

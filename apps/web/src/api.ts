@@ -50,3 +50,56 @@ export const getMe = () => request<Me>("/me");
 
 export const createCharacter = (input: CharacterInput) =>
   request<Character>("/characters", { method: "POST", body: JSON.stringify(input) });
+
+export type Exercise = {
+  id: number;
+  name: string;
+  category: "strength" | "cardio" | "mobility";
+  muscle_group: string;
+  owner_id: number | null;
+};
+
+export type WorkoutSet = {
+  id: number;
+  exercise_id: number;
+  set_no: number;
+  weight_kg: number | null;
+  reps: number | null;
+  rir: number | null;
+  duration_s: number | null;
+  distance_m: number | null;
+};
+
+export type Workout = {
+  id: number;
+  date: string;
+  title: string;
+  status: "planned" | "in_progress" | "finished";
+  duration_min: number | null;
+  notes: string | null;
+  sets: WorkoutSet[];
+};
+
+export type WorkoutSummary = Omit<Workout, "notes" | "sets"> & { sets_count: number };
+
+export type SetInput = {
+  exercise_id: number;
+  weight_kg?: number;
+  reps?: number;
+  rir?: number;
+  duration_s?: number;
+  distance_m?: number;
+};
+
+export const getExercises = () => request<Exercise[]>("/exercises");
+export const listWorkouts = () => request<WorkoutSummary[]>("/workouts");
+export const getWorkout = (id: number) => request<Workout>(`/workouts/${id}`);
+export const createWorkout = (title: string) =>
+  request<Workout>("/workouts", { method: "POST", body: JSON.stringify({ title }) });
+export const addSet = (workoutId: number, input: SetInput) =>
+  request<WorkoutSet>(`/workouts/${workoutId}/sets`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+export const finishWorkout = (workoutId: number) =>
+  request<Workout>(`/workouts/${workoutId}/finish`, { method: "POST" });

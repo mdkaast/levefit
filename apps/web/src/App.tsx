@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { getMe, login, type Character } from "./api";
 import { t } from "./i18n";
 import { CreateCharacter } from "./screens/CreateCharacter";
+import { Home } from "./screens/Home";
+import { WorkoutScreen } from "./screens/WorkoutScreen";
 import { getInitData } from "./telegram";
 
 type State =
   | { kind: "loading" }
   | { kind: "error"; message: string }
   | { kind: "create" }
-  | { kind: "home"; character: Character };
+  | { kind: "home"; character: Character }
+  | { kind: "workout"; character: Character; workoutId: number };
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "loading" });
@@ -36,13 +39,19 @@ export function App() {
       return <CreateCharacter onCreated={(character) => setState({ kind: "home", character })} />;
     case "home":
       return (
-        <main style={{ padding: 16 }}>
-          <h1>{state.character.name}</h1>
-          <p>
-            {t.home.level} {state.character.level}
-          </p>
-          <p>{t.homeStub}</p>
-        </main>
+        <Home
+          character={state.character}
+          onOpenWorkout={(workoutId) =>
+            setState({ kind: "workout", character: state.character, workoutId })
+          }
+        />
+      );
+    case "workout":
+      return (
+        <WorkoutScreen
+          workoutId={state.workoutId}
+          onClose={() => setState({ kind: "home", character: state.character })}
+        />
       );
   }
 }

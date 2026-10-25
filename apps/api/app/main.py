@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import router
+from app.workouts import router as workouts_router
 
 app = FastAPI(title="PFO API")
 app.add_middleware(
@@ -12,6 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+app.include_router(workouts_router)
 
 
 @app.get("/health")
