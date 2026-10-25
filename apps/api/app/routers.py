@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.admin import is_admin
 from app.config import settings
 from app.db import get_db
 from app.deps import current_user
@@ -64,6 +65,7 @@ def me(user: User = Depends(current_user), db: Session = Depends(get_db)) -> MeO
     character = user.character
     return MeOut(
         user=UserOut.model_validate(user),
+        is_admin=is_admin(user),
         character=CharacterOut.model_validate(character) if character else None,
         streak=StreakOut(**streak_view(db, user, utcnow().date())) if character else None,
     )

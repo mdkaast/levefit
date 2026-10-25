@@ -140,6 +140,7 @@ class StreakOut(BaseModel):
 
 class MeOut(BaseModel):
     user: UserOut
+    is_admin: bool = False
     character: CharacterOut | None
     streak: StreakOut | None
 

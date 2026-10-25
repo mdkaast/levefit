@@ -821,3 +821,46 @@ svg {
     animation: none;
   }
 }
+
+/* ---------- админ-панель ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.tiles .card {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.tiles strong {
+  font-size: 24px;
+  color: var(--lime);
+}
+
+.spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 80px;
+}
+
+.spark i {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 3px;
+  background: var(--lime);
+}
+
+.prompt {
+  margin: 0;
+  padding: 12px;
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre-wrap;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 12px;
+}

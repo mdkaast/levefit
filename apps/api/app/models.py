@@ -245,3 +245,15 @@ class AdjustmentFeedback(Base):
     )
     rating: Mapped[str] = mapped_column(String(12))  # fits | too_hard | too_easy
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class ChangeRequest(Base):
+    """Запрос владельца на изменение приложения: готовый текст для Claude Code."""
+
+    __tablename__ = "change_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(120))
+    prompt: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(8), default="draft")  # draft | sent | done
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

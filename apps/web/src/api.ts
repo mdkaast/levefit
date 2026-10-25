@@ -38,6 +38,7 @@ export type UserSettings = {
 };
 
 export type Me = {
+  is_admin: boolean;
   user: { id: number; username: string | null } & UserSettings;
   character: Character | null;
   streak: Streak | null;
@@ -239,3 +240,47 @@ export async function deleteMe(): Promise<void> {
   await request<void>("/me", { method: "DELETE" });
   token = null;
 }
+
+export type AdminStats = {
+  users: { total: number; new_7d: number; active_7d: number; paused: number };
+  workouts: { finished: number; finished_7d: number; sets: number; daily: { date: string; count: number }[] };
+  ai: {
+    total: number;
+    last_7d: number;
+    by_decision: { decision: string; count: number }[];
+    ratings: { fits: number; too_hard: number; too_easy: number };
+    rules: { approved: number; proposed: number; rejected: number };
+    configured: boolean;
+    model: string;
+  };
+};
+
+export type RecentAdjustment = {
+  id: number;
+  created_at: string;
+  decision: string;
+  rationale: string;
+  model: string;
+  rating: string | null;
+  rules_used: number;
+};
+
+export type CoachRule = { id: number; text: string; status: string; source: string };
+
+export type ChangeRequest = { id: number; title: string; prompt: string; status: string };
+
+export const getAdminStats = () => request<AdminStats>("/admin/stats");
+export const getRecentAdjustments = () => request<RecentAdjustment[]>("/admin/ai/recent");
+export const getCoachRules = () => request<CoachRule[]>("/admin/coach/rules");
+export const addCoachRule = (text: string) =>
+  request<CoachRule>("/admin/coach/rules", { method: "POST", body: JSON.stringify({ text }) });
+export const setCoachRuleStatus = (id: number, status: "approved" | "rejected") =>
+  request<CoachRule>(`/admin/coach/rules/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+export const learnCoachRules = () => request<CoachRule[]>("/admin/coach/learn", { method: "POST" });
+export const getChangeRequests = () => request<ChangeRequest[]>("/admin/requests");
+export const addChangeRequest = (title: string, prompt: string) =>
+  request<ChangeRequest>("/admin/requests", { method: "POST", body: JSON.stringify({ title, prompt }) });
+export const setChangeRequestStatus = (id: number, status: "draft" | "sent" | "done") =>
+  request<ChangeRequest>(`/admin/requests/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+export const deleteChangeRequest = (id: number) =>
+  request<void>(`/admin/requests/${id}`, { method: "DELETE" });

@@ -1,18 +1,17 @@
 """База знаний тренера: правила владельца, оценки пользователей, предложения ИИ на одобрение."""
 
-import hmac
 from datetime import datetime
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.adjust import llm_dependency
+from app.admin import require_admin
 from app.ai.provider import AdjustmentUnavailable, LLMProvider
-from app.config import settings
 from app.db import get_db
 from app.deps import current_user
 from app.game import utcnow
@@ -20,15 +19,6 @@ from app.game_rules import config as rules
 from app.models import AdjustmentFeedback, AiAdjustment, CoachRule, User, Workout
 
 router = APIRouter()
-
-
-def require_admin_key(x_admin_key: str = Header(default="")) -> None:
-    key = settings.admin_api_key
-    if not key or not hmac.compare_digest(x_admin_key, key):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid admin key")
-
-
-admin = Depends(require_admin_key)
 
 
 class FeedbackIn(BaseModel):
@@ -80,7 +70,9 @@ def rate_adjustment(
         db.rollback()
 
 
-@router.get("/admin/coach/rules", response_model=list[RuleOut], dependencies=[admin])
+@router.get(
+    "/admin/coach/rules", response_model=list[RuleOut], dependencies=[Depends(require_admin)]
+)
 def list_rules(status_filter: str | None = None, db: Session = Depends(get_db)) -> list[CoachRule]:
     query = select(CoachRule).order_by(CoachRule.id)
     if status_filter:
@@ -92,7 +84,7 @@ def list_rules(status_filter: str | None = None, db: Session = Depends(get_db)) 
     "/admin/coach/rules",
     response_model=RuleOut,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[admin],
+    dependencies=[Depends(require_admin)],
 )
 def add_rule(body: RuleIn, db: Session = Depends(get_db)) -> CoachRule:
     """Правило владельца сразу одобрено."""
@@ -102,7 +94,9 @@ def add_rule(body: RuleIn, db: Session = Depends(get_db)) -> CoachRule:
     return rule
 
 
-@router.patch("/admin/coach/rules/{rule_id}", response_model=RuleOut, dependencies=[admin])
+@router.patch(
+    "/admin/coach/rules/{rule_id}", response_model=RuleOut, dependencies=[Depends(require_admin)]
+)
 def set_rule_status(rule_id: int, body: RuleStatusIn, db: Session = Depends(get_db)) -> CoachRule:
     rule = db.get(CoachRule, rule_id)
     if rule is None:
@@ -112,7 +106,9 @@ def set_rule_status(rule_id: int, body: RuleStatusIn, db: Session = Depends(get_
     return rule
 
 
-@router.post("/admin/coach/learn", response_model=list[RuleOut], dependencies=[admin])
+@router.post(
+    "/admin/coach/learn", response_model=list[RuleOut], dependencies=[Depends(require_admin)]
+)
 def learn(
     db: Session = Depends(get_db), llm: LLMProvider = Depends(llm_dependency)
 ) -> list[CoachRule]:

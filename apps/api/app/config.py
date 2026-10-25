@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     llm_timeout_s: float = 90.0
     # Ключ владельца для /admin/coach/*; пусто — эндпоинты отключены.
     admin_api_key: str = ""
+    # Telegram ID владельцев через запятую: им открыта админ-панель в приложении.
+    admin_telegram_ids: str = ""
 
 
 settings = Settings()
