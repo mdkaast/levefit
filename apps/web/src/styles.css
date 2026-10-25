@@ -58,8 +58,10 @@ h1 {
 
 h2 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 h3 {
@@ -592,8 +594,10 @@ svg {
 
 .onboarding h1 {
   font-size: 34px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase; /* крупные заглавные заголовки, как на stndrd.app */
 }
 
 .onboarding .hint {
