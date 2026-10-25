@@ -157,3 +157,13 @@ class Streak(Base):
     last_week: Mapped[date | None] = mapped_column(Date)
     # Месяц последнего восстановления заморозок (в ТЗ нет, нужен для «одна в месяц»).
     freeze_month: Mapped[date | None] = mapped_column(Date)
+
+
+class BodyMetric(Base):
+    __tablename__ = "body_metrics"
+    __table_args__ = (UniqueConstraint("user_id", "date", name="uq_body_metric_day"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    date: Mapped[date] = mapped_column(Date)
+    weight_kg: Mapped[float] = mapped_column(Float)

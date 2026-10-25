@@ -111,4 +111,5 @@ def clock(monkeypatch):
     monkeypatch.setattr("app.game.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.routers.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.workouts.utcnow", lambda: Clock.now)
+    monkeypatch.setattr("app.metrics.utcnow", lambda: Clock.now)
     return Clock

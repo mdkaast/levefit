@@ -143,3 +143,13 @@ export type Quest = {
 };
 
 export const getQuests = () => request<Quest[]>("/quests");
+
+export type WeightEntry = { date: string; weight_kg: number };
+
+export const getWeights = (from: string) =>
+  request<WeightEntry[]>(`/metrics/weight?from=${encodeURIComponent(from)}`);
+export const saveWeight = (weight_kg: number) =>
+  request<WeightEntry & { xp_gained: number }>("/metrics/weight", {
+    method: "PUT",
+    body: JSON.stringify({ weight_kg }),
+  });

@@ -202,3 +202,15 @@ def recompute_character_xp(db: Session, user: User) -> None:
     if user.character:
         user.character.xp = total
         user.character.level = level_from_total_xp(total)[0]
+
+
+def award_weight(db: Session, user: User, day: date, now: datetime) -> int:
+    """XP за запись веса: один раз в сутки и только за сегодняшнюю дату."""
+    character = user.character
+    if character is None or day != now.date():
+        return 0
+    gained = grant(db, user.id, rules.SRC_WEIGHT, rules.XP_WEIGHT_ENTRY, day.toordinal(), now)
+    if gained:
+        character.xp += gained
+        character.level = level_from_total_xp(character.xp)[0]
+    return gained

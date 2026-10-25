@@ -16,7 +16,7 @@ WORKOUT_STATUSES = ("planned", "in_progress", "finished")
 # --- XP (стартовые значения, подтверждены владельцем) ---
 XP_WORKOUT = 50
 XP_PER_SET = 5
-XP_WEIGHT_ENTRY = 5  # начисляется на этапе 4
+XP_WEIGHT_ENTRY = 5
 XP_DAILY_QUEST = 20
 XP_WEEKLY_QUEST = 100
 XP_WEEK_GOAL = 50
@@ -42,6 +42,7 @@ SRC_SETS = "sets"
 SRC_QUEST_DAILY = "quest_daily"
 SRC_QUEST_WEEKLY = "quest_weekly"
 SRC_WEEK_GOAL = "week_goal"
+SRC_WEIGHT = "weight"
 
 # --- Квесты: условия хранятся как данные (metric + target) ---
 QUEST_METRICS = ("workouts_finished", "sets_logged")
@@ -55,3 +56,9 @@ QUEST_TEMPLATES = (
     {"code": "weekly_sets_40", "kind": "weekly", "metric": "sets_logged", "target": 40,
      "xp_reward": XP_WEEKLY_QUEST},
 )
+
+# --- Вес ---
+MIN_WEIGHT_KG = 20
+MAX_WEIGHT_KG = 500
+MAX_WEIGHT_BACKDATE_DAYS = 365
+DEFAULT_WEIGHT_RANGE_DAYS = 90

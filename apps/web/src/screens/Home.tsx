@@ -3,11 +3,9 @@ import {
   createWorkout,
   getMe,
   getQuests,
-  listWorkouts,
   type Character,
   type Quest,
   type Streak,
-  type WorkoutSummary,
 } from "../api";
 import { t } from "../i18n";
 
@@ -19,7 +17,6 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
   const [character, setCharacter] = useState(initial);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [quests, setQuests] = useState<Quest[]>([]);
-  const [history, setHistory] = useState<WorkoutSummary[] | null>(null);
 
   useEffect(() => {
     getMe()
@@ -31,9 +28,6 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
     getQuests()
       .then(setQuests)
       .catch(() => undefined);
-    listWorkouts()
-      .then(setHistory)
-      .catch(() => setHistory([]));
   }, []);
 
   async function start() {
@@ -99,19 +93,6 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
       <button type="button" onClick={start}>
         {t.home.startWorkout}
       </button>
-
-      <h2>{t.home.history}</h2>
-      {history && history.length === 0 && <p>{t.home.historyEmpty}</p>}
-      <ul style={{ paddingLeft: 0, listStyle: "none", display: "grid", gap: 8 }}>
-        {history?.map((w) => (
-          <li key={w.id}>
-            <button type="button" onClick={() => onOpenWorkout(w.id)} style={{ width: "100%" }}>
-              {w.date} · {w.title} · {w.sets_count} {t.home.sets}
-              {w.status !== "finished" && ` · ${t.home.inProgress}`}
-            </button>
-          </li>
-        ))}
-      </ul>
     </main>
   );
 }
