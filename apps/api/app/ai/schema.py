@@ -33,3 +33,9 @@ class PlanOut(BaseModel):
 
     workout_id: int | None
     items: list[NextExercise]
+
+
+class RuleProposals(BaseModel):
+    """Предложения новых правил тренера; в работу попадают только после одобрения владельцем."""
+
+    rules: list[str]

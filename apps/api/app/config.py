@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     llm_model: str = "claude-opus-5-5"
     anthropic_api_key: str = ""
     llm_timeout_s: float = 90.0
+    # Ключ владельца для /admin/coach/*; пусто — эндпоинты отключены.
+    admin_api_key: str = ""
 
 
 settings = Settings()

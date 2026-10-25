@@ -5,9 +5,9 @@ from typing import Protocol
 
 import anthropic
 
-from app.ai.prompt import SYSTEM_PROMPT
+from app.ai.prompt import LEARN_PROMPT, SYSTEM_PROMPT
 from app.ai.safety import InvalidAdjustment
-from app.ai.schema import Adjustment
+from app.ai.schema import Adjustment, RuleProposals
 from app.config import settings
 
 
@@ -19,6 +19,8 @@ class LLMProvider(Protocol):
     model: str
 
     def generate_adjustment(self, snapshot: dict) -> Adjustment: ...
+
+    def propose_rules(self, stats: dict) -> RuleProposals: ...
 
 
 class AnthropicProvider:
@@ -49,6 +51,21 @@ class AnthropicProvider:
             raise InvalidAdjustment("response does not match the schema") from None
         if response.stop_reason == "refusal" or response.parsed_output is None:
             raise AdjustmentUnavailable("refusal or empty output")
+        return response.parsed_output
+
+    def propose_rules(self, stats: dict) -> RuleProposals:
+        try:
+            response = self._client.messages.parse(
+                model=self.model,
+                max_tokens=4000,
+                system=LEARN_PROMPT,
+                messages=[{"role": "user", "content": json.dumps(stats, ensure_ascii=False)}],
+                output_format=RuleProposals,
+            )
+        except (anthropic.APIError, ValueError):
+            raise AdjustmentUnavailable("learning request failed") from None
+        if response.parsed_output is None:
+            raise AdjustmentUnavailable("empty output")
         return response.parsed_output
 
 

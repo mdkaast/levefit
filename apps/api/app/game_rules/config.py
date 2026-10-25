@@ -113,6 +113,9 @@ MAX_REMINDERS_PER_DAY = 1
 # --- ИИ-корректировка ---
 AI_DECISIONS = ("keep_weight", "reduce_weight", "change_volume", "replace_exercise")
 AI_ADJUSTS_PER_DAY = 10  # лимит вызовов ИИ на пользователя в сутки
+COACH_MAX_RULES_IN_PROMPT = 30  # сколько одобренных правил тренера попадает в запрос к модели
+COACH_MIN_FEEDBACK_TO_LEARN = 20  # сколько оценок нужно, чтобы ИИ предлагал правила
+COACH_MAX_PROPOSALS = 3
 AI_MAX_WEIGHT_INCREASE_PCT = 0.10  # нагрузку наращиваем постепенно
 AI_MIN_WEIGHT_STEP_KG = 2.5  # но шаг в 2,5 кг допустим всегда
 AI_MAX_EXERCISES = 8

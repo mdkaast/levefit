@@ -11,6 +11,11 @@
 		respond 404
 	}
 
+	# Админка тренера (/admin/coach/*) тоже только изнутри сервера.
+	handle /api/admin/* {
+		respond 404
+	}
+
 	handle_path /api/* {
 		reverse_proxy api:8000
 	}

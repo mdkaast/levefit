@@ -219,3 +219,29 @@ class UserAchievement(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     code: Mapped[str] = mapped_column(String(32))
     earned_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class CoachRule(Base):
+    """Правило тренера: пишет владелец или предлагает ИИ; в промпт попадают только одобренные."""
+
+    __tablename__ = "coach_rules"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    text: Mapped[str] = mapped_column(String(500))
+    # proposed -> approved | rejected; одобряет только владелец.
+    status: Mapped[str] = mapped_column(String(12), default="proposed", index=True)
+    source: Mapped[str] = mapped_column(String(8))  # owner | ai
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class AdjustmentFeedback(Base):
+    """Оценка пользователя рекомендации ИИ; по ней тренер учится."""
+
+    __tablename__ = "adjustment_feedback"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    adjustment_id: Mapped[int] = mapped_column(
+        ForeignKey("ai_adjustments.id", ondelete="CASCADE"), unique=True
+    )
+    rating: Mapped[str] = mapped_column(String(12))  # fits | too_hard | too_easy
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

@@ -5,7 +5,17 @@ from sqlalchemy.orm import Session
 
 from app.ai.safety import mentions_health_issue
 from app.game_rules import config as rules
-from app.models import AiAdjustment, Exercise, User, Workout
+from app.models import AiAdjustment, CoachRule, Exercise, User, Workout
+
+
+def approved_rules(db: Session) -> list[str]:
+    rows = db.scalars(
+        select(CoachRule.text)
+        .where(CoachRule.status == "approved")
+        .order_by(CoachRule.id)
+        .limit(rules.COACH_MAX_RULES_IN_PROMPT)
+    )
+    return list(rows)
 
 
 def previous_plan(db: Session, user_id: int, before_workout_id: int) -> dict[int, dict]:
@@ -96,4 +106,6 @@ def build_snapshot(
         "exercises": items,
         "user_notes": notes,
         "health_flag": mentions_health_issue(notes),
+        # Правила, одобренные владельцем; безопасность они не отменяют (см. SYSTEM_PROMPT).
+        "coach_rules": approved_rules(db),
     }
