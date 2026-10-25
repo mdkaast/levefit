@@ -44,3 +44,17 @@
 
 Важно: доступ к Docker (группа `docker`, сокет `/var/run/docker.sock`) равен root. Агентным приложениям его не давать:
 иначе они смогут прочитать секреты Levefit.
+
+## Текущее развёртывание
+
+- Сервер: Ubuntu 24.04, 1 vCPU, ~1 ГБ RAM (+1 ГБ свопа), 10 ГБ диска; IP `217.177.72.87`.
+- Адрес Mini App: `https://217-177-72-87.sslip.io` (сертификат Let's Encrypt, продлевается Caddy автоматически).
+- Запущено: `proxy-caddy-1` (80/443), `levefit-web-1`, `levefit-api-1`, `levefit-bot-1`, `levefit-db-1` (Postgres). Контейнеры вместе занимают ~215 МБ.
+- Из интернета доступны только порты 22 (SSH только по ключу), 80, 443 и 8080 (панель хостера BeAdmin; при желании закрывается командой `ufw delete allow 8080/tcp`).
+- Секреты лежат в `/opt/levefit/.env.prod` (root, права 600) и сгенерированы на сервере; токен бота скопирован из локального `.env`.
+- Снаружи закрыты `/api/internal/*` (служебные запросы бота идут внутри сети compose).
+
+Обновление: `scripts/deploy_vps.sh` (заливает текущий коммит и пересобирает).
+Включить ИИ-рекомендации: вписать `ANTHROPIC_API_KEY=...` в `/opt/levefit/.env.prod` и выполнить
+`cd /opt/levefit && docker compose -f docker-compose.prod.yml --env-file .env.prod up -d api`.
+Копия базы: `docker compose -f docker-compose.prod.yml --env-file .env.prod exec -T db pg_dump -U levefit levefit > backup.sql`.
