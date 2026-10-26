@@ -8,6 +8,7 @@ from app.coach import router as coach_router
 from app.config import settings
 from app.cycle import router as cycle_router
 from app.metrics import router as metrics_router
+from app.nutrition import router as nutrition_router
 from app.planner import router as planner_router
 from app.progress import router as progress_router
 from app.reminders import router as reminders_router
@@ -31,6 +32,7 @@ app.include_router(coach_router)
 app.include_router(catalog_router)
 app.include_router(cycle_router)
 app.include_router(planner_router)
+app.include_router(nutrition_router)
 app.include_router(admin_router)
 app.include_router(progress_router)
 app.include_router(reminders_router)

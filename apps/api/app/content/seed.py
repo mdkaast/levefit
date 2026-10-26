@@ -158,6 +158,9 @@ def main() -> None:
 
     with SessionLocal() as db:
         print("catalog seed:", seed_catalog(db))
+        from app.content.seed_nutrition import seed_nutrition
+
+        print("nutrition seed:", seed_nutrition(db))
 
 
 if __name__ == "__main__":

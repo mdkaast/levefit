@@ -587,3 +587,67 @@ input[type="search"] {
     animation: none;
   }
 }
+
+/* ---------- питание (фаза 4) ---------- */
+.nutri-ring {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nutri-ring > div:last-child {
+  display: grid;
+  gap: 4px;
+}
+
+.macro-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.macro-tiles > div {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+}
+
+.macro-tiles small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.recipe-card {
+  display: grid;
+  gap: 4px;
+}
+
+.recipe-reason {
+  padding: 0 14px 4px;
+}
+
+.steps {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+}
+
+.nutri-today {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.chip-row.wrap .ui-chip {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}

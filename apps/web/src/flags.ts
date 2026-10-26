@@ -3,7 +3,7 @@ export const FLAGS = {
   // LEGAL-LATER: A1 — экран согласия на обработку данных о здоровье (макет On2-Consent).
   consent: false,
   // Питание (фаза 4): вкладка есть всегда, содержимое включается флагом.
-  nutrition: false,
+  nutrition: true,
   // 3D-силуэты (фаза 3): пока везде используется 2D-запасной вариант.
   threeD: false,
   // Подписка Pro за Telegram Stars (фаза 5).

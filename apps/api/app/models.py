@@ -429,3 +429,83 @@ class WeekPlan(Base):
     week_start: Mapped[date] = mapped_column(Date)
     spec: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class Food(Base):
+    """Продукт: значения на 100 г. `owner_id` задан у личных продуктов пользователя."""
+
+    __tablename__ = "foods"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str | None] = mapped_column(String(64), unique=True)
+    name: Mapped[str] = mapped_column(String(120), index=True)
+    group: Mapped[str] = mapped_column(String(16), default="other")
+    kcal: Mapped[float] = mapped_column(Float)
+    protein: Mapped[float] = mapped_column(Float)
+    fat: Mapped[float] = mapped_column(Float)
+    carbs: Mapped[float] = mapped_column(Float)
+    piece_g: Mapped[float | None] = mapped_column(Float)
+    piece_name: Mapped[str | None] = mapped_column(String(40))
+    owner_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    source: Mapped[str] = mapped_column(String(16), default="estimate")  # estimate | user | off
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class Recipe(Base):
+    """Рецепт: КБЖУ на порцию посчитано по ингредиентам при загрузке."""
+
+    __tablename__ = "recipes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(64), unique=True)
+    name: Mapped[str] = mapped_column(String(120))
+    minutes: Mapped[int] = mapped_column(Integer)
+    servings: Mapped[int] = mapped_column(Integer)
+    meal: Mapped[str] = mapped_column(String(10))
+    tags: Mapped[list] = mapped_column(JSON)
+    ingredients: Mapped[list] = mapped_column(JSON)  # [{"food": slug, "grams": на весь рецепт}]
+    steps: Mapped[list] = mapped_column(JSON)
+    kcal: Mapped[float] = mapped_column(Float)
+    protein: Mapped[float] = mapped_column(Float)
+    fat: Mapped[float] = mapped_column(Float)
+    carbs: Mapped[float] = mapped_column(Float)
+    verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    source: Mapped[str] = mapped_column(String(16), default="own")
+
+
+class FoodEntry(Base):
+    """Запись дневника питания. КБЖУ хранится снимком: правка продукта не меняет прошлые дни."""
+
+    __tablename__ = "food_entries"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    date: Mapped[date] = mapped_column(Date, index=True)
+    meal: Mapped[str] = mapped_column(String(10))
+    food_id: Mapped[int | None] = mapped_column(ForeignKey("foods.id", ondelete="SET NULL"))
+    recipe_id: Mapped[int | None] = mapped_column(ForeignKey("recipes.id", ondelete="SET NULL"))
+    name: Mapped[str] = mapped_column(String(120))
+    grams: Mapped[float | None] = mapped_column(Float)
+    servings: Mapped[float | None] = mapped_column(Float)
+    kcal: Mapped[float] = mapped_column(Float)
+    protein: Mapped[float] = mapped_column(Float)
+    fat: Mapped[float] = mapped_column(Float)
+    carbs: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class NutritionGoal(Base):
+    """Выбор пользователя: режим цели и ручная поправка. Калории считаются на лету по профилю."""
+
+    __tablename__ = "nutrition_goals"
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    mode: Mapped[str] = mapped_column(String(10), default="maintain")  # gain | maintain | lose
+    adjust_kcal: Mapped[int] = mapped_column(Integer, default=0)
+    restrictions: Mapped[list] = mapped_column(JSON, default=list)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

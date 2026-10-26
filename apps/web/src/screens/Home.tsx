@@ -13,8 +13,11 @@ import {
 } from "../api";
 import { clearSession, loadSession, type Session } from "../cycle/session";
 import { capitalizeName } from "../format";
+import { FLAGS } from "../flags";
+import { formatKcal } from "../nutrition";
 import { Icon } from "../icons";
 import { t } from "../i18n";
+import { getNutritionDay, type NutritionDay } from "../api";
 import { TodayCard } from "./TodayCard";
 
 type Props = {
@@ -22,6 +25,7 @@ type Props = {
   onStart: (plan: Plan) => void;
   onResume: (session: Session) => void;
   onSkip: () => void;
+  onOpenNutrition?: () => void;
 };
 
 /** «Понедельник, 26 октября». */
@@ -32,13 +36,14 @@ function todayLabel(): string {
 
 const STATS = ["strength", "endurance", "agility", "discipline"] as const;
 
-export function Home({ character: initial, onStart, onResume, onSkip }: Props) {
+export function Home({ character: initial, onStart, onResume, onSkip, onOpenNutrition }: Props) {
   const [character, setCharacter] = useState(initial);
   const [paused, setPaused] = useState(false);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [food, setFood] = useState<NutritionDay | null>(null);
 
   const load = useCallback(() => {
     getMe()
@@ -54,6 +59,11 @@ export function Home({ character: initial, onStart, onResume, onSkip }: Props) {
     getPlan()
       .then(setPlan)
       .catch(() => undefined);
+    if (FLAGS.nutrition) {
+      getNutritionDay()
+        .then(setFood)
+        .catch(() => undefined);
+    }
     // Незавершённая тренировка: показываем «Продолжить», только если сервер её ещё считает открытой.
     const saved = loadSession();
     setSession(saved);
@@ -100,6 +110,18 @@ export function Home({ character: initial, onStart, onResume, onSkip }: Props) {
         onSkip={onSkip}
         onUndoSkip={() => void undo()}
       />
+
+      {FLAGS.nutrition && food && food.goal && (
+        <button type="button" className="card nutri-today" onClick={onOpenNutrition}>
+          <span className="kicker">{t.nutrition.today.title}</span>
+          <b className="num">
+            {formatKcal(food.totals.kcal)} / {formatKcal(food.goal.kcal)} {t.nutrition.kcal}
+          </b>
+          {food.remaining && food.remaining.protein >= 10 && (
+            <small className="muted">{t.nutrition.today.protein(Math.round(food.remaining.protein))}</small>
+          )}
+        </button>
+      )}
 
       <header className="card hero">
         <div className="avatar" aria-hidden="true">

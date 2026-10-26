@@ -175,6 +175,7 @@ export function App() {
               onSkip={() => setState({ kind: "missed", character, admin })}
               onResume={(session) => setState({ kind: "active", character, admin, session })}
               onStart={startWith}
+              onOpenNutrition={() => setState({ kind: "tabs", character, tab: "nutrition", admin })}
             />
           )}
           {tab === "workouts" && (

@@ -427,6 +427,143 @@ export type WeekPreview = {
   after_warnings: string[];
 };
 
+// --- питание (фаза 4) ---
+
+export type Meal = "breakfast" | "lunch" | "dinner" | "snack";
+export type Macros = { kcal: number; protein: number; fat: number; carbs: number };
+
+export type NutritionGoalData = {
+  mode: "gain" | "maintain" | "lose";
+  kcal: number;
+  protein_g: number;
+  fat_g: number;
+  carbs_g: number;
+  bmr: number;
+  tdee: number;
+  floor: number;
+  delta_kcal: number;
+  adjust_kcal: number;
+  assumptions: string[];
+  notes: string[];
+  clamped: boolean;
+};
+
+export type NutritionGoalState = {
+  complete: boolean;
+  requested_mode: "gain" | "maintain" | "lose";
+  adjust_kcal: number;
+  restrictions: string[];
+  blocked: { key: string; name: string }[];
+  lose_blocked: boolean;
+  screening: { key: string; name: string }[];
+  goal: NutritionGoalData | null;
+  options: Record<"gain" | "maintain" | "lose", number | null>;
+  trend_hint: string | null;
+  disclaimer: string;
+  profile: { weight_kg: number | null; height_cm: number | null; age: number | null };
+};
+
+export type DiaryEntry = {
+  id: number;
+  meal: Meal;
+  name: string;
+  grams: number | null;
+  servings: number | null;
+  food_id: number | null;
+  recipe_id: number | null;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+};
+
+export type NutritionDay = {
+  date: string;
+  goal: NutritionGoalData | null;
+  complete: boolean;
+  totals: Macros;
+  remaining: Macros | null;
+  hints: string[];
+  meals: { meal: Meal; name: string; entries: DiaryEntry[]; totals: Macros }[];
+};
+
+export type FoodItem = {
+  id: number;
+  name: string;
+  group: string;
+  group_name: string;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  piece_g: number | null;
+  piece_name: string | null;
+  own: boolean;
+  last_grams?: number | null;
+};
+
+export type RecipeCard = {
+  id: number;
+  name: string;
+  minutes: number;
+  servings: number;
+  meal: Meal;
+  meal_name: string;
+  tags: string[];
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  reason?: string;
+};
+
+export type RecipeDetailData = RecipeCard & {
+  servings_shown: number;
+  per_serving: Macros;
+  ingredients: { name: string; grams: number }[];
+  steps: string[];
+  note: string;
+};
+
+export const getNutritionGoal = () => request<NutritionGoalState>("/nutrition/goal");
+export const saveNutritionGoal = (body: { mode: string; adjust_kcal: number; restrictions: string[] }) =>
+  request<NutritionGoalState>("/nutrition/goal", { method: "PUT", body: JSON.stringify(body) });
+export const getNutritionDay = (date?: string) =>
+  request<NutritionDay>(`/nutrition/day${date ? `?date=${date}` : ""}`);
+export const addDiaryEntry = (body: {
+  date?: string;
+  meal: Meal;
+  food_id?: number;
+  recipe_id?: number;
+  grams?: number;
+  servings?: number;
+}) => request<DiaryEntry>("/nutrition/entries", { method: "POST", body: JSON.stringify(body) });
+export const patchDiaryEntry = (id: number, body: { meal?: Meal; grams?: number; servings?: number }) =>
+  request<DiaryEntry>(`/nutrition/entries/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+export const deleteDiaryEntry = (id: number) =>
+  request<void>(`/nutrition/entries/${id}`, { method: "DELETE" });
+export const searchFoods = (q: string, group?: string) => {
+  const query = new URLSearchParams({ q, limit: "30" });
+  if (group) query.set("group", group);
+  return request<{ items: FoodItem[]; groups: { key: string; name: string }[] }>(`/nutrition/foods?${query}`);
+};
+export const getRecentFoods = () =>
+  request<{ frequent: FoodItem[]; recent: FoodItem[] }>("/nutrition/foods/recent");
+export const createFood = (body: { name: string; kcal: number; protein: number; fat: number; carbs: number }) =>
+  request<FoodItem>("/nutrition/foods", { method: "POST", body: JSON.stringify(body) });
+export const listRecipes = (tag?: string) =>
+  request<{ items: RecipeCard[]; tags: { key: string; name: string }[]; total: number }>(
+    `/nutrition/recipes${tag ? `?tag=${tag}` : ""}`,
+  );
+export const suggestRecipes = (training?: "before" | "after", direction?: string) => {
+  const query = new URLSearchParams();
+  if (training) query.set("training", training);
+  if (direction) query.set("direction", direction);
+  return request<{ summary: string | null; items: RecipeCard[] }>(`/nutrition/recipes/suggest?${query}`);
+};
+export const getRecipe = (id: number, servings: number) =>
+  request<RecipeDetailData>(`/nutrition/recipes/${id}?servings=${servings}`);
+
 export const getDirections = () => request<DirectionsState>("/directions");
 export const putDirections = (items: { direction: string; days: number }[]) =>
   request<DirectionsState>("/me/directions", { method: "PUT", body: JSON.stringify({ items }) });
