@@ -1,7 +1,6 @@
 import type { Plan } from "../api";
 import type { Session } from "../cycle/session";
 import { t } from "../i18n";
-import { targetLine } from "../messages";
 import { Button, Card, Chip, Hint } from "../ui/ui";
 
 type Props = {
@@ -12,6 +11,15 @@ type Props = {
   onSkip: () => void;
   onUndoSkip: () => void;
 };
+
+/** «80 кг × 3 × 8», а без заданного веса короче: «3 × 8». */
+function shortTarget(item: Plan["items"][number]): string {
+  const reps = item.rep_targets?.[0] ?? item.reps;
+  const base = `${item.sets} × ${reps}`;
+  return item.target_weight_kg === null
+    ? base
+    : `${String(item.target_weight_kg).replace(".", ",")} кг × ${base}`;
+}
 
 /** Карточка «Тренировка сегодня»: состав, решение тренера после прошлой тренировки и кнопки. */
 export function TodayCard({ plan, session, onStart, onResume, onSkip, onUndoSkip }: Props) {
@@ -78,7 +86,7 @@ export function TodayCard({ plan, session, onStart, onResume, onSkip, onUndoSkip
           {items.map((item) => (
             <li key={item.exercise_id}>
               <span>{item.name}</span>
-              <span className="num">{targetLine(item)}</span>
+              <span className="num">{shortTarget(item)}</span>
             </li>
           ))}
         </ul>

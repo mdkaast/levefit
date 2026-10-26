@@ -56,6 +56,10 @@
   color: var(--text-2);
 }
 
+.plain-list li > span:first-child {
+  min-width: 0;
+}
+
 .plain-list .num {
   color: var(--muted);
   white-space: nowrap;
@@ -77,6 +81,12 @@
 .ui-card {
   display: grid;
   gap: 12px;
+  min-width: 0;
+}
+
+.ui-card > *,
+main > * {
+  min-width: 0;
 }
 
 .back-link {
@@ -129,6 +139,21 @@
 .workout .top-bar > div {
   display: grid;
   gap: 2px;
+  min-width: 0;
+}
+
+.workout .top-bar .ui-btn {
+  flex: none;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.workout .top-bar .kicker {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ex-title {

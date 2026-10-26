@@ -242,7 +242,9 @@ export function ActiveWorkout({ session: initial, onFinished, onExit }: Props) {
     <RateSheet
       key={unrated.exercise_id}
       name={unrated.name}
-      line={`${kg(unrated.target_weight_kg)} × ${repsLine(logged[unrated.exercise_id] ?? [])}`}
+      line={`${kg(
+        (logged[unrated.exercise_id] ?? []).at(-1)?.weight ?? unrated.target_weight_kg,
+      )} × ${repsLine(logged[unrated.exercise_id] ?? [])}`}
       last={items.indexOf(unrated) === items.length - 1}
       onSave={(rating, pain) => saveRating(unrated.exercise_id, rating, pain)}
       onSkip={() => setRated((prev) => new Set(prev).add(unrated.exercise_id))}
