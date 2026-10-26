@@ -61,6 +61,19 @@ export type CharacterInput = {
 
 let token: string | null = null;
 
+/** Ошибка ответа сервера. Текст «HTTP 404» используют старые проверки на экранах. */
+export class ApiError extends Error {
+  constructor(public status: number) {
+    super(`HTTP ${status}`);
+  }
+}
+
+/** Что делать с неудавшейся записью: повторить позже (нет связи, сбой сервера) или отбросить. */
+export function classifyFailure(error: unknown): "retry" | "drop" {
+  if (error instanceof ApiError) return error.status >= 500 || error.status === 408 || error.status === 429 ? "retry" : "drop";
+  return "retry"; // fetch отклонён: связи нет
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
@@ -69,7 +82,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) throw new ApiError(response.status);
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
@@ -119,6 +132,7 @@ export type Workout = {
 export type WorkoutSummary = Omit<Workout, "notes" | "sets"> & { sets_count: number };
 
 export type SetInput = {
+  client_id?: string;
   exercise_id: number;
   weight_kg?: number;
   reps?: number;
@@ -130,8 +144,10 @@ export type SetInput = {
 export const getExercises = () => request<Exercise[]>("/exercises");
 export const listWorkouts = () => request<WorkoutSummary[]>("/workouts");
 export const getWorkout = (id: number) => request<Workout>(`/workouts/${id}`);
-export const createWorkout = (title: string) =>
-  request<Workout>("/workouts", { method: "POST", body: JSON.stringify({ title }) });
+export type Checkin = { sleep_quality?: number; energy?: number; pain?: boolean };
+
+export const createWorkout = (title: string, checkin: Checkin = {}) =>
+  request<Workout>("/workouts", { method: "POST", body: JSON.stringify({ title, ...checkin }) });
 export const addSet = (workoutId: number, input: SetInput) =>
   request<WorkoutSet>(`/workouts/${workoutId}/sets`, {
     method: "POST",
@@ -193,8 +209,23 @@ export type Adjustment = {
   }[];
 };
 
-export const adjustWorkout = (workoutId: number) =>
-  request<Adjustment>(`/workouts/${workoutId}/adjust`, { method: "POST" });
+/** Решение движка после тренировки; plan — то, что планировалось на сегодня (иначе берётся прошлое решение). */
+export const adjustWorkout = (workoutId: number, plan?: PlanItem[]) =>
+  request<Adjustment>(`/workouts/${workoutId}/adjust`, {
+    method: "POST",
+    body: JSON.stringify(
+      plan
+        ? {
+            plan: plan.map((p) => ({
+              exercise_id: p.exercise_id,
+              weight_kg: p.target_weight_kg,
+              sets: p.sets,
+              reps: p.reps,
+            })),
+          }
+        : {},
+    ),
+  });
 
 export type AdjustRating = "fits" | "too_hard" | "too_easy";
 
@@ -244,9 +275,18 @@ export type Plan = {
   source: "ai" | "starter" | null;
   /** Поправки на сегодня: перерыв, низкое самочувствие. */
   notes: string[];
+  /** Причины решения движка после прошлой тренировки. */
+  decisions: string[];
+  skipped_today: "move" | "rest" | null;
 };
 
-export const getPlan = () => request<Plan>("/plan");
+export const getPlan = (checkin?: { sleep?: number; energy?: number }) => {
+  const query = new URLSearchParams();
+  if (checkin?.sleep) query.set("sleep", String(checkin.sleep));
+  if (checkin?.energy) query.set("energy", String(checkin.energy));
+  const suffix = query.size ? `?${query}` : "";
+  return request<Plan>(`/plan${suffix}`);
+};
 
 export type WeightEntry = { date: string; weight_kg: number };
 
@@ -298,3 +338,41 @@ export const patchCharacter = (targetMuscles: string[]) =>
     method: "PATCH",
     body: JSON.stringify({ target_muscles: targetMuscles }),
   });
+
+export type ExerciseRatingValue = "easy" | "normal" | "hard";
+
+export const rateExercise = (
+  workoutId: number,
+  exerciseId: number,
+  rating: ExerciseRatingValue,
+  pain: boolean,
+) =>
+  request<{ exercise_id: number; rating: string; pain: boolean }>(
+    `/workouts/${workoutId}/ratings/${exerciseId}`,
+    { method: "PUT", body: JSON.stringify({ rating, pain }) },
+  );
+
+export const skipToday = (kind: "move" | "rest") =>
+  request<{ day: string; kind: string }>("/skips", { method: "POST", body: JSON.stringify({ kind }) });
+
+export const undoSkip = () => request<void>("/skips/today", { method: "DELETE" });
+
+export type LastSession = {
+  day: string;
+  top_weight_kg: number | null;
+  sets: { weight_kg: number | null; reps: number | null; rir: number | null }[];
+};
+
+export const getLastSession = (exerciseId: number) =>
+  request<LastSession | null>(`/exercises/${exerciseId}/last`);
+
+export const overrideDecision = (workoutId: number, exerciseId: number, weightKg: number, reason?: string) =>
+  request<Adjustment>(`/workouts/${workoutId}/adjust/exercise/${exerciseId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ weight_kg: weightKg, reason: reason?.trim() || undefined }),
+  });
+
+export type ExerciseRatingOut = { exercise_id: number; rating: ExerciseRatingValue; pain: boolean };
+
+export const listRatings = (workoutId: number) =>
+  request<ExerciseRatingOut[]>(`/workouts/${workoutId}/ratings`);

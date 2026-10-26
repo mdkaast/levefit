@@ -20,7 +20,7 @@ function errorMessage(error: unknown): string {
 
 const RATINGS: AdjustRating[] = ["fits", "too_hard", "too_easy"];
 
-function RatingBar({ workoutId }: Props) {
+export function RatingBar({ workoutId }: Props) {
   const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
 
   const send = (rating: AdjustRating) =>

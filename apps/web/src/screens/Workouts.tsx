@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { createWorkout, listWorkouts, type WorkoutSummary } from "../api";
+import { listWorkouts, type WorkoutSummary } from "../api";
 import { t } from "../i18n";
 import { Button, EmptyState, ListRow, Segmented, Skeleton } from "../ui/ui";
 
-type Props = { onOpenWorkout: (id: number) => void };
+type Props = { onOpenWorkout: (id: number) => void; onStart: () => void };
 
 type Mode = "week" | "programs" | "exercises";
 
 /** Вкладка «Тренировки». Неделя, программы и каталог подключаются в фазах 1–2; пока здесь история и старт. */
-export function Workouts({ onOpenWorkout }: Props) {
+export function Workouts({ onOpenWorkout, onStart }: Props) {
   const [mode, setMode] = useState<Mode>("week");
   const [history, setHistory] = useState<WorkoutSummary[] | null>(null);
 
@@ -17,11 +17,6 @@ export function Workouts({ onOpenWorkout }: Props) {
       .then(setHistory)
       .catch(() => setHistory([]));
   }, []);
-
-  async function start() {
-    const workout = await createWorkout(t.workout.defaultTitle);
-    onOpenWorkout(workout.id);
-  }
 
   const items = [
     { id: "week" as const, label: t.workouts.modes.week },
@@ -36,7 +31,7 @@ export function Workouts({ onOpenWorkout }: Props) {
 
       {mode === "week" && (
         <>
-          <Button onClick={start}>{t.home.startWorkout}</Button>
+          <Button onClick={onStart}>{t.home.startWorkout}</Button>
           <h3>{t.home.history}</h3>
           {history === null && <Skeleton height={56} />}
           {history && history.length === 0 && (

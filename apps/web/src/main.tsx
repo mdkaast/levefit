@@ -4,6 +4,7 @@ import { App } from "./App";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/inter-tight";
 import "./styles.css";
+import "./cycle.css";
 import { applyPrefs } from "./prefs";
 
 // Сообщаем Telegram, что интерфейс готов, и раскрываем Mini App на всю высоту.

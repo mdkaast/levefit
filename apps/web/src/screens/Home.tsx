@@ -1,31 +1,44 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   completeTask,
-  createWorkout,
   getMe,
   getPlan,
   getTasks,
+  listWorkouts,
+  undoSkip,
   type Character,
-  type PlanItem,
+  type Plan,
   type Streak,
   type Task,
 } from "../api";
+import { clearSession, loadSession, type Session } from "../cycle/session";
 import { capitalizeName } from "../format";
 import { Icon } from "../icons";
 import { t } from "../i18n";
-import { targetLine } from "../messages";
+import { TodayCard } from "./TodayCard";
 
-type Props = { character: Character; onOpenWorkout: (id: number) => void };
+type Props = {
+  character: Character;
+  onStart: (plan: Plan) => void;
+  onResume: (session: Session) => void;
+  onSkip: () => void;
+};
+
+/** «Понедельник, 26 октября». */
+function todayLabel(): string {
+  const text = new Date().toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" });
+  return text.charAt(0).toLocaleUpperCase("ru") + text.slice(1);
+}
 
 const STATS = ["strength", "endurance", "agility", "discipline"] as const;
 
-export function Home({ character: initial, onOpenWorkout }: Props) {
+export function Home({ character: initial, onStart, onResume, onSkip }: Props) {
   const [character, setCharacter] = useState(initial);
   const [paused, setPaused] = useState(false);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [plan, setPlan] = useState<PlanItem[]>([]);
-  const [planNotes, setPlanNotes] = useState<string[]>([]);
+  const [plan, setPlan] = useState<Plan | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   const load = useCallback(() => {
     getMe()
@@ -39,18 +52,29 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
       .then(setTasks)
       .catch(() => undefined);
     getPlan()
-      .then((p) => {
-        setPlan(p.items);
-        setPlanNotes(p.notes);
-      })
+      .then(setPlan)
       .catch(() => undefined);
+    // Незавершённая тренировка: показываем «Продолжить», только если сервер её ещё считает открытой.
+    const saved = loadSession();
+    setSession(saved);
+    if (saved) {
+      listWorkouts()
+        .then((list) => {
+          const open = list.some((w) => w.id === saved.workoutId && w.status !== "finished");
+          if (!open) {
+            clearSession();
+            setSession(null);
+          }
+        })
+        .catch(() => undefined);
+    }
   }, []);
 
   useEffect(load, [load]);
 
-  async function start() {
-    const workout = await createWorkout(t.workout.defaultTitle);
-    onOpenWorkout(workout.id);
+  async function undo() {
+    await undoSkip().catch(() => undefined);
+    load();
   }
 
   async function confirm(task: Task) {
@@ -65,7 +89,18 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
 
   return (
     <main>
-      <p className="brand">{t.appTitle}</p>
+      <p className="kicker">{todayLabel()}</p>
+      <h2 className="screen-title">{t.cycle.today.title}</h2>
+
+      <TodayCard
+        plan={plan}
+        session={session}
+        onStart={() => plan && onStart(plan)}
+        onResume={() => session && onResume(session)}
+        onSkip={onSkip}
+        onUndoSkip={() => void undo()}
+      />
+
       <header className="card hero">
         <div className="avatar" aria-hidden="true">
           {capitalizeName(character.name).charAt(0)}
@@ -149,24 +184,6 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
         </section>
       )}
 
-      {plan.length > 0 && (
-        <section>
-          <h3>{t.home.planTitle}</h3>
-          {planNotes.map((note) => (
-            <p key={note} className="muted">
-              {note}
-            </p>
-          ))}
-          <ul className="list">
-            {plan.map((item) => (
-              <li key={item.exercise_id}>
-                {item.name}: {targetLine(item)}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       {(["daily", "weekly"] as const).map((period) => {
         const list = tasks.filter((task) => task.period === period);
         if (list.length === 0) return null;
@@ -205,10 +222,6 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
           </section>
         );
       })}
-
-      <button type="button" onClick={start}>
-        {t.home.startWorkout}
-      </button>
     </main>
   );
 }
