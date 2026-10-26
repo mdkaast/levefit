@@ -3,22 +3,20 @@ import {
   deleteMe,
   getAchievements,
   getMe,
-  patchCharacter,
   patchMe,
   type Achievement,
   type Character,
 } from "../api";
-import { Silhouette } from "../components/Silhouette";
 import { capitalizeName } from "../format";
 import { t } from "../i18n";
 import { loadPrefs, savePrefs } from "../prefs";
-import { Chip } from "../ui/ui";
+import { ListRow } from "../ui/ui";
+import { Directions } from "./Directions";
 
 type Props = { onDeleted: () => void };
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const STATS = ["strength", "endurance", "agility", "discipline"] as const;
-const MUSCLES = ["chest", "back", "shoulders", "arms", "legs", "core"] as const;
 
 /** Смещение пояса от UTC: «GMT+10»; если браузер не умеет, показываем только название. */
 function zoneOffset(zone: string): string {
@@ -42,7 +40,7 @@ export function Profile({ onDeleted }: Props) {
   const [enabled, setEnabled] = useState(true);
   const [time, setTime] = useState("19:00");
   const [timezone, setTimezone] = useState("");
-  const [muscles, setMuscles] = useState<string[]>([]);
+  const [view, setView] = useState<"profile" | "directions">("profile");
   const [prefs, setPrefs] = useState(loadPrefs());
   const device = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const zones = useMemo(() => listZones(timezone, device), [timezone, device]);
@@ -53,7 +51,6 @@ export function Profile({ onDeleted }: Props) {
     getMe()
       .then(({ user, character: me }) => {
         setCharacter(me);
-        setMuscles(me?.target_muscles ?? []);
         setPaused(user.mode === "paused");
         setEnabled(user.reminders_enabled);
         setTime(user.reminder_time);
@@ -89,21 +86,6 @@ export function Profile({ onDeleted }: Props) {
     }
   }
 
-  async function toggleMuscle(muscle: string) {
-    const previous = muscles;
-    // не больше двух групп: новая заменяет самую раннюю выбранную
-    const next = muscles.includes(muscle) ? muscles.filter((m) => m !== muscle) : [...muscles, muscle].slice(-2);
-    setMuscles(next);
-    setMessage(null);
-    try {
-      await patchCharacter(next);
-      setMessage(t.profile.accentSaved);
-    } catch {
-      setMuscles(previous);
-      setError(t.profile.error);
-    }
-  }
-
   function changePrefs(change: Partial<typeof prefs>) {
     const next = { ...prefs, ...change };
     setPrefs(next);
@@ -118,6 +100,14 @@ export function Profile({ onDeleted }: Props) {
     } catch {
       setError(t.profile.deleteError);
     }
+  }
+
+  if (view === "directions") {
+    return (
+      <main>
+        <Directions onBack={() => setView("profile")} />
+      </main>
+    );
   }
 
   const field = { display: "block", width: "100%" } as const;
@@ -223,16 +213,11 @@ export function Profile({ onDeleted }: Props) {
       {error && <p role="alert">{error}</p>}
 
       <section>
-        <h2>{t.profile.accentTitle}</h2>
-        <p className="muted">{t.profile.accentHint}</p>
-        <div className="chips">
-          {MUSCLES.map((muscle) => (
-            <Chip key={muscle} selected={muscles.includes(muscle)} onClick={() => toggleMuscle(muscle)}>
-              {t.onboarding.muscles[muscle]}
-            </Chip>
-          ))}
-        </div>
-        <Silhouette selected={muscles} onToggle={toggleMuscle} />
+        <ListRow
+          title={t.directions.profileRow}
+          hint={t.directions.profileHint}
+          onClick={() => setView("directions")}
+        />
       </section>
 
       <section>

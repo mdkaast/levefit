@@ -515,3 +515,75 @@ input[type="search"] {
   gap: 10px;
   font-size: 14px;
 }
+
+/* ---------- направления, акценты, неделя (фаза 3) ---------- */
+.chip-row.wrap {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.warn {
+  color: var(--warn, #f2c14e);
+  font-size: 14px;
+}
+
+.change-row {
+  display: grid;
+  gap: 2px;
+}
+
+.week-detail {
+  display: grid;
+  gap: 6px;
+  padding: 10px 14px 12px;
+  margin-top: -4px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 0 0 14px 14px;
+  font-size: 14px;
+}
+
+.focus-silhouette {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.focus-silhouette .hotspot {
+  position: absolute;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--accent, #b7e35b);
+  font-size: 16px;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.focus-silhouette .hotspot:focus-visible {
+  outline: 2px solid var(--accent, #b7e35b);
+  outline-offset: 2px;
+}
+
+.silhouette2d img + img {
+  animation: focus-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes focus-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .silhouette2d img + img {
+    animation: none;
+  }
+}

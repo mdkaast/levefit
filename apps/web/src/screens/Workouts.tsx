@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { listWorkouts, type WorkoutSummary } from "../api";
 import { t } from "../i18n";
 import { Button, EmptyState, ListRow, Segmented, Skeleton } from "../ui/ui";
+import { Directions } from "./Directions";
 import { ExerciseCard } from "./ExerciseCard";
 import { ExerciseLibrary } from "./ExerciseLibrary";
 import { ProgramDetail } from "./ProgramDetail";
 import { Programs } from "./Programs";
+import { WeekView } from "./WeekView";
 
 type Props = { onOpenWorkout: (id: number) => void; onStart: () => void };
 
 type Mode = "week" | "programs" | "exercises";
 
 /** Открытая карточка внутри вкладки; стек позволяет вернуться, например, от замены к исходному упражнению. */
-type Detail = { kind: "exercise"; id: number } | { kind: "program"; id: string };
+type Detail = { kind: "exercise"; id: number } | { kind: "program"; id: string } | { kind: "directions" };
 
 /** Вкладка «Тренировки». Неделя, программы и каталог подключаются в фазах 1–2; пока здесь история и старт. */
 export function Workouts({ onOpenWorkout, onStart }: Props) {
@@ -38,19 +40,21 @@ export function Workouts({ onOpenWorkout, onStart }: Props) {
   if (top) {
     return (
       <main>
-        {top.kind === "exercise" ? (
+        {top.kind === "exercise" && (
           <ExerciseCard
             id={top.id}
             onBack={back}
             onOpen={(id) => open({ kind: "exercise", id })}
           />
-        ) : (
+        )}
+        {top.kind === "program" && (
           <ProgramDetail
             id={top.id}
             onBack={back}
             onOpenExercise={(id) => open({ kind: "exercise", id })}
           />
         )}
+        {top.kind === "directions" && <Directions onBack={back} />}
       </main>
     );
   }
@@ -62,6 +66,7 @@ export function Workouts({ onOpenWorkout, onStart }: Props) {
 
       {mode === "week" && (
         <>
+          <WeekView onCustomize={() => open({ kind: "directions" })} />
           <Button onClick={onStart}>{t.home.startWorkout}</Button>
           <h3>{t.home.history}</h3>
           {history === null && <Skeleton height={56} />}

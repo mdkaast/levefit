@@ -30,6 +30,7 @@ from app.content.directions import (
     WEEKLY_SETS_CAP,
     valid_accent,
 )
+from app.content.muscles import UI_GROUPS
 from app.game import utcnow
 from app.models import AccentVersion, User, UserDirection, WeekPlan
 
@@ -58,12 +59,14 @@ def saved_directions(db: Session, user: User) -> list[tuple[str, int]]:
 
 
 def effective_directions(db: Session, user: User) -> list[tuple[str, int]]:
-    """Сохранённые направления; без них неделя строится из «Зала» по числу дней из онбординга."""
+    """Сохранённые направления; без них неделя строится из «Зала» или «Дома» по дням онбординга."""
     saved = saved_directions(db, user)
     if saved:
         return saved
-    days = user.character.workouts_per_week if user.character else 3
-    return [("gym", min(MAX_DAYS_PER_DIRECTION, max(1, days)))]
+    character = user.character
+    days = character.workouts_per_week if character else 3
+    home = character is not None and character.equipment != "gym"
+    return [("home" if home else "gym", min(MAX_DAYS_PER_DIRECTION, max(1, days)))]
 
 
 def accent_for(db: Session, user: User, direction: str, week_start: date) -> list[str]:
@@ -398,7 +401,10 @@ def build_week(
             }
             for i in range(7)
         ],
-        "volume": programs.volume_by_group(db, strength_pairs),
+        "volume": [
+            {**row, "name": UI_GROUPS.get(row["group"], row["group"])}
+            for row in programs.volume_by_group(db, strength_pairs)
+        ],
         "warnings": warnings,
         "violations": found,
         "templates": templates,
@@ -583,7 +589,12 @@ def volume_delta(before: dict[str, Any], after: dict[str, Any]) -> list[dict[str
     old = {v["group"]: v["sets"] for v in before["volume"]}
     new = {v["group"]: v["sets"] for v in after["volume"]}
     rows = [
-        {"group": g, "before": old.get(g, 0.0), "after": new.get(g, 0.0)}
+        {
+            "group": g,
+            "name": UI_GROUPS.get(g, g),
+            "before": old.get(g, 0.0),
+            "after": new.get(g, 0.0),
+        }
         for g in sorted(set(old) | set(new))
         if round(old.get(g, 0.0) - new.get(g, 0.0), 1) != 0
     ]

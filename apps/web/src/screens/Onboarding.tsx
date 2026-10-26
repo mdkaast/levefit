@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { createCharacter, type Character } from "../api";
+import { createCharacter, putDirections, type Character } from "../api";
 import { NeonAthlete } from "../components/NeonAthlete";
 import { WheelPicker } from "../components/WheelPicker";
+import { DIRECTION_KEYS, distributeDays, toggleDirection } from "../directions";
 import { capitalizeName, formatWeight } from "../format";
 import { Icon } from "../icons";
 import { t } from "../i18n";
@@ -18,10 +19,12 @@ const STEPS = [
   "experience",
   "lifestyle",
   "schedule",
+  "directions",
 ] as const;
 type Step = (typeof STEPS)[number];
 
 const GENDERS = ["male", "female", "other"] as const;
+const SILHOUETTES = ["male", "female"] as const;
 const GOALS = ["strength", "strength_mass", "mass", "return", "weight_loss", "general"] as const;
 const LEVELS = ["beginner", "intermediate", "advanced"] as const;
 const LIFESTYLES = ["sedentary", "light", "active", "very_active"] as const;
@@ -38,6 +41,8 @@ type Values = {
   lifestyle: string;
   perWeek: number;
   equipment: string;
+  silhouette: string;
+  directions: string[];
 };
 
 const INITIAL: Values = {
@@ -51,6 +56,8 @@ const INITIAL: Values = {
   lifestyle: "",
   perWeek: 3,
   equipment: "gym",
+  silhouette: "",
+  directions: [],
 };
 
 function canContinue(step: Step, v: Values): boolean {
@@ -58,7 +65,7 @@ function canContinue(step: Step, v: Values): boolean {
     case "name":
       return validateName(v.name) === null;
     case "gender":
-      return v.gender !== "";
+      return v.gender !== "" && (v.gender !== "other" || v.silhouette !== "");
     case "age":
       return parseAge(v.age) !== null;
     case "body":
@@ -71,6 +78,8 @@ function canContinue(step: Step, v: Values): boolean {
       return v.lifestyle !== "";
     case "schedule":
       return v.perWeek >= 1 && v.perWeek <= 7 && v.equipment !== "";
+    case "directions":
+      return true; // можно пропустить
   }
 }
 
@@ -184,7 +193,12 @@ export function Onboarding({ onCreated }: Props) {
         experience: values.experience,
         lifestyle: values.lifestyle,
         target_muscles: [], // акцент на мышцы выбирается в профиле (B5)
+        silhouette: values.gender === "other" ? values.silhouette : values.gender,
       });
+      if (values.directions.length > 0) {
+        // Направления можно донастроить в профиле, поэтому сбой здесь не мешает регистрации.
+        await putDirections(distributeDays(values.directions, values.perWeek)).catch(() => undefined);
+      }
       onCreated(character);
     } catch {
       setError(t.create.error);
@@ -229,12 +243,41 @@ export function Onboarding({ onCreated }: Props) {
         )}
 
         {step === "gender" && (
-          <SinglePick
-            items={GENDERS}
-            value={values.gender}
-            labels={t.onboarding.gender}
-            onPick={(item) => set("gender", item)}
-          />
+          <>
+            <SinglePick
+              items={GENDERS}
+              value={values.gender}
+              labels={t.onboarding.gender}
+              onPick={(item) => set("gender", item)}
+            />
+            {values.gender === "other" && (
+              <>
+                <p className="muted">{t.directions.silhouette.choose}</p>
+                <SinglePick
+                  items={SILHOUETTES}
+                  value={values.silhouette}
+                  labels={t.directions.silhouette}
+                  onPick={(item) => set("silhouette", item)}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        {step === "directions" && (
+          <div className="options">
+            {DIRECTION_KEYS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                className="option"
+                aria-pressed={values.directions.includes(key)}
+                onClick={() => set("directions", toggleDirection(values.directions, key))}
+              >
+                {t.onboarding.directionNames[key]}
+              </button>
+            ))}
+          </div>
         )}
 
         {step === "age" && (

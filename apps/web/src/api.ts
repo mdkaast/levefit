@@ -22,6 +22,7 @@ export type Character = {
   experience: string | null;
   lifestyle: string | null;
   target_muscles: string[] | null;
+  silhouette: string | null;
 };
 
 export type Streak = {
@@ -57,6 +58,7 @@ export type CharacterInput = {
   experience: string | null;
   lifestyle: string | null;
   target_muscles: string[];
+  silhouette?: string | null;
 };
 
 let token: string | null = null;
@@ -272,12 +274,25 @@ export type PlanItem = {
 export type Plan = {
   workout_id: number | null;
   items: PlanItem[];
-  source: "ai" | "starter" | null;
+  source: "ai" | "starter" | "week" | null;
   /** Поправки на сегодня: перерыв, низкое самочувствие. */
   notes: string[];
   /** Причины решения движка после прошлой тренировки. */
   decisions: string[];
   skipped_today: "move" | "rest" | null;
+  /** Сессия недельного плана, если пользователь на программе. */
+  session: PlanSession | null;
+};
+
+export type PlanSession = {
+  title: string;
+  direction: string;
+  kind: "strength" | "session";
+  minutes: number | null;
+  blocks: string[];
+  day: string;
+  is_today: boolean;
+  verified: boolean;
 };
 
 export const getPlan = (checkin?: { sleep?: number; energy?: number }) => {
@@ -333,11 +348,98 @@ export type RecentAdjustment = {
 export const getAdminStats = () => request<AdminStats>("/admin/stats");
 export const getRecentAdjustments = () => request<RecentAdjustment[]>("/admin/ai/recent");
 
-export const patchCharacter = (targetMuscles: string[]) =>
-  request<Character>("/me/character", {
-    method: "PATCH",
-    body: JSON.stringify({ target_muscles: targetMuscles }),
+export const patchCharacter = (change: { target_muscles?: string[]; silhouette?: "male" | "female" }) =>
+  request<Character>("/me/character", { method: "PATCH", body: JSON.stringify(change) });
+
+// --- направления, акценты и неделя (фаза 3) ---
+
+export type DirectionInfo = {
+  key: string;
+  name: string;
+  kind: "strength" | "sessions" | "auto";
+  accent_kind: "muscles" | "qualities" | null;
+  default_days: number;
+  options: { key: string; name: string }[];
+  verified: boolean;
+};
+
+export type DirectionsState = {
+  catalog: DirectionInfo[];
+  muscles: { key: string; name: string }[];
+  mine: { direction: string; days: number }[];
+  saved: boolean;
+  follows_week: boolean;
+  total_days: number;
+  max_days: number;
+  accents: Record<string, { current: string[]; next: string[] }>;
+  pending: Record<string, { from: string; selection: string[] }>;
+  next_monday: string;
+};
+
+export type WeekLine = {
+  slug: string;
+  exercise_id: number;
+  name: string;
+  sets: number;
+  reps: number[];
+  unit: "reps" | "sec";
+  role: string;
+  accent: string | null;
+};
+
+export type WeekSession = {
+  key: string;
+  title: string;
+  direction: string;
+  kind: "strength" | "session";
+  minutes: number | null;
+  hard: boolean;
+  tags: string[];
+  exercises: WeekLine[];
+  blocks: string[];
+  verified: boolean;
+};
+
+export type WeekPlan = {
+  offset: number;
+  today: string;
+  follows_week: boolean;
+  week_start: string;
+  days: { date: string; weekday: number; session: WeekSession | null }[];
+  volume: { group: string; name: string; sets: number }[];
+  warnings: string[];
+  accents: Record<string, string[]>;
+};
+
+export type WeekChange = {
+  weekday: number;
+  day: string;
+  kind: "added" | "removed" | "changed";
+  title: string;
+  details: string[];
+};
+
+export type WeekPreview = {
+  effective_from: string;
+  current_week_unchanged: boolean;
+  changes: WeekChange[];
+  volume: { group: string; name: string; before: number; after: number }[];
+  after_warnings: string[];
+};
+
+export const getDirections = () => request<DirectionsState>("/directions");
+export const putDirections = (items: { direction: string; days: number }[]) =>
+  request<DirectionsState>("/me/directions", { method: "PUT", body: JSON.stringify({ items }) });
+export const putAccent = (direction: string, selection: string[]) =>
+  request<DirectionsState & { effective_from: string }>("/me/accent", {
+    method: "PUT",
+    body: JSON.stringify({ direction, selection }),
   });
+export const getWeek = (offset: 0 | 1 = 0) => request<WeekPlan>(`/week?offset=${offset}`);
+export const previewWeek = (change: {
+  directions?: { direction: string; days: number }[];
+  accent?: { direction: string; selection: string[] };
+}) => request<WeekPreview>("/week/preview", { method: "POST", body: JSON.stringify(change) });
 
 export type ExerciseRatingValue = "easy" | "normal" | "hard";
 
