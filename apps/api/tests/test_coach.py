@@ -6,7 +6,7 @@ from app.config import settings
 from app.game_rules import config as rules
 from app.main import app
 from app.models import AdjustmentFeedback, AiAdjustment
-from tests.test_ai_adjust import FakeLLM, adjustment, plan_for, setup_workout
+from tests.test_ai_adjust import FakeLLM, explanation, plan_for, setup_workout
 
 ADMIN = {"X-Admin-Key": "admin-key"}
 
@@ -66,9 +66,9 @@ def test_only_approved_rules_reach_the_prompt(client, auth_headers, exercises, u
 
         s.add(CoachRule(text="Черновик ИИ", status="proposed", source="ai"))
         s.commit()
-    llm = use_llm(FakeLLM(adjustment(bench)))
+    llm = use_llm(FakeLLM(explanation()))
     adjusted_workout(client, headers, bench)
-    assert llm.snapshots[0]["coach_rules"] == ["Не повышай вес новичкам"]
+    assert llm.snapshots[0]["context"]["coach_rules"] == ["Не повышай вес новичкам"]
 
 
 def test_owner_approves_and_rejects(client):
@@ -93,7 +93,7 @@ def test_owner_approves_and_rejects(client):
 def test_feedback_saved_and_overwritten(client, auth_headers, exercises, use_llm):
     headers = auth_headers()
     bench = exercises["strength"]
-    use_llm(FakeLLM(adjustment(bench)))
+    use_llm(FakeLLM(explanation()))
     wid = adjusted_workout(client, headers, bench)
     url = f"/workouts/{wid}/adjust/feedback"
     assert client.post(url, json={"rating": "too_hard"}, headers=headers).status_code == 204
@@ -108,7 +108,7 @@ def test_feedback_only_for_own_recommendation(client, auth_headers, exercises, u
     owner = auth_headers({"id": 1, "first_name": "A"})
     other = auth_headers({"id": 2, "first_name": "B"})
     bench = exercises["strength"]
-    use_llm(FakeLLM(adjustment(bench)))
+    use_llm(FakeLLM(explanation()))
     wid = adjusted_workout(client, owner, bench)
     url = f"/workouts/{wid}/adjust/feedback"
     assert client.post(url, json={"rating": "fits"}, headers=other).status_code == 404
@@ -118,7 +118,7 @@ def test_learn_creates_proposals(client, auth_headers, exercises, use_llm):
     headers = auth_headers()
     bench = exercises["strength"]
     proposals = ["Правило А", "Правило А", " ", "Б" * 600]
-    llm = use_llm(LearningLLM(adjustment(bench), proposals=proposals))
+    llm = use_llm(LearningLLM(explanation(), proposals=proposals))
     adjusted_workout(client, headers, bench)
     assert client.post("/admin/coach/learn", headers=ADMIN).status_code == 409
 

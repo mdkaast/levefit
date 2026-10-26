@@ -69,6 +69,10 @@ export function AdjustmentView({ workoutId }: Props) {
   }
 
   const { adjustment } = state;
+  // Расчёт движка показываем, если он не повторяет уже выведенные факты (при шаблоне они совпадают).
+  const engineLines = adjustment.engine
+    .map((d) => d.reason)
+    .filter((reason) => !adjustment.changes.includes(reason));
   return (
     <section>
       <h2>{t.adjust.title}</h2>
@@ -84,6 +88,18 @@ export function AdjustmentView({ workoutId }: Props) {
         ))}
       </ul>
 
+      {engineLines.length > 0 && (
+        <>
+          <h3>{t.adjust.engineTitle}</h3>
+          <ul className="list">
+            {engineLines.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <small>{t.adjust.engineHint}</small>
+        </>
+      )}
+
       <h3>{t.adjust.target}</h3>
       <ul className="list">
         {adjustment.next_workout.map((item) => (
@@ -95,6 +111,9 @@ export function AdjustmentView({ workoutId }: Props) {
 
       <h3>{t.adjust.why}</h3>
       <p>{adjustment.rationale}</p>
+      <small>
+        {adjustment.explained_by === "llm" ? t.adjust.byLlm : t.adjust.byTemplate}
+      </small>
       <small>{t.adjust.disclaimer}</small>
       <RatingBar workoutId={workoutId} />
     </section>

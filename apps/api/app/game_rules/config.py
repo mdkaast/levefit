@@ -113,16 +113,17 @@ REMINDER_WINDOW_MIN = 180
 MAX_REMINDERS_PER_DAY = 1
 
 # --- ИИ-корректировка ---
+# Итоговое решение по тренировке. Его принимает движок (app/engine); первые четыре значения
+# выдаёт он, остальные остались в старых записях журнала.
 AI_DECISIONS = (
+    "increase_weight",
     "keep_weight",
     "reduce_weight",
+    "deload",
     "change_volume",
     "replace_exercise",
-    "deload",  # разгрузка: вес и объём не растут, хотя бы что-то снижается
-    "change_rep_range",  # другой диапазон повторений при том же или меньшем весе
+    "change_rep_range",
 )
-# Решения, при которых вес в следующей тренировке не может быть выше прежнего.
-AI_NO_GROWTH_DECISIONS = ("keep_weight", "reduce_weight", "deload", "change_rep_range")
 # История и плато.
 AI_HISTORY_SESSIONS = 6  # сколько прошлых тренировок по упражнению видит модель
 AI_PAST_DECISIONS = 5  # сколько прошлых рекомендаций (с оценками) видит модель

@@ -70,3 +70,13 @@ test("цель тренировки: вес × подходы × повторы"
   expect(targetLine({ target_weight_kg: 80, sets: 3, reps: 8 })).toBe("80 кг × 3 × 8");
   expect(targetLine({ target_weight_kg: null, sets: 3, reps: 10 })).toContain("× 3 × 10");
 });
+
+test("цель по подходам показывается через слэш, если она разная", () => {
+  expect(targetLine({ target_weight_kg: 80, sets: 3, reps: 8, rep_targets: [8, 8, 7] })).toBe(
+    "80 кг × 8/8/7",
+  );
+  expect(targetLine({ target_weight_kg: 82.5, sets: 3, reps: 8, rep_targets: [6, 6, 6] })).toBe(
+    "82,5 кг × 3 × 6",
+  );
+  expect(targetLine({ target_weight_kg: null, sets: 3, reps: 8 })).toContain("× 3 × 8");
+});

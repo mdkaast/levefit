@@ -168,15 +168,29 @@ export const finishWorkout = (workoutId: number, notes?: string) =>
 export type Adjustment = {
   health_flag: boolean;
   changes: string[];
-  decision: "keep_weight" | "reduce_weight" | "change_volume" | "replace_exercise";
-  next_workout: {
+  decision:
+    | "increase_weight"
+    | "keep_weight"
+    | "reduce_weight"
+    | "deload"
+    | "change_volume"
+    | "replace_exercise"
+    | "change_rep_range";
+  next_workout: PlanItem[];
+  rationale: string;
+  /** Кто написал объяснение: ИИ-тренер или шаблон (если ИИ недоступен). */
+  explained_by: "llm" | "template" | null;
+  engine_version: string | null;
+  /** Решения движка по упражнениям: числа считает он, ИИ-тренер их только объясняет. */
+  engine: {
     exercise_id: number;
     name: string;
-    target_weight_kg: number | null;
-    sets: number;
-    reps: number;
+    action: string;
+    rule: string;
+    reason: string;
+    from_weight_kg: number | null;
+    next_weight_kg: number | null;
   }[];
-  rationale: string;
 };
 
 export const adjustWorkout = (workoutId: number) =>
@@ -220,10 +234,19 @@ export type PlanItem = {
   name: string;
   target_weight_kg: number | null;
   sets: number;
-  reps: number;
+  reps: number; // верх диапазона повторений
+  rep_targets?: number[] | null; // цель на каждый подход, например 8/8/7
 };
 
-export const getPlan = () => request<{ workout_id: number | null; items: PlanItem[] }>("/plan");
+export type Plan = {
+  workout_id: number | null;
+  items: PlanItem[];
+  source: "ai" | "starter" | null;
+  /** Поправки на сегодня: перерыв, низкое самочувствие. */
+  notes: string[];
+};
+
+export const getPlan = () => request<Plan>("/plan");
 
 export type WeightEntry = { date: string; weight_kg: number };
 

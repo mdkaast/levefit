@@ -111,9 +111,7 @@ def test_delete_me_removes_everything(client, auth_headers, exercises, tasks_see
             (BodyMetric, BodyMetric.user_id),
             (Streak, Streak.user_id),
         ):
-            others = session.scalar(
-                select(func.count()).select_from(model).where(column != uid)
-            )
+            others = session.scalar(select(func.count()).select_from(model).where(column != uid))
             assert others == 0, model.__name__
         assert session.scalar(select(func.count()).select_from(WorkoutSet)) == 1
         owned = session.scalar(
@@ -150,7 +148,10 @@ def test_reminder_sent_at_set_time_once_per_day(client, auth_headers, clock):
     first = due(client)
     assert len(first) == 1
     assert {k: first[0][k] for k in ("telegram_id", "kind", "streak_weeks", "needed")} == {
-        "telegram_id": 77, "kind": "workout", "streak_weeks": 0, "needed": 3,
+        "telegram_id": 77,
+        "kind": "workout",
+        "streak_weeks": 0,
+        "needed": 3,
     }
     assert first[0]["reward_xp"] == 50 and first[0]["days_left"] == 6  # вторник
     assert due(client) == []  # повторно в тот же день не шлём
@@ -207,7 +208,10 @@ def test_streak_risk_reminder(client, auth_headers, exercises, clock):
     result = due(client)
     assert len(result) == 1
     assert (result[0]["kind"], result[0]["streak_weeks"], result[0]["needed"]) == (
-        "streak_risk", 1, 1)
+        "streak_risk",
+        1,
+        1,
+    )
     assert result[0]["days_left"] == 1 and result[0]["freezes_left"] == 1
     # в начале той же недели серия жива, но времени достаточно: обычное напоминание
     client.patch("/me", json={"reminder_time": "19:00"}, headers=headers)  # сброс отметки дня

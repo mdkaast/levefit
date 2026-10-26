@@ -25,6 +25,7 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
   const [streak, setStreak] = useState<Streak | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [plan, setPlan] = useState<PlanItem[]>([]);
+  const [planNotes, setPlanNotes] = useState<string[]>([]);
 
   const load = useCallback(() => {
     getMe()
@@ -38,7 +39,10 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
       .then(setTasks)
       .catch(() => undefined);
     getPlan()
-      .then((p) => setPlan(p.items))
+      .then((p) => {
+        setPlan(p.items);
+        setPlanNotes(p.notes);
+      })
       .catch(() => undefined);
   }, []);
 
@@ -148,6 +152,11 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
       {plan.length > 0 && (
         <section>
           <h3>{t.home.planTitle}</h3>
+          {planNotes.map((note) => (
+            <p key={note} className="muted">
+              {note}
+            </p>
+          ))}
           <ul className="list">
             {plan.map((item) => (
               <li key={item.exercise_id}>

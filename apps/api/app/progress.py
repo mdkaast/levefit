@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.ai.schema import NextExercise
 from app.db import get_db
 from app.deps import current_user
+from app.engine import SetResult, session_score
 from app.game_rules import config as rules
 from app.models import Exercise, User, Workout, WorkoutSet
 
@@ -19,6 +20,7 @@ router = APIRouter()
 
 @dataclass
 class Session_:
+    workout_id: int
     date: date
     top_weight_kg: float | None
     volume: float
@@ -26,27 +28,14 @@ class Session_:
     sets: list[dict]
 
 
-def estimate_one_rep_max(weight: float | None, reps: int | None) -> float:
-    """Формула Эпли. Без веса возвращает 0 (такие подходы оцениваем повторами)."""
-    if not weight or not reps:
-        return 0.0
-    return weight * (1 + reps / 30)
-
-
-def _score(sets: list[WorkoutSet]) -> float:
-    best_max = max((estimate_one_rep_max(s.weight_kg, s.reps) for s in sets), default=0.0)
-    if best_max > 0:
-        return round(best_max, 1)
-    return float(max((s.reps or 0 for s in sets), default=0))
-
-
-def _session(workout_date: date, sets: list[WorkoutSet]) -> Session_:
+def _session(workout_id: int, workout_date: date, sets: list[WorkoutSet]) -> Session_:
     weights = [s.weight_kg for s in sets if s.weight_kg]
     return Session_(
+        workout_id=workout_id,
         date=workout_date,
         top_weight_kg=max(weights) if weights else None,
         volume=round(sum((s.weight_kg or 1) * (s.reps or 0) for s in sets), 1),
-        score=_score(sets),
+        score=session_score(tuple(SetResult(x.weight_kg, x.reps, x.rir) for x in sets)),
         sets=[{"weight_kg": s.weight_kg, "reps": s.reps, "rir": s.rir} for s in sets],
     )
 
@@ -70,8 +59,8 @@ def user_sessions(db: Session, user_id: int) -> dict[int, list[Session_]]:
             workout_set
         )
     result: dict[int, list[Session_]] = {}
-    for (exercise_id, _), (workout_date, sets) in grouped.items():
-        result.setdefault(exercise_id, []).append(_session(workout_date, sets))
+    for (exercise_id, workout_id), (workout_date, sets) in grouped.items():
+        result.setdefault(exercise_id, []).append(_session(workout_id, workout_date, sets))
     for sessions in result.values():
         sessions.sort(key=lambda s: s.date)
     return result

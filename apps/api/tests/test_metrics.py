@@ -64,8 +64,9 @@ def test_list_is_sorted_and_filtered(client, auth_headers, clock):
     ).json()
     assert [e["date"] for e in ranged] == ["2026-06-01", "2026-10-10"]
 
-    bad = client.get("/metrics/weight", params={"from": "2026-10-12", "to": "2026-10-01"},
-                     headers=headers)
+    bad = client.get(
+        "/metrics/weight", params={"from": "2026-10-12", "to": "2026-10-01"}, headers=headers
+    )
     assert bad.status_code == 422
 
 

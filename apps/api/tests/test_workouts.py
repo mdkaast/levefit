@@ -78,8 +78,9 @@ def test_set_validation_by_category(client, auth_headers, exercises):
         == 422
     )
     assert (
-        add_set(client, headers, wid, exercise_id=exercises["strength"], reps=5, weight_kg=-1)
-        .status_code
+        add_set(
+            client, headers, wid, exercise_id=exercises["strength"], reps=5, weight_kg=-1
+        ).status_code
         == 422
     )
     assert add_set(client, headers, wid, exercise_id=9999, reps=5).status_code == 404

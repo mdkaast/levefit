@@ -82,7 +82,7 @@ export function WorkoutScreen({ workoutId, onClose }: Props) {
   function applyPlan(item: PlanItem) {
     setExerciseId(item.exercise_id);
     setWeight(item.target_weight_kg !== null ? String(item.target_weight_kg) : "");
-    setReps(String(item.reps));
+    setReps(String(item.rep_targets?.[0] ?? item.reps));
   }
 
   async function finish() {

@@ -99,18 +99,14 @@ def build_snapshot(
                 "sets_done": len(sets),
                 "max_weight_kg": max(weights) if weights else None,
                 "max_reps": max(reps) if reps else 0,
-                "alternatives": [
-                    {"exercise_id": a.id, "name": a.name} for a in alternatives
-                ],
+                "alternatives": [{"exercise_id": a.id, "name": a.name} for a in alternatives],
                 "history": exercise_context(sessions.get(exercise_id, [])),
             }
         )
 
     notes = (workout.notes or "")[: rules.AI_MAX_NOTES_LEN]
     checkin = {"sleep_quality": workout.sleep_quality, "energy": workout.energy}
-    low_readiness = any(
-        v is not None and v <= rules.LOW_READINESS_MAX for v in checkin.values()
-    )
+    low_readiness = any(v is not None and v <= rules.LOW_READINESS_MAX for v in checkin.values())
     character = user.character
     return {
         "date": workout.date.isoformat(),

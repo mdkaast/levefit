@@ -46,9 +46,17 @@ export function achievementMessages(reward: Reward): string[] {
   });
 }
 
-/** «80 кг × 3 × 8» — вес × подходы × повторы. */
-export function targetLine(item: Pick<PlanItem, "target_weight_kg" | "sets" | "reps">): string {
+/** «80 кг × 3 × 8» или, если цели по подходам разные, «80 кг × 8/8/7». */
+export function targetLine(
+  item: Pick<PlanItem, "target_weight_kg" | "sets" | "reps" | "rep_targets">,
+): string {
   const weight =
-    item.target_weight_kg !== null ? `${item.target_weight_kg} ${t.units.kg}` : t.adjust.freeWeight;
-  return `${weight} × ${item.sets} × ${item.reps}`;
+    item.target_weight_kg !== null
+      ? `${String(item.target_weight_kg).replace(".", ",")} ${t.units.kg}`
+      : t.adjust.freeWeight;
+  const targets = item.rep_targets;
+  if (targets && targets.length > 1 && new Set(targets).size > 1) {
+    return `${weight} × ${targets.join("/")}`;
+  }
+  return `${weight} × ${item.sets} × ${targets?.[0] ?? item.reps}`;
 }

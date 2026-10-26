@@ -213,6 +213,10 @@ class AiAdjustment(Base):
     result: Mapped[dict] = mapped_column(JSON)
     model: Mapped[str] = mapped_column(String(64))
     # Расход токенов на запрос: нужен для юнит-экономики; пусто, если провайдер не сообщил.
+    # Версия правил движка и его решения по упражнениям: по ним можно воспроизвести рекомендацию.
+    engine_version: Mapped[str | None] = mapped_column(String(16))
+    engine_decisions: Mapped[list | None] = mapped_column(JSON)
+    explained_by: Mapped[str | None] = mapped_column(String(12))  # llm | template
     input_tokens: Mapped[int | None] = mapped_column(Integer)
     output_tokens: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)

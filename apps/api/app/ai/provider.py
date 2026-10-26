@@ -6,19 +6,19 @@ from typing import Protocol
 import anthropic
 
 from app.ai.prompt import LEARN_PROMPT, SYSTEM_PROMPT
-from app.ai.safety import InvalidAdjustment
-from app.ai.schema import Adjustment, RuleProposals
+from app.ai.safety import InvalidExplanation
+from app.ai.schema import Explanation, RuleProposals
 from app.config import settings
 
 
 class AdjustmentUnavailable(Exception):
-    """Модель недоступна, отказалась отвечать или вернула непригодный ответ."""
+    """Модель недоступна или отказалась отвечать."""
 
 
 class LLMProvider(Protocol):
     model: str
 
-    def generate_adjustment(self, snapshot: dict) -> Adjustment: ...
+    def explain(self, payload: dict) -> Explanation: ...
 
     def propose_rules(self, stats: dict) -> RuleProposals: ...
 
@@ -32,24 +32,20 @@ class AnthropicProvider:
             api_key=settings.anthropic_api_key, timeout=timeout_s, max_retries=2
         )
 
-    def generate_adjustment(self, snapshot: dict) -> Adjustment:
+    def explain(self, payload: dict) -> Explanation:
+        """Объяснение решения движка. Числа в payload окончательные, модель их не меняет."""
         try:
             response = self._client.messages.parse(
                 model=self.model,
-                max_tokens=16000,
+                max_tokens=4000,
                 system=SYSTEM_PROMPT,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": json.dumps(snapshot, ensure_ascii=False),
-                    }
-                ],
-                output_format=Adjustment,
+                messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
+                output_format=Explanation,
             )
         except anthropic.APIError as exc:
             raise AdjustmentUnavailable(type(exc).__name__) from None
-        except ValueError:  # ответ не прошёл разбор по схеме: пусть вызывающий повторит запрос
-            raise InvalidAdjustment("response does not match the schema") from None
+        except ValueError:  # ответ не прошёл разбор по схеме: вызывающий повторит запрос
+            raise InvalidExplanation("response does not match the schema") from None
         usage = getattr(response, "usage", None)
         if usage is not None:
             self.last_usage = (usage.input_tokens, usage.output_tokens)
