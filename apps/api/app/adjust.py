@@ -8,9 +8,17 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app import week
 from app.ai.provider import AdjustmentUnavailable, LLMProvider, get_llm
 from app.ai.safety import InvalidExplanation, validate_explanation
-from app.ai.schema import Adjustment, AdjustmentOut, EngineDecisionOut, Explanation, PlanOut
+from app.ai.schema import (
+    Adjustment,
+    AdjustmentOut,
+    EngineDecisionOut,
+    Explanation,
+    NextExercise,
+    PlanOut,
+)
 from app.ai.snapshot import build_snapshot, previous_plan
 from app.db import get_db
 from app.decisions import (
@@ -204,14 +212,31 @@ def next_plan(
         .order_by(AiAdjustment.id.desc())
         .limit(1)
     )
-    if last is None:
+    today = week.today()
+    session_info = None
+    from_week = week.follows_week(db, user)
+    planned, planned_day = week.planned_session(db, user, today) if from_week else (None, None)
+    if planned is not None and planned_day is not None:
+        # Перешёл на программу: состав из недельного плана, веса из решений движка.
+        items = [NextExercise(**line) for line in week.plan_items(db, user, planned)]
+        source, workout_id = "week", (last.workout_id if last else None)
+        session_info = {
+            "title": planned["title"],
+            "direction": planned["direction"],
+            "kind": planned["kind"],
+            "minutes": planned["minutes"],
+            "blocks": planned["blocks"],
+            "day": planned_day.isoformat(),
+            "is_today": planned_day == today,
+            "verified": planned["verified"],
+        }
+    elif last is None:
         # Первая тренировка: решать нечего, даём стартовый план по профилю.
         items = starter_plan(db, user)
         source, workout_id = ("starter" if items else None), None
     else:
         items = Adjustment.model_validate(last.result).next_workout
         source, workout_id = "ai", last.workout_id
-    today = utcnow().date()
     items, notes = plan_adjusted_for_return(db, user, items, today)
     items, light_notes = plan_adjusted_for_light_day(db, user, items, sleep, energy)
     skipped = db.scalar(
@@ -226,4 +251,5 @@ def next_plan(
         notes=notes + light_notes,
         decisions=[d["reason"] for d in (last.engine_decisions or [])][:3] if last else [],
         skipped_today=skipped,
+        session=session_info,
     )

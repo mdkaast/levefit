@@ -27,6 +27,7 @@ Gender = Literal[rules.GENDERS]  # type: ignore[valid-type]
 Experience = Literal[rules.EXPERIENCE_LEVELS]  # type: ignore[valid-type]
 Lifestyle = Literal[rules.LIFESTYLES]  # type: ignore[valid-type]
 Muscle = Literal[rules.TARGET_MUSCLES]  # type: ignore[valid-type]
+Silhouette = Literal["male", "female"]
 
 
 class CharacterCreate(BaseModel):
@@ -39,6 +40,7 @@ class CharacterCreate(BaseModel):
     experience: Experience | None = None
     lifestyle: Lifestyle | None = None
     target_muscles: list[Muscle] = Field(default_factory=list, max_length=len(rules.TARGET_MUSCLES))
+    silhouette: Silhouette | None = None
     appearance: Appearance = rules.APPEARANCES[0]
     goal: Goal | None = None
     workouts_per_week: int = Field(
@@ -63,14 +65,15 @@ class CharacterCreate(BaseModel):
 
 
 class CharacterPatch(BaseModel):
-    """Изменение профиля персонажа после регистрации: пока только акцент на мышцы (B5)."""
+    """Изменение профиля персонажа после регистрации: акцент на мышцы (B5) и силуэт (B9)."""
 
-    target_muscles: list[Muscle] = Field(max_length=len(rules.TARGET_MUSCLES))
+    target_muscles: list[Muscle] | None = Field(default=None, max_length=len(rules.TARGET_MUSCLES))
+    silhouette: Silhouette | None = None
 
     @field_validator("target_muscles")
     @classmethod
-    def muscles_unique(cls, value: list[str]) -> list[str]:
-        return list(dict.fromkeys(value))
+    def muscles_unique(cls, value: list[str] | None) -> list[str] | None:
+        return list(dict.fromkeys(value)) if value is not None else None
 
 
 class CharacterOut(BaseModel):
@@ -95,6 +98,7 @@ class CharacterOut(BaseModel):
     experience: str | None
     lifestyle: str | None
     target_muscles: list[str] | None
+    silhouette: str | None = None
 
     @computed_field  # type: ignore[prop-decorator]
     @property

@@ -122,6 +122,9 @@ def patch_character(
     """Акцент на мышцы меняется в профиле в любое время; план учтёт его со следующей недели."""
     if user.character is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "character not found")
-    user.character.target_muscles = body.target_muscles
+    if body.target_muscles is not None:
+        user.character.target_muscles = body.target_muscles
+    if body.silhouette is not None:
+        user.character.silhouette = body.silhouette
     db.commit()
     return user.character

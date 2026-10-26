@@ -390,6 +390,7 @@ def test_plan_endpoint_returns_last_decision(client, auth_headers, exercises, us
         "notes": [],
         "decisions": [],
         "skipped_today": None,
+        "session": None,
     }
     wid = setup_workout(client, headers, bench)
     use_llm(FakeLLM(explanation()))

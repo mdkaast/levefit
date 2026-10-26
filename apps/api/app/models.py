@@ -75,6 +75,8 @@ class Character(Base):
     experience: Mapped[str | None] = mapped_column(String(16))
     lifestyle: Mapped[str | None] = mapped_column(String(16))
     target_muscles: Mapped[list | None] = mapped_column(JSON)
+    # Силуэт для выбора акцента: male | female; пусто, пока пользователь не выбрал.
+    silhouette: Mapped[str | None] = mapped_column(String(8))
 
     user: Mapped[User] = relationship(back_populates="character")
 
@@ -385,3 +387,45 @@ class TemplateMatrix(Base):
     mode: Mapped[str] = mapped_column(String(8))  # base | prefix | replace
     templates: Mapped[list] = mapped_column(JSON)
     note: Mapped[str | None] = mapped_column(Text)
+
+
+class UserDirection(Base):
+    """Направление пользователя (зал, бег, йога…) и число занятий в неделю."""
+
+    __tablename__ = "user_directions"
+    __table_args__ = (UniqueConstraint("user_id", "direction", name="uq_user_direction"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    direction: Mapped[str] = mapped_column(String(16))
+    days_per_week: Mapped[int] = mapped_column(Integer, default=1)
+    sort: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class AccentVersion(Base):
+    """Выбранный акцент направления с датой, с которой он действует (всегда понедельник).
+
+    История версий нужна, чтобы смена акцента не меняла уже идущую неделю.
+    """
+
+    __tablename__ = "accent_versions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    direction: Mapped[str] = mapped_column(String(16))
+    selection: Mapped[list] = mapped_column(JSON)
+    effective_from: Mapped[date] = mapped_column(Date)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class WeekPlan(Base):
+    """Недельный план, замороженный при первом обращении: дальше он не пересчитывается."""
+
+    __tablename__ = "week_plans"
+    __table_args__ = (UniqueConstraint("user_id", "week_start", name="uq_week_plan"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    week_start: Mapped[date] = mapped_column(Date)
+    spec: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

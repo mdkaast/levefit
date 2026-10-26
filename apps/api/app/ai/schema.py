@@ -66,13 +66,15 @@ class PlanOut(BaseModel):
 
     workout_id: int | None
     items: list[NextExercise]
-    source: Literal["ai", "starter"] | None = None
+    source: Literal["ai", "starter", "week"] | None = None
     # Поправки к плану перед тренировкой (например, после перерыва), простыми фразами.
     notes: list[str] = []
     # Что решил движок по прошлой тренировке (короткие причины) и правки пользователя.
     decisions: list[str] = []
     # Если сегодня отмечен пропуск: move или rest.
     skipped_today: str | None = None
+    # Сессия недельного плана (название, направление, блоки не-силовых), если план идёт по неделе.
+    session: dict | None = None
 
 
 class RuleProposals(BaseModel):
