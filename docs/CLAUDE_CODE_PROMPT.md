@@ -34,7 +34,10 @@ CLAUDE_CODE_PROMPT.md      этот файл
 README.md                  оглавление пакета
 docs/BACKLOG.md            бэклог A–M (ID задач, критерии приёмки, приоритет, размер)
 docs/MOCKUPS_SPEC.md       карта всех 33 экранов: состояния, поведение, привязка к бэклогу
-mockups/*.dc.html          макеты (открываются в браузере; Inter / Inter Tight)
+mockups/*.dc.html          макеты; запуск: `cd mockups && python3 serve.py`, затем http://localhost:8000/Today.dc.html
+mockups/support.js         рантайм макетов (без него страницы не отрисуются)
+mockups/serve.py           локальный сервер, подменяет /_blob/<id> на PNG силуэтов (blob-map.json)
+mockups/screenshots/       PNG-снимки всех 33 экранов (390×844; Main 1360×1640) для быстрой сверки
 mockups/canvas.json        расположение экранов на холсте и порядок потоков
 mockups/silhouettes/       PNG силуэтов (база + оверлеи групп мышц) и meta.json с боксами
 data/exercises.csv|json    374 упражнения (id, name_ru, name_en, паттерн, мышцы, инвентарь, уровень, шаг, e1RM, замены/флаги)
