@@ -437,3 +437,81 @@ main > * {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
+
+/* ---------- библиотека и программы ---------- */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip-row .ui-chip {
+  flex: none;
+}
+
+input[type="search"] {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.program-card {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.program-card .row {
+  align-items: center;
+}
+
+.program-card .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.tiles .card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+.tiles .card small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tiles .card strong {
+  font-size: 15px;
+}
+
+.vol-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}

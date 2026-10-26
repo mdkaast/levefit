@@ -91,7 +91,7 @@ MUSCLES = [
     (r"ромб", "rhomboids", "back_thickness"),
     (r"трап", "traps", "traps"),
     (r"з\.\s*дельта|задн\w* дельт|задняя дельта", "rear_delt", "rear_delts"),
-    (r"ср\.\s*дельта|средн\w* дельт|\(ср\)|ср\.?\s*дельт", "side_delt", "side_delts"),
+    (r"ср\.\s*дельта|средн\w* дельт|ср\.?\s*дельт", "side_delt", "side_delts"),
     (r"п\.\s*дельта|передн\w* дельт|\(п\)|дельт|плечи|плеч\b", "front_delt", "front_delts"),
     (r"грудь|груд", "pectorals", "chest"),
     (r"трицепс", "triceps", "triceps"),

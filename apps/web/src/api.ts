@@ -376,3 +376,125 @@ export type ExerciseRatingOut = { exercise_id: number; rating: ExerciseRatingVal
 
 export const listRatings = (workoutId: number) =>
   request<ExerciseRatingOut[]>(`/workouts/${workoutId}/ratings`);
+
+// ---------- каталог упражнений и программ ----------
+
+export type ExerciseItem = {
+  id: number;
+  slug: string | null;
+  name: string;
+  pattern: string | null;
+  pattern_name: string;
+  level: string | null;
+  level_name: string | null;
+  ui_groups: string[];
+  primary_muscles: string[];
+  fits_you: boolean;
+  verified: boolean;
+};
+
+export type ExerciseList = { total: number; catalog_total: number; items: ExerciseItem[] };
+export type CatalogGroup = { key: string; name: string; count: number };
+
+export type ExerciseCardData = ExerciseItem & {
+  name_en: string | null;
+  category: string;
+  equipment_names: string[][];
+  load_type: string | null;
+  load_increment_kg: number | null;
+  e1rm: string | null;
+  flags: string[];
+  muscles: { slug: string; name: string; ui_group: string; role: string; volume_weight: number }[];
+  aliases: string[];
+  cues: string[];
+  media: string[];
+  substitutes: { id: number; slug: string; name: string; reason: string }[];
+};
+
+export type SearchParams = { q?: string; group?: string; fits?: boolean; limit?: number; offset?: number };
+
+export const getCatalogGroups = () => request<CatalogGroup[]>("/catalog/groups");
+
+export const searchExercises = (params: SearchParams) => {
+  const query = new URLSearchParams();
+  if (params.q?.trim()) query.set("q", params.q.trim());
+  if (params.group) query.set("group", params.group);
+  if (params.fits) query.set("fits", "true");
+  query.set("limit", String(params.limit ?? 40));
+  query.set("offset", String(params.offset ?? 0));
+  return request<ExerciseList>(`/catalog/exercises?${query}`);
+};
+
+export const getExerciseCard = (id: number) => request<ExerciseCardData>(`/catalog/exercises/${id}`);
+
+export type ProgramCardData = {
+  id: string;
+  name: string;
+  summary: string;
+  days_min: number;
+  days_max: number;
+  session: number[];
+  progression: string;
+  engine_ready: boolean;
+  fallback: string | null;
+  verified: boolean;
+  fits_you: boolean;
+  goals: string[];
+  levels: string[];
+  inventory: string[];
+  on_request_only: boolean;
+};
+
+export type ProgramSlot = {
+  pattern: string;
+  pattern_name: string;
+  role: string;
+  sets: number[];
+  reps: number[];
+  rir: number[] | null;
+  progression: string;
+  exercise_id: number | null;
+  exercise_slug: string | null;
+  exercise_name: string | null;
+  via: string;
+  note: string | null;
+};
+
+export type ProgramDetailData = ProgramCardData & {
+  principle: string;
+  warning: string | null;
+  rules: Record<string, unknown> | null;
+  phases: { weeks: string; scheme: string }[] | null;
+  stages: Record<string, string[]> | null;
+  week_scheme: string[][] | null;
+  cardio: Record<string, string> | null;
+  base_template: string | null;
+  days: { name: string; slots: ProgramSlot[] }[];
+  volume: { group: string; name: string; sets: number }[];
+  empty_slots: string[];
+  inventory_used: string;
+  level_used: string;
+};
+
+export type Recommendation = {
+  primary: ProgramCardData;
+  then: ProgramCardData[];
+  reasons: string[];
+  usable_id: string;
+  usable_note: string | null;
+  inputs: Record<string, unknown>;
+};
+
+export const listPrograms = () => request<ProgramCardData[]>("/programs");
+export const getProgram = (id: string) => request<ProgramDetailData>(`/programs/${id}`);
+export const getRecommendation = () => request<Recommendation>("/programs/recommend");
+
+export type ExerciseProgress = {
+  exercise_id: number;
+  name: string;
+  points: { date: string; top_weight_kg: number | null; volume: number; score: number }[];
+  plateau: boolean;
+  sessions_without_gain: number;
+};
+
+export const getExerciseProgress = () => request<ExerciseProgress[]>("/progress/exercises");

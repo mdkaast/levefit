@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 import { listWorkouts, type WorkoutSummary } from "../api";
 import { t } from "../i18n";
 import { Button, EmptyState, ListRow, Segmented, Skeleton } from "../ui/ui";
+import { ExerciseCard } from "./ExerciseCard";
+import { ExerciseLibrary } from "./ExerciseLibrary";
+import { ProgramDetail } from "./ProgramDetail";
+import { Programs } from "./Programs";
 
 type Props = { onOpenWorkout: (id: number) => void; onStart: () => void };
 
 type Mode = "week" | "programs" | "exercises";
 
+/** Открытая карточка внутри вкладки; стек позволяет вернуться, например, от замены к исходному упражнению. */
+type Detail = { kind: "exercise"; id: number } | { kind: "program"; id: string };
+
 /** Вкладка «Тренировки». Неделя, программы и каталог подключаются в фазах 1–2; пока здесь история и старт. */
 export function Workouts({ onOpenWorkout, onStart }: Props) {
   const [mode, setMode] = useState<Mode>("week");
   const [history, setHistory] = useState<WorkoutSummary[] | null>(null);
+  const [stack, setStack] = useState<Detail[]>([]);
 
   useEffect(() => {
     listWorkouts()
@@ -23,6 +31,29 @@ export function Workouts({ onOpenWorkout, onStart }: Props) {
     { id: "programs" as const, label: t.workouts.modes.programs },
     { id: "exercises" as const, label: t.workouts.modes.exercises },
   ];
+
+  const open = (detail: Detail) => setStack((prev) => [...prev, detail]);
+  const back = () => setStack((prev) => prev.slice(0, -1));
+  const top = stack[stack.length - 1];
+  if (top) {
+    return (
+      <main>
+        {top.kind === "exercise" ? (
+          <ExerciseCard
+            id={top.id}
+            onBack={back}
+            onOpen={(id) => open({ kind: "exercise", id })}
+          />
+        ) : (
+          <ProgramDetail
+            id={top.id}
+            onBack={back}
+            onOpenExercise={(id) => open({ kind: "exercise", id })}
+          />
+        )}
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -50,12 +81,8 @@ export function Workouts({ onOpenWorkout, onStart }: Props) {
         </>
       )}
 
-      {mode === "programs" && (
-        <EmptyState title={t.workouts.programsTitle} text={t.workouts.programsText} />
-      )}
-      {mode === "exercises" && (
-        <EmptyState title={t.workouts.exercisesTitle} text={t.workouts.exercisesText} />
-      )}
+      {mode === "programs" && <Programs onOpen={(id) => open({ kind: "program", id })} />}
+      {mode === "exercises" && <ExerciseLibrary onOpen={(id) => open({ kind: "exercise", id })} />}
     </main>
   );
 }

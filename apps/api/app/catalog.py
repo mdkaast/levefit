@@ -114,6 +114,9 @@ class ProgramCard(BaseModel):
     fallback: str | None
     verified: bool
     fits_you: bool
+    goals: list[str]
+    levels: list[str]
+    inventory: list[str]
     on_request_only: bool = False
 
 
@@ -135,8 +138,8 @@ class ProgramDetail(ProgramCard):
     days: list[DayOut]
     volume: list[VolumeOut]
     empty_slots: list[str]
-    inventory: str
-    level: str
+    inventory_used: str
+    level_used: str
 
 
 class Recommendation(BaseModel):
@@ -323,6 +326,9 @@ def _card(t: ProgramTemplate, profile: dict[str, Any], recommended: set[str]) ->
         fallback=t.fallback,
         verified=t.verified,
         fits_you=t.id in recommended,
+        goals=t.goals,
+        levels=t.levels,
+        inventory=t.inventory,
         on_request_only=bool(t.spec.get("on_request_only")),
     )
 
@@ -463,6 +469,6 @@ def program_detail(
         days=days_out,
         volume=volume,
         empty_slots=result["resolved"]["empty"],
-        inventory=profile["inventory"],
-        level=profile["level"],
+        inventory_used=profile["inventory"],
+        level_used=profile["level"],
     )

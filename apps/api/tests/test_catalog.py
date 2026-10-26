@@ -185,6 +185,7 @@ def test_seed_is_idempotent_and_keeps_legacy_ids(client):
         )
         s.commit()
         first = seed_catalog(s)
+        links = s.scalar(select(func.count(ExerciseMuscle.id)))
         second = seed_catalog(s)
         assert first["matched_legacy"] == 2 and first["created"] == 372
         assert second["created"] == 0 and second["updated"] == 374
@@ -193,9 +194,8 @@ def test_seed_is_idempotent_and_keeps_legacy_ids(client):
         assert bench.slug == "barbell_bench_press" and bench.name == "Жим штанги лёжа"
         assert s.scalar(select(func.count(ProgramTemplate.id))) == 22
         assert s.scalar(select(func.count(TemplateMatrix.id))) == len(matrix.build_matrix())
-        assert (
-            s.scalar(select(func.count(ExerciseMuscle.id))) > 700
-        )  # связей не удваивается при повторе
+        # связи мышц пересоздаются, а не накапливаются
+        assert s.scalar(select(func.count(ExerciseMuscle.id))) == links > 600
 
 
 # ---------- API каталога ----------

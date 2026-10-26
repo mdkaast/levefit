@@ -22,7 +22,7 @@ const STEPS = [
 type Step = (typeof STEPS)[number];
 
 const GENDERS = ["male", "female", "other"] as const;
-const GOALS = ["mass", "strength", "shape", "weight_loss"] as const;
+const GOALS = ["strength", "strength_mass", "mass", "return", "weight_loss", "general"] as const;
 const LEVELS = ["beginner", "intermediate", "advanced"] as const;
 const LIFESTYLES = ["sedentary", "light", "active", "very_active"] as const;
 const EQUIPMENT = ["gym", "home", "none"] as const;

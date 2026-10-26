@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { WorkoutSet } from "./api";
-import { capitalizeName, formatSet, formatWeight } from "./format";
+import { capitalizeName, formatSet, formatWeight, plural } from "./format";
 
 const base: WorkoutSet = {
   id: 1,
@@ -36,4 +36,12 @@ test("вес показывается с запятой и одной десят
   expect(formatWeight("82.5")).toBe("82,5");
   expect(formatWeight(70)).toBe("70,0");
   expect(formatWeight("abc")).toBe("");
+});
+
+test("склонение по числу", () => {
+  expect(plural(1, "день", "дня", "дней")).toBe("день");
+  expect(plural(3, "день", "дня", "дней")).toBe("дня");
+  expect(plural(11, "день", "дня", "дней")).toBe("дней");
+  expect(plural(374, "упражнение", "упражнения", "упражнений")).toBe("упражнения");
+  expect(plural(22, "программа", "программы", "программ")).toBe("программы");
 });

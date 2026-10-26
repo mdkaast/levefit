@@ -6959,7 +6959,6 @@
   "category": "strength",
   "legacy_group": "shoulders",
   "ui_groups": [
-   "side_delts",
    "front_delts",
    "chest",
    "triceps"
@@ -6978,12 +6977,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "yes",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "front_delt",
     "role": "primary",
@@ -7228,7 +7221,6 @@
   "category": "strength",
   "legacy_group": "shoulders",
   "ui_groups": [
-   "side_delts",
    "front_delts",
    "chest",
    "triceps"
@@ -7246,12 +7238,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "yes",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "front_delt",
     "role": "primary",
@@ -7452,7 +7438,6 @@
   "category": "strength",
   "legacy_group": "shoulders",
   "ui_groups": [
-   "side_delts",
    "front_delts",
    "chest",
    "triceps"
@@ -7470,12 +7455,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "yes",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "front_delt",
     "role": "primary",
@@ -10319,9 +10298,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "beginner",
@@ -10337,12 +10315,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -10502,9 +10474,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "beginner",
@@ -10519,12 +10490,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -10551,9 +10516,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "beginner",
@@ -10568,12 +10532,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -10600,9 +10558,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "intermediate",
@@ -10617,12 +10574,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -10649,9 +10600,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "beginner",
@@ -10666,12 +10616,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -10698,9 +10642,8 @@
   "pattern_secondary": [],
   "unilateral": false,
   "category": "strength",
-  "legacy_group": "shoulders",
+  "legacy_group": "chest",
   "ui_groups": [
-   "side_delts",
    "chest"
   ],
   "level": "beginner",
@@ -10715,12 +10658,6 @@
   "load_increment_beginner_kg": null,
   "e1rm": "no",
   "muscles": [
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
    {
     "muscle": "pectorals",
     "role": "primary",
@@ -13045,8 +12982,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "intermediate",
   "equipment": [
@@ -13076,12 +13012,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -13112,8 +13042,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "intermediate",
   "equipment": [
@@ -13143,12 +13072,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -13271,8 +13194,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -13305,12 +13227,6 @@
     "volume_weight": 1.0
    },
    {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
-   {
     "muscle": "erector_spinae",
     "role": "secondary",
     "ui_group": "lower_back",
@@ -13340,8 +13256,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -13373,12 +13288,6 @@
     "role": "primary",
     "ui_group": "traps",
     "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
    }
   ],
   "muscles_source": "catalog",
@@ -13402,8 +13311,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "intermediate",
   "equipment": [
@@ -13438,12 +13346,6 @@
     "role": "primary",
     "ui_group": "traps",
     "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
    }
   ],
   "muscles_source": "catalog",
@@ -13467,8 +13369,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "intermediate",
   "equipment": [
@@ -13501,12 +13402,6 @@
     "volume_weight": 1.0
    },
    {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
-   },
-   {
     "muscle": "erector_spinae",
     "role": "secondary",
     "ui_group": "lower_back",
@@ -13536,8 +13431,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -13567,12 +13461,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -13703,8 +13591,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -13735,12 +13622,6 @@
     "role": "primary",
     "ui_group": "traps",
     "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
    }
   ],
   "muscles_source": "catalog",
@@ -13766,8 +13647,7 @@
   "ui_groups": [
    "back_thickness",
    "traps",
-   "rear_delts",
-   "side_delts"
+   "rear_delts"
   ],
   "level": "beginner",
   "equipment": [
@@ -13797,12 +13677,6 @@
     "muscle": "rear_delt",
     "role": "primary",
     "ui_group": "rear_delts",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -13867,8 +13741,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -13898,12 +13771,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -13975,8 +13842,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -14009,12 +13875,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -14092,8 +13952,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -14123,12 +13982,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -14349,8 +14202,7 @@
   "ui_groups": [
    "back_width",
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -14380,12 +14232,6 @@
     "muscle": "traps",
     "role": "primary",
     "ui_group": "traps",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -14465,8 +14311,7 @@
   "ui_groups": [
    "back_thickness",
    "traps",
-   "rear_delts",
-   "side_delts"
+   "rear_delts"
   ],
   "level": "beginner",
   "equipment": [
@@ -14502,12 +14347,6 @@
     "muscle": "rear_delt",
     "role": "primary",
     "ui_group": "rear_delts",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
@@ -14811,8 +14650,7 @@
   "legacy_group": "back",
   "ui_groups": [
    "back_thickness",
-   "traps",
-   "side_delts"
+   "traps"
   ],
   "level": "beginner",
   "equipment": [
@@ -14840,12 +14678,6 @@
     "role": "primary",
     "ui_group": "traps",
     "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
-    "volume_weight": 1.0
    }
   ],
   "muscles_source": "catalog",
@@ -14868,8 +14700,7 @@
   "legacy_group": "back",
   "ui_groups": [
    "traps",
-   "rear_delts",
-   "side_delts"
+   "rear_delts"
   ],
   "level": "beginner",
   "equipment": [
@@ -14893,12 +14724,6 @@
     "muscle": "rear_delt",
     "role": "primary",
     "ui_group": "rear_delts",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    },
    {
@@ -15090,12 +14915,6 @@
     "role": "secondary",
     "ui_group": "traps",
     "volume_weight": 0.5
-   },
-   {
-    "muscle": "side_delt",
-    "role": "secondary",
-    "ui_group": "side_delts",
-    "volume_weight": 0.5
    }
   ],
   "muscles_source": "catalog",
@@ -15159,8 +14978,7 @@
   "ui_groups": [
    "back_thickness",
    "traps",
-   "rear_delts",
-   "side_delts"
+   "rear_delts"
   ],
   "level": "beginner",
   "equipment": [
@@ -15190,12 +15008,6 @@
     "muscle": "rear_delt",
     "role": "primary",
     "ui_group": "rear_delts",
-    "volume_weight": 1.0
-   },
-   {
-    "muscle": "side_delt",
-    "role": "primary",
-    "ui_group": "side_delts",
     "volume_weight": 1.0
    }
   ],
