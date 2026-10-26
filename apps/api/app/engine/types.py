@@ -43,6 +43,7 @@ class ExerciseInput:
     history: tuple[SessionSummary, ...] = ()
     step_kg: float | None = None  # шаг инвентаря; по умолчанию определяется по группе мышц
     plateau: bool = False  # признак плато по истории (считается вне движка)
+    rating: str | None = None  # оценка упражнения: easy | normal | hard
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,7 @@ class Context:
     low_readiness: bool = False  # плохое самочувствие перед этой тренировкой
     recent_low_readiness: int = 0  # сколько прошлых тренировок были «лёгкими днями»
     deload_due: bool = False  # плановая разгрузка по календарю
+    recent_skips: int = 0  # пропущенные тренировки за последние дни
 
 
 @dataclass(frozen=True)

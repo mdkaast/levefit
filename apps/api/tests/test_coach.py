@@ -1,10 +1,8 @@
 import pytest
 
-from app.adjust import llm_dependency
 from app.ai.schema import RuleProposals
 from app.config import settings
 from app.game_rules import config as rules
-from app.main import app
 from app.models import AdjustmentFeedback, AiAdjustment
 from tests.test_ai_adjust import FakeLLM, explanation, plan_for, setup_workout
 
@@ -29,16 +27,6 @@ class LearningLLM(FakeLLM):
 @pytest.fixture(autouse=True)
 def _admin_key(monkeypatch):
     monkeypatch.setattr(settings, "admin_api_key", "admin-key")
-
-
-@pytest.fixture
-def use_llm(client):
-    def _use(llm):
-        app.dependency_overrides[llm_dependency] = lambda: llm
-        return llm
-
-    yield _use
-    app.dependency_overrides.pop(llm_dependency, None)
 
 
 def adjusted_workout(client, headers, bench):

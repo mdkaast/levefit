@@ -109,6 +109,7 @@ class Workout(Base):
     # Самочувствие перед тренировкой, 1-5; необязательно.
     sleep_quality: Mapped[int | None] = mapped_column(Integer)
     energy: Mapped[int | None] = mapped_column(Integer)
+    pain: Mapped[bool] = mapped_column(Boolean, default=False)  # боль перед тренировкой
 
     sets: Mapped[list["WorkoutSet"]] = relationship(
         order_by="WorkoutSet.id", cascade="all, delete-orphan", passive_deletes=True
@@ -117,6 +118,8 @@ class Workout(Base):
 
 class WorkoutSet(Base):
     __tablename__ = "workout_sets"
+    # client_id делает запись подхода идемпотентной: повтор из офлайн-очереди не дублирует подход.
+    __table_args__ = (UniqueConstraint("workout_id", "client_id", name="uq_set_client"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     workout_id: Mapped[int] = mapped_column(
@@ -129,6 +132,7 @@ class WorkoutSet(Base):
     rir: Mapped[int | None] = mapped_column(Integer)
     duration_s: Mapped[int | None] = mapped_column(Integer)
     distance_m: Mapped[int | None] = mapped_column(Integer)
+    client_id: Mapped[str | None] = mapped_column(String(36))
 
 
 class XpEvent(Base):
@@ -217,6 +221,8 @@ class AiAdjustment(Base):
     engine_version: Mapped[str | None] = mapped_column(String(16))
     engine_decisions: Mapped[list | None] = mapped_column(JSON)
     explained_by: Mapped[str | None] = mapped_column(String(12))  # llm | template
+    # Ручные правки решения пользователем: упражнение, вес до и после, причина.
+    overrides: Mapped[list | None] = mapped_column(JSON)
     input_tokens: Mapped[int | None] = mapped_column(Integer)
     output_tokens: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
@@ -267,4 +273,33 @@ class ChangeRequest(Base):
     title: Mapped[str] = mapped_column(String(120))
     prompt: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(8), default="draft")  # draft | sent | done
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class ExerciseRating(Base):
+    """Оценка упражнения после тренировки: «Легко», «Нормально» или «Тяжело», и была ли боль."""
+
+    __tablename__ = "exercise_ratings"
+    __table_args__ = (UniqueConstraint("workout_id", "exercise_id", name="uq_exercise_rating"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    workout_id: Mapped[int] = mapped_column(
+        ForeignKey("workouts.id", ondelete="CASCADE"), index=True
+    )
+    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"))
+    rating: Mapped[str] = mapped_column(String(8))  # easy | normal | hard
+    pain: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class SkippedSession(Base):
+    """Пропущенная тренировка. Это часть плана, а не провал: XP и серия не отнимаются."""
+
+    __tablename__ = "skipped_sessions"
+    __table_args__ = (UniqueConstraint("user_id", "day", name="uq_skip_day"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    day: Mapped[date] = mapped_column(Date)
+    kind: Mapped[str] = mapped_column(String(8))  # move (перенести) | rest (засчитать как отдых)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

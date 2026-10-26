@@ -1,6 +1,6 @@
 """Связка движка с базой: собирает входные данные, запускает правила, готовит поправки к плану."""
 
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -21,7 +21,7 @@ from app.engine import (
     step_for,
 )
 from app.engine import rules as R
-from app.models import AiAdjustment, Exercise, User, Workout
+from app.models import AiAdjustment, Exercise, ExerciseRating, SkippedSession, User, Workout
 from app.progress import Session_, is_plateau, user_sessions
 
 
@@ -42,6 +42,20 @@ def _recent_low_readiness(db: Session, user: User, workout: Workout) -> int:
         .limit(5)
     )
     return sum(1 for w in rows if is_light_day(w.sleep_quality, w.energy))
+
+
+def _recent_skips(db: Session, user: User, workout: Workout) -> int:
+    since = workout.date - timedelta(days=R.SKIPS_WINDOW_DAYS)
+    return (
+        db.scalar(
+            select(func.count(SkippedSession.id)).where(
+                SkippedSession.user_id == user.id,
+                SkippedSession.day >= since,
+                SkippedSession.day <= workout.date,
+            )
+        )
+        or 0
+    )
 
 
 def deload_due(db: Session, user: User, workout: Workout, experience: str | None) -> bool:
@@ -89,6 +103,10 @@ def engine_inputs(
     character = user.character
     experience = character.experience if character else None
 
+    ratings = {
+        r.exercise_id: r.rating
+        for r in db.scalars(select(ExerciseRating).where(ExerciseRating.workout_id == workout.id))
+    }
     items = []
     for fact in snapshot["exercises"]:
         exercise_id = fact["exercise_id"]
@@ -110,6 +128,7 @@ def engine_inputs(
                     for s in previous[-R.SCHEDULED_DELOAD_MIN_SESSIONS :]
                 ),
                 plateau=is_plateau(scores),
+                rating=ratings.get(exercise_id),
             )
         )
     ctx = Context(
@@ -120,6 +139,7 @@ def engine_inputs(
         low_readiness=bool(snapshot["low_readiness"]),
         recent_low_readiness=_recent_low_readiness(db, user, workout),
         deload_due=deload_due(db, user, workout, experience),
+        recent_skips=_recent_skips(db, user, workout),
     )
     return tuple(items), ctx
 

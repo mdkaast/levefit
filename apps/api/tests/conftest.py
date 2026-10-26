@@ -12,6 +12,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app import models  # noqa: F401
+from app.adjust import llm_dependency
 from app.config import settings
 from app.db import Base, get_db
 from app.game_rules import config as rules
@@ -122,3 +123,15 @@ def clock(monkeypatch):
     monkeypatch.setattr("app.reminders.utcnow", lambda: Clock.now)
     monkeypatch.setattr("app.tasks_routes.utcnow", lambda: Clock.now)
     return Clock
+
+
+@pytest.fixture
+def use_llm(client):
+    """Подставляет ИИ-тренера (или None) вместо настоящего провайдера."""
+
+    def _use(llm):
+        app.dependency_overrides[llm_dependency] = lambda: llm
+        return llm
+
+    yield _use
+    app.dependency_overrides.pop(llm_dependency, None)

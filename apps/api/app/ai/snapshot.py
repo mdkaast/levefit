@@ -5,7 +5,15 @@ from sqlalchemy.orm import Session
 
 from app.ai.safety import mentions_health_issue
 from app.game_rules import config as rules
-from app.models import AdjustmentFeedback, AiAdjustment, CoachRule, Exercise, User, Workout
+from app.models import (
+    AdjustmentFeedback,
+    AiAdjustment,
+    CoachRule,
+    Exercise,
+    ExerciseRating,
+    User,
+    Workout,
+)
 from app.progress import exercise_context, user_sessions
 
 
@@ -33,6 +41,19 @@ def past_decisions(db: Session, user_id: int, before_workout_id: int) -> list[di
         {"date": day.isoformat(), "decision": adj.decision, "user_rating": rating}
         for adj, day, rating in rows
     ]
+
+
+def _pain_reported(db: Session, workout: Workout) -> bool:
+    """Боль отмечена до тренировки или в оценке любого упражнения."""
+    if workout.pain:
+        return True
+    return bool(
+        db.scalar(
+            select(ExerciseRating.id)
+            .where(ExerciseRating.workout_id == workout.id, ExerciseRating.pain.is_(True))
+            .limit(1)
+        )
+    )
 
 
 def previous_plan(db: Session, user_id: int, before_workout_id: int) -> dict[int, dict]:
@@ -125,7 +146,7 @@ def build_snapshot(
         else None,
         "exercises": items,
         "user_notes": notes,
-        "health_flag": mentions_health_issue(notes),
+        "health_flag": mentions_health_issue(notes) or _pain_reported(db, workout),
         "checkin": checkin,
         "low_readiness": low_readiness,
         "past_decisions": past_decisions(db, user.id, workout.id),

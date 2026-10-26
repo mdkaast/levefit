@@ -24,7 +24,7 @@ from app.engine import decide_session
 from app.engine.explain import allowed_weights, describe, template_explanation
 from app.game import utcnow
 from app.game_rules import config as rules
-from app.models import AiAdjustment, User, Workout
+from app.models import AiAdjustment, SkippedSession, User, Workout
 from app.progress import starter_plan
 from app.schemas import AdjustRequest
 
@@ -211,6 +211,19 @@ def next_plan(
     else:
         items = Adjustment.model_validate(last.result).next_workout
         source, workout_id = "ai", last.workout_id
-    items, notes = plan_adjusted_for_return(db, user, items, utcnow().date())
+    today = utcnow().date()
+    items, notes = plan_adjusted_for_return(db, user, items, today)
     items, light_notes = plan_adjusted_for_light_day(db, user, items, sleep, energy)
-    return PlanOut(workout_id=workout_id, items=items, source=source, notes=notes + light_notes)
+    skipped = db.scalar(
+        select(SkippedSession.kind).where(
+            SkippedSession.user_id == user.id, SkippedSession.day == today
+        )
+    )
+    return PlanOut(
+        workout_id=workout_id,
+        items=items,
+        source=source,
+        notes=notes + light_notes,
+        decisions=[d["reason"] for d in (last.engine_decisions or [])][:3] if last else [],
+        skipped_today=skipped,
+    )

@@ -2,7 +2,7 @@ import pytest
 
 from app.config import settings
 from tests.test_ai_adjust import FakeLLM, explanation
-from tests.test_coach import ADMIN, adjusted_workout, use_llm  # noqa: F401
+from tests.test_coach import ADMIN, adjusted_workout
 
 OWNER = {"id": 777, "first_name": "Owner"}
 
@@ -37,7 +37,7 @@ def test_coach_rules_open_to_admin_user(client, auth_headers):
     assert created.status_code == 201
 
 
-def test_stats_counts(client, auth_headers, exercises, use_llm):  # noqa: F811
+def test_stats_counts(client, auth_headers, exercises, use_llm):
     headers = auth_headers(OWNER)
     bench = exercises["strength"]
     use_llm(FakeLLM(explanation()))

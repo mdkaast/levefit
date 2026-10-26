@@ -5,13 +5,11 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy import select
 
-from app.adjust import llm_dependency
 from app.ai.provider import AdjustmentUnavailable, AnthropicProvider
 from app.ai.safety import InvalidExplanation, mentions_health_issue
 from app.ai.schema import Explanation
 from app.engine import RULES_VERSION
 from app.game_rules import config as rules
-from app.main import app
 from app.models import AiAdjustment
 
 
@@ -42,16 +40,6 @@ def explanation(rationale=GOOD, changes=None):
         else changes,
         rationale=rationale,
     )
-
-
-@pytest.fixture
-def use_llm(client):
-    def _use(llm):
-        app.dependency_overrides[llm_dependency] = lambda: llm
-        return llm
-
-    yield _use
-    app.dependency_overrides.pop(llm_dependency, None)
 
 
 def setup_workout(
@@ -400,6 +388,8 @@ def test_plan_endpoint_returns_last_decision(client, auth_headers, exercises, us
         "items": [],
         "source": None,
         "notes": [],
+        "decisions": [],
+        "skipped_today": None,
     }
     wid = setup_workout(client, headers, bench)
     use_llm(FakeLLM(explanation()))

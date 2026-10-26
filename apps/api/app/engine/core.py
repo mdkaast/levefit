@@ -232,8 +232,20 @@ def decide_exercise(
             hold_reps,
         )
 
+    # Оценка «Тяжело»: повторы выполнены, но упражнение на пределе: вес не повышаем
+    if all_top and item.rating == "hard":
+        return build(
+            "hold",
+            "rating.hold",
+            f"{item.name}: оценка «Тяжело», вес {kg(w)} кг сохраняем, пока упражнение не станет легче.",
+            w,
+            planned_sets,
+            hold_reps,
+        )
+
     # Двойная прогрессия: все подходы на верхней границе при целевом RIR → вес + шаг
-    if all_top and (last_rir is None or last_rir >= rir_target):
+    # (оценка «Легко» разрешает прибавку, даже если запас сил не указан или чуть меньше цели)
+    if all_top and (last_rir is None or last_rir >= rir_target or item.rating == "easy"):
         steps = 1
         if gap_high >= R.RIR_GAP_TRIGGER:
             steps = max(1, min(R.RIR_MAX_UP_STEPS, round(w * R.RIR_ADJUST_PCT * gap_high / step)))
@@ -319,6 +331,8 @@ def deload_signals(items: tuple[ExerciseInput, ...], ctx: Context) -> tuple[str,
         signals.append("pain")
     if ctx.recent_low_readiness + (1 if ctx.low_readiness else 0) >= R.DELOAD_LOW_READINESS_COUNT:
         signals.append("poor_recovery")
+    if ctx.recent_skips >= R.DELOAD_SKIPS_COUNT:
+        signals.append("skips")
     return tuple(signals)
 
 

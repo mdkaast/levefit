@@ -1,22 +1,10 @@
 import pytest
 from sqlalchemy import select
 
-from app.adjust import llm_dependency
 from app.engine import estimate_one_rep_max
-from app.main import app
 from app.models import AiAdjustment
 from app.progress import is_plateau, sessions_since_best
 from tests.test_ai_adjust import FakeLLM, explanation, plan_for
-
-
-@pytest.fixture
-def use_llm(client):
-    def _use(llm):
-        app.dependency_overrides[llm_dependency] = lambda: llm
-        return llm
-
-    yield _use
-    app.dependency_overrides.pop(llm_dependency, None)
 
 
 def finished_workout(client, headers, exercise_id, day, sets=((80, 8),), rir=1, **extra):

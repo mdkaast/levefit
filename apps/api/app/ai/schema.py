@@ -69,6 +69,10 @@ class PlanOut(BaseModel):
     source: Literal["ai", "starter"] | None = None
     # Поправки к плану перед тренировкой (например, после перерыва), простыми фразами.
     notes: list[str] = []
+    # Что решил движок по прошлой тренировке (короткие причины) и правки пользователя.
+    decisions: list[str] = []
+    # Если сегодня отмечен пропуск: move или rest.
+    skipped_today: str | None = None
 
 
 class RuleProposals(BaseModel):

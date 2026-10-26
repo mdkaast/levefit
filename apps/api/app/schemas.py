@@ -194,6 +194,7 @@ class WorkoutCreate(BaseModel):
     notes: str | None = Field(default=None, max_length=2000)
     sleep_quality: int | None = Field(default=None, ge=1, le=5)
     energy: int | None = Field(default=None, ge=1, le=5)
+    pain: bool = False
 
 
 class WorkoutFinish(BaseModel):
@@ -208,6 +209,8 @@ class SetCreate(BaseModel):
     rir: int | None = Field(default=None, ge=0, le=10)
     duration_s: int | None = Field(default=None, ge=1, le=86400)
     distance_m: int | None = Field(default=None, ge=1, le=1_000_000)
+    # Ключ идемпотентности от клиента: повторная отправка того же подхода не создаёт дубль.
+    client_id: str | None = Field(default=None, min_length=8, max_length=36)
 
 
 class SetOut(BaseModel):

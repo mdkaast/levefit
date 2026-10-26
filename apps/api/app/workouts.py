@@ -68,6 +68,7 @@ def create_workout(
         notes=body.notes,
         sleep_quality=body.sleep_quality,
         energy=body.energy,
+        pain=body.pain,
     )
     db.add(workout)
     db.commit()
@@ -137,6 +138,15 @@ def add_set(
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "reps required")
     elif body.duration_s is None and body.reps is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "duration or reps required")
+
+    if body.client_id:  # повтор из офлайн-очереди: возвращаем уже записанный подход
+        existing = db.scalar(
+            select(WorkoutSet).where(
+                WorkoutSet.workout_id == workout.id, WorkoutSet.client_id == body.client_id
+            )
+        )
+        if existing is not None:
+            return existing
 
     last_no = db.scalar(
         select(func.max(WorkoutSet.set_no)).where(
