@@ -113,7 +113,33 @@ REMINDER_WINDOW_MIN = 180
 MAX_REMINDERS_PER_DAY = 1
 
 # --- ИИ-корректировка ---
-AI_DECISIONS = ("keep_weight", "reduce_weight", "change_volume", "replace_exercise")
+AI_DECISIONS = (
+    "keep_weight",
+    "reduce_weight",
+    "change_volume",
+    "replace_exercise",
+    "deload",  # разгрузка: вес и объём не растут, хотя бы что-то снижается
+    "change_rep_range",  # другой диапазон повторений при том же или меньшем весе
+)
+# Решения, при которых вес в следующей тренировке не может быть выше прежнего.
+AI_NO_GROWTH_DECISIONS = ("keep_weight", "reduce_weight", "deload", "change_rep_range")
+# История и плато.
+AI_HISTORY_SESSIONS = 6  # сколько прошлых тренировок по упражнению видит модель
+AI_PAST_DECISIONS = 5  # сколько прошлых рекомендаций (с оценками) видит модель
+PLATEAU_MIN_SESSIONS = 4  # меньше тренировок — плато не определяем
+PLATEAU_SESSIONS_WITHOUT_GAIN = 3  # столько тренировок подряд без нового лучшего результата
+PLATEAU_TOLERANCE = 0.01  # прирост меньше 1% считаем отсутствием роста
+PROGRESS_POINTS = 20  # точек на графике прогрессии по упражнению
+# Самочувствие перед тренировкой (1-5): при таком значении и ниже нагрузку не повышаем.
+LOW_READINESS_MAX = 2
+# Стартовый план первой тренировки.
+STARTER_SETS = 3
+STARTER_REPS = {"strength": 5, "mass": 8, "shape": 10, "weight_loss": 12}
+STARTER_DEFAULT_REPS = 10
+STARTER_MAX_EXERCISES = 5
+STARTER_DEFAULT_MUSCLES = ("legs", "chest", "back", "shoulders", "core")
+# Упражнения с собственным весом: подходят дома и без оборудования.
+BODYWEIGHT_EXERCISES = ("Отжимания", "Подтягивания", "Выпады", "Скручивания")
 AI_ADJUSTS_PER_DAY = 10  # лимит вызовов ИИ на пользователя в сутки
 COACH_MAX_RULES_IN_PROMPT = 30  # сколько одобренных правил тренера попадает в запрос к модели
 COACH_MIN_FEEDBACK_TO_LEARN = 20  # сколько оценок нужно, чтобы ИИ предлагал правила

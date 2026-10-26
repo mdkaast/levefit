@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.ai.safety import mentions_health_issue
 from app.game_rules import config as rules
-from app.models import AiAdjustment, CoachRule, Exercise, User, Workout
+from app.models import AdjustmentFeedback, AiAdjustment, CoachRule, Exercise, User, Workout
+from app.progress import exercise_context, user_sessions
 
 
 def approved_rules(db: Session) -> list[str]:
@@ -16,6 +17,22 @@ def approved_rules(db: Session) -> list[str]:
         .limit(rules.COACH_MAX_RULES_IN_PROMPT)
     )
     return list(rows)
+
+
+def past_decisions(db: Session, user_id: int, before_workout_id: int) -> list[dict]:
+    """Прошлые рекомендации человека с его оценками: что сработало, а что нет."""
+    rows = db.execute(
+        select(AiAdjustment, Workout.date, AdjustmentFeedback.rating)
+        .join(Workout, Workout.id == AiAdjustment.workout_id)
+        .outerjoin(AdjustmentFeedback, AdjustmentFeedback.adjustment_id == AiAdjustment.id)
+        .where(Workout.user_id == user_id, AiAdjustment.workout_id != before_workout_id)
+        .order_by(AiAdjustment.id.desc())
+        .limit(rules.AI_PAST_DECISIONS)
+    )
+    return [
+        {"date": day.isoformat(), "decision": adj.decision, "user_rating": rating}
+        for adj, day, rating in rows
+    ]
 
 
 def previous_plan(db: Session, user_id: int, before_workout_id: int) -> dict[int, dict]:
@@ -53,6 +70,7 @@ def build_snapshot(
         if exercises[workout_set.exercise_id].category == "strength":
             grouped.setdefault(workout_set.exercise_id, []).append(workout_set)
 
+    sessions = user_sessions(db, user.id)
     items = []
     for exercise_id, sets in grouped.items():
         exercise = exercises[exercise_id]
@@ -84,10 +102,15 @@ def build_snapshot(
                 "alternatives": [
                     {"exercise_id": a.id, "name": a.name} for a in alternatives
                 ],
+                "history": exercise_context(sessions.get(exercise_id, [])),
             }
         )
 
     notes = (workout.notes or "")[: rules.AI_MAX_NOTES_LEN]
+    checkin = {"sleep_quality": workout.sleep_quality, "energy": workout.energy}
+    low_readiness = any(
+        v is not None and v <= rules.LOW_READINESS_MAX for v in checkin.values()
+    )
     character = user.character
     return {
         "date": workout.date.isoformat(),
@@ -107,6 +130,9 @@ def build_snapshot(
         "exercises": items,
         "user_notes": notes,
         "health_flag": mentions_health_issue(notes),
+        "checkin": checkin,
+        "low_readiness": low_readiness,
+        "past_decisions": past_decisions(db, user.id, workout.id),
         # Правила, одобренные владельцем; безопасность они не отменяют (см. SYSTEM_PROMPT).
         "coach_rules": approved_rules(db),
     }

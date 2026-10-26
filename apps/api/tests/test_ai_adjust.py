@@ -368,7 +368,9 @@ def test_live_model_returns_valid_adjustment(monkeypatch):
 def test_plan_endpoint_returns_last_recommendation(client, auth_headers, exercises, use_llm):
     headers = auth_headers()
     bench = exercises["strength"]
-    assert client.get("/plan", headers=headers).json() == {"workout_id": None, "items": []}
+    assert client.get("/plan", headers=headers).json() == {
+        "workout_id": None, "items": [], "source": None,
+    }
     wid = setup_workout(client, headers, bench)
     use_llm(FakeLLM(adjustment(bench, weight=80.0, sets=3, reps=8)))
     client.post(f"/workouts/{wid}/adjust", headers=headers)

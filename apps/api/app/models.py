@@ -106,6 +106,9 @@ class Workout(Base):
     status: Mapped[str] = mapped_column(String(16), default="in_progress")
     duration_min: Mapped[int | None] = mapped_column(Integer)
     notes: Mapped[str | None] = mapped_column(Text)
+    # Самочувствие перед тренировкой, 1-5; необязательно.
+    sleep_quality: Mapped[int | None] = mapped_column(Integer)
+    energy: Mapped[int | None] = mapped_column(Integer)
 
     sets: Mapped[list["WorkoutSet"]] = relationship(
         order_by="WorkoutSet.id", cascade="all, delete-orphan", passive_deletes=True
@@ -209,6 +212,9 @@ class AiAdjustment(Base):
     # Полный проверенный ответ (changes, decision, next_workout, rationale) и модель — для аудита.
     result: Mapped[dict] = mapped_column(JSON)
     model: Mapped[str] = mapped_column(String(64))
+    # Расход токенов на запрос: нужен для юнит-экономики; пусто, если провайдер не сообщил.
+    input_tokens: Mapped[int | None] = mapped_column(Integer)
+    output_tokens: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
 
 

@@ -26,6 +26,7 @@ class LLMProvider(Protocol):
 class AnthropicProvider:
     def __init__(self, model: str, timeout_s: float):
         self.model = model
+        self.last_usage: tuple[int, int] | None = None
         # Ключ приходит только из окружения (ANTHROPIC_API_KEY); в коде и логах его нет.
         self._client = anthropic.Anthropic(
             api_key=settings.anthropic_api_key, timeout=timeout_s, max_retries=2
@@ -49,6 +50,9 @@ class AnthropicProvider:
             raise AdjustmentUnavailable(type(exc).__name__) from None
         except ValueError:  # ответ не прошёл разбор по схеме: пусть вызывающий повторит запрос
             raise InvalidAdjustment("response does not match the schema") from None
+        usage = getattr(response, "usage", None)
+        if usage is not None:
+            self.last_usage = (usage.input_tokens, usage.output_tokens)
         if response.stop_reason == "refusal" or response.parsed_output is None:
             raise AdjustmentUnavailable("refusal or empty output")
         return response.parsed_output

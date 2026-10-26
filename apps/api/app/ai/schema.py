@@ -16,7 +16,14 @@ class NextExercise(BaseModel):
 class Adjustment(BaseModel):
     # Что изменилось по сравнению с планом (простыми фразами).
     changes: list[str]
-    decision: Literal["keep_weight", "reduce_weight", "change_volume", "replace_exercise"]
+    decision: Literal[
+        "keep_weight",
+        "reduce_weight",
+        "change_volume",
+        "replace_exercise",
+        "deload",
+        "change_rep_range",
+    ]
     next_workout: list[NextExercise]
     # Объяснение решения простым языком.
     rationale: str
@@ -33,6 +40,7 @@ class PlanOut(BaseModel):
 
     workout_id: int | None
     items: list[NextExercise]
+    source: Literal["ai", "starter"] | None = None
 
 
 class RuleProposals(BaseModel):

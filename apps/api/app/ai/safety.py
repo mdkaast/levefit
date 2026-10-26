@@ -100,14 +100,37 @@ def validate_adjustment(adj: Adjustment, snapshot: dict) -> None:
     top = {
         e["exercise_id"]: e["max_weight_kg"] for e in snapshot["exercises"] if e["max_weight_kg"]
     }
-    if adj.decision in ("keep_weight", "reduce_weight"):
+    no_growth = adj.decision in rules.AI_NO_GROWTH_DECISIONS or snapshot.get("low_readiness")
+    if no_growth:
         for item in adj.next_workout:
             last = top.get(item.exercise_id)
             if item.target_weight_kg is not None and last and item.target_weight_kg > last + 1e-6:
                 raise InvalidAdjustment("weight must not grow with this decision")
 
+    if adj.decision == "deload":
+        _check_deload(adj, done)
+
     if snapshot["health_flag"] and not _SPECIALIST_RE.search(adj.rationale):
         raise InvalidAdjustment("pain mentioned but no advice to see a specialist")
+
+
+def _check_deload(adj: Adjustment, done: dict) -> None:
+    """Разгрузка: объём не растёт и хотя бы где-то нагрузка действительно снижена."""
+    reduced = False
+    for item in adj.next_workout:
+        fact = done.get(item.exercise_id)
+        if fact is None:
+            continue
+        if item.sets > fact["sets_done"]:
+            raise InvalidAdjustment("deload must not add sets")
+        last = fact["max_weight_kg"]
+        lower_weight = (
+            item.target_weight_kg is not None and last and item.target_weight_kg < last - 1e-6
+        )
+        if lower_weight or item.sets < fact["sets_done"]:
+            reduced = True
+    if not reduced:
+        raise InvalidAdjustment("deload must reduce the load")
 
 
 def _check_known_exercise(item, fact: dict, health_flag: bool) -> None:

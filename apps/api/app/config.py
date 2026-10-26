@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     admin_api_key: str = ""
     # Telegram ID владельцев через запятую: им открыта админ-панель в приложении.
     admin_telegram_ids: str = ""
+    # Цена модели за миллион токенов (в долларах) для оценки расходов; 0 — не задана.
+    llm_price_input_per_mtok: float = 0.0
+    llm_price_output_per_mtok: float = 0.0
 
 
 settings = Settings()

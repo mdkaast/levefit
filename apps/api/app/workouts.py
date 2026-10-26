@@ -66,6 +66,8 @@ def create_workout(
         date=body.date or datetime.now(UTC).date(),
         status=body.status,
         notes=body.notes,
+        sleep_quality=body.sleep_quality,
+        energy=body.energy,
     )
     db.add(workout)
     db.commit()

@@ -15,6 +15,7 @@ from app.deps import current_user
 from app.game import utcnow
 from app.game_rules import config as rules
 from app.models import AiAdjustment, User, Workout
+from app.progress import starter_plan
 from app.schemas import AdjustRequest
 
 log = logging.getLogger(__name__)
@@ -75,7 +76,8 @@ def adjust_workout(
     if not snapshot["exercises"]:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "no strength sets to adjust")
 
-    adjustment = _generate_valid(llm, snapshot)
+    usage: dict[str, int] = {}
+    adjustment = _generate_valid(llm, snapshot, usage)
 
     db.add(
         AiAdjustment(
@@ -85,6 +87,8 @@ def adjust_workout(
             rationale=adjustment.rationale,
             result=adjustment.model_dump(),
             model=llm.model,
+            input_tokens=usage.get("input"),
+            output_tokens=usage.get("output"),
             created_at=now,
         )
     )
@@ -97,6 +101,15 @@ def adjust_workout(
             raise
         return _out(stored)
     return AdjustmentOut(**adjustment.model_dump(), health_flag=snapshot["health_flag"])
+
+
+def _add_usage(llm: LLMProvider, usage: dict[str, int] | None) -> None:
+    """Суммирует токены последнего запроса (повторная попытка тоже стоит денег)."""
+    last = getattr(llm, "last_usage", None)
+    if usage is None or not last:
+        return
+    usage["input"] = usage.get("input", 0) + last[0]
+    usage["output"] = usage.get("output", 0) + last[1]
 
 
 def _out(stored: AiAdjustment) -> AdjustmentOut:
@@ -117,19 +130,27 @@ def next_plan(user: User = Depends(current_user), db: Session = Depends(get_db))
         .limit(1)
     )
     if last is None:
-        return PlanOut(workout_id=None, items=[])
+        # Первая тренировка: ИИ ещё нечего корректировать, даём стартовый план по профилю.
+        items = starter_plan(db, user)
+        return PlanOut(workout_id=None, items=items, source="starter" if items else None)
     return PlanOut(
-        workout_id=last.workout_id, items=Adjustment.model_validate(last.result).next_workout
+        workout_id=last.workout_id,
+        items=Adjustment.model_validate(last.result).next_workout,
+        source="ai",
     )
 
 
-def _generate_valid(llm: LLMProvider, snapshot: dict) -> Adjustment:
+def _generate_valid(
+    llm: LLMProvider, snapshot: dict, usage: dict[str, int] | None = None
+) -> Adjustment:
     for attempt in range(MAX_ATTEMPTS):
         try:
             adjustment = llm.generate_adjustment(snapshot)
+            _add_usage(llm, usage)
             validate_adjustment(adjustment, snapshot)
             return adjustment
         except InvalidAdjustment as exc:
+            _add_usage(llm, usage)
             log.warning("ai answer rejected (attempt %d): %s", attempt + 1, exc)
         except AdjustmentUnavailable as exc:
             log.warning("ai unavailable: %s", exc)

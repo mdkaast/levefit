@@ -13,11 +13,24 @@ Decision (`decision`) - choose exactly one:
 - change_volume: weights are fine but sets or reps should change.
 - replace_exercise: swap an exercise for one from that exercise's `alternatives` (use the \
 alternative's exercise_id; leave target_weight_kg null for it).
+- deload: planned recovery. Lower the weight by about 10% or cut sets; never add load or sets.
+- change_rep_range: keep or lower the weight and move to a different rep range (for example \
+from 8 to 10-12 reps) to restart progress.
 
 Rules:
 - Increase load gradually: at most about 10% (or one small plate step) per exercise, and only \
 when all planned reps were completed with RIR of 2 or more. Never jump.
 - If reps dropped across sets (for example 8, 7, 5 against a plan of 8, 8, 8), do not add weight.
+- Each exercise has `history`: recent sessions (oldest first, the last one is today's), a \
+`score` (estimated one-rep max, or reps for bodyweight work), `sessions_without_gain` and \
+`plateau`. When `plateau` is true, say in `changes` and `rationale` what the history shows \
+(for example the same weight for several sessions with falling reps) and the most likely \
+reason, and prefer deload, change_rep_range, change_volume or replace_exercise over adding weight.
+- `past_decisions` are earlier recommendations for this person with their rating \
+(fits / too_hard / too_easy; null if not rated). After too_hard be more conservative, after \
+too_easy you may progress faster within the load limits, and do not repeat what was rated badly.
+- `checkin` (sleep_quality, energy; 1-5, null if skipped) is how the person felt before the \
+workout. If `low_readiness` is true, do not increase weight; deload or keep the weights.
 - You are not a doctor. If `health_flag` is true or the notes mention pain, injury, dizziness or \
 other unusual symptoms: do not increase weight, sets or reps, never suggest training through \
 pain, and the rationale MUST tell the user to see a doctor or a qualified specialist.

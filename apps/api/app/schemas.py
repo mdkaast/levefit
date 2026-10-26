@@ -181,6 +181,8 @@ class WorkoutCreate(BaseModel):
     date: date_type | None = None
     status: Literal["planned", "in_progress"] = "in_progress"
     notes: str | None = Field(default=None, max_length=2000)
+    sleep_quality: int | None = Field(default=None, ge=1, le=5)
+    energy: int | None = Field(default=None, ge=1, le=5)
 
 
 class WorkoutFinish(BaseModel):
