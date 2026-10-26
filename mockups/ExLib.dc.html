@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Упражнения</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#A2A6AF;min-width:64px;min-height:44px;justify-content:center}
+.g{flex:none;height:34px;padding:0 13px;border-radius:17px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font:600 13px Inter,sans-serif;cursor:pointer}
+.gon{flex:none;height:34px;padding:0 13px;border-radius:17px;border:0;background:#B7E35B;color:#0E0F11;font:700 13px Inter,sans-serif;cursor:pointer}
+.row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:#17181C;border:1px solid #2C2F35;color:#F3F4F6}
+.th{position:relative;width:48px;height:60px;border-radius:10px;background:#12171E;overflow:hidden;flex:none}
+.th img{position:absolute;max-width:none;transition:left .4s ease,top .4s ease}
+.tg{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:10px;background:#202227;color:#D7D9DE;font-size:11px;font-weight:600}
+@keyframes glow{0%,100%{opacity:.75}50%{opacity:1}}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column">
+  <div style="flex:1;padding:24px 20px 12px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="lbl">Библиотека · 374 упражнения</span>
+      <h1 class="num" style="margin:0;font-size:28px;font-weight:800">Тренировки</h1>
+    </div>
+
+    <div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#17181C">
+      <a href="Week.dc.html" style="flex:1;height:34px;border-radius:9px;color:#A2A6AF;font:600 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Неделя</a>
+      <a href="Programs.dc.html" style="flex:1;height:34px;border-radius:9px;color:#A2A6AF;font:600 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Программы</a>
+      <span style="flex:1;height:34px;border-radius:9px;background:#2C2F35;color:#F3F4F6;font:700 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Упражнения</span>
+    </div>
+
+    <div style="display:flex;gap:6px;overflow:hidden;margin:0 -20px;padding:0 20px">
+      <sc-for list="{{groups}}" as="g" hint-placeholder-count="5"><button class="{{g.cls}}" onClick="{{g.pick}}">{{g.label}}</button></sc-for>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+      <span class="lbl">Подходит вам · {{count}}</span>
+      <a href="OnFocusM.dc.html" style="font-size:12px;font-weight:600">{{accentNote}}</a>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+        <a href="Exercise.dc.html" class="row">
+          <span class="th"><img src="/_blob/6017643218f31e0ceeada9db821dcc0e" alt="" style="{{r.baseStyle}}"><img src="{{r.ovSrc}}" alt="" style="{{r.baseStyle}};animation:glow 1.8s ease-in-out infinite"></span>
+          <span style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0"><span style="font-weight:600;font-size:14px">{{r.name}}</span><span style="display:flex;gap:6px"><span class="tg">{{r.eq}}</span><span class="tg">{{r.role}}</span></span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#6F737B" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+      </sc-for>
+    </div>
+
+    <div style="padding:10px 12px;border-radius:12px;background:#202227;font-size:12px;line-height:1.5;color:#D7D9DE">{{foot}}</div>
+  </div>
+
+  <nav style="display:flex;justify-content:space-around;padding:8px 8px 18px;border-top:1px solid #2C2F35;background:#0E0F11">
+    <a href="Today.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Сегодня</a>
+    <a href="Week.dc.html" class="tab" style="color:#B7E35B"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Тренировки</a>
+    <a href="Nutrition.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8a2 2 0 002 2v8M11 3v8M7 7h4M17 3c-2 2-3 5-3 8h3v10"/></svg>Питание</a>
+    <a href="Progress.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>Прогресс</a>
+    <a href="Athlete.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 8v8M9 11l3-3 3 3"/></svg>Атлет</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { g: 'chest' }; }
+  renderVals() {
+    const G = {
+      chest:   { label: 'Грудные', id: 'b6477069b3f1b880b56241a8f7c5c67e', c: [81,112], ex: [['Жим штанги лёжа','Штанга','База'],['Жим гантелей на наклонной скамье','Гантели','База'],['Отжимания на брусьях','Свой вес','База'],['Сведение рук в кроссовере','Блок','Изоляция']] },
+      biceps:  { label: 'Бицепсы', id: '56994d529adf68956fa0007933b26249', c: [80,132], ex: [['Подъём штанги на бицепс','Штанга','Изоляция'],['Сгибания с гантелями сидя','Гантели','Изоляция'],['Молотки','Гантели','Изоляция']] },
+      triceps: { label: 'Трицепсы', id: '9e96f5c807efcfbbda478f76f5a846ab', c: [264,134], ex: [['Жим узким хватом','Штанга','База'],['Французский жим','Штанга','Изоляция'],['Разгибание на блоке','Блок','Изоляция']] },
+      delts:   { label: 'Дельтовидные', id: '621a5b86f5c77497d34054be14a0eacb', c: [62,100], ex: [['Жим штанги стоя','Штанга','База'],['Жим гантелей сидя','Гантели','База'],['Махи гантелей в стороны','Гантели','Изоляция'],['Тяга к лицу на блоке','Блок','Изоляция']] },
+      abs:     { label: 'Пресс', id: '83ea85d4edd7e20c5ab012ba3583511f', c: [82,155], ex: [['Подъём ног в висе','Турник','База'],['Скручивания на блоке','Блок','Изоляция'],['Планка','Свой вес','Изоляция']] },
+      lats:    { label: 'Широчайшие', id: '895f24c1603ba116c7545cff2b7734c8', c: [264,141], ex: [['Подтягивания','Турник','База'],['Тяга верхнего блока','Блок','База'],['Тяга гантели в наклоне','Гантели','База']] },
+      glutes:  { label: 'Ягодичные', id: 'a6bd8535fde148ff728f7c0f013bfec2', c: [267,211], ex: [['Ягодичный мост со штангой','Штанга','База'],['Румынская тяга','Штанга','База'],['Болгарские выпады','Гантели','База'],['Отведение ноги на блоке','Блок','Изоляция']] },
+      quads:   { label: 'Квадрицепсы', id: '259f5e0f163ce231032bb984656d3cea', c: [78,240], ex: [['Присед со штангой','Штанга','База'],['Жим ногами','Тренажёр','База'],['Фронтальный присед','Штанга','База'],['Разгибание ног','Тренажёр','Изоляция']] }
+    };
+    const order = ['chest','biceps','triceps','delts','abs','lats','glutes','quads'];
+    const cur = this.state.g;
+    const d = G[cur];
+    const z = 0.72, W = 347 * z, H = 428 * z;
+    const left = Math.round(24 - d.c[0] * z), top = Math.round(30 - d.c[1] * z);
+    const baseStyle = `left:${left}px;top:${top}px;width:${Math.round(W)}px;height:${Math.round(H)}px`;
+    return {
+      groups: order.map(k => ({ label: G[k].label, cls: cur === k ? 'gon' : 'g', pick: () => this.setState({ g: k }) })),
+      count: d.ex.length + ' из 374',
+      accentNote: cur === 'chest' ? 'Ваш акцент' : 'Сменить акцент',
+      rows: d.ex.map(e => ({ name: e[0], eq: e[1], role: e[2], baseStyle, ovSrc: '/_blob/' + d.id })),
+      foot: 'Остальные упражнения скрыты: нет нужного инвентаря, не подходят по уровню или дублируют показанные. Нужное можно найти через поиск.'
+    };
+  }
+}
+</script>
+</body>
+</html>

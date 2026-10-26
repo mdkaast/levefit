@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Атлет</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#A2A6AF;min-width:64px;min-height:44px;justify-content:center}
+.stat{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:14px;background:#17181C;border:1px solid #2C2F35}
+.rk{flex:1;height:6px;border-radius:3px;background:#2C2F35}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column">
+  <div style="flex:1;padding:24px 20px 12px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
+    <div style="display:flex;gap:16px;align-items:center">
+      <svg width="132" height="148" viewBox="0 0 132 148" role="img" aria-label="Атлет ранга Практик, уровень 7" style="flex:none">
+        <path d="M66 4l58 33v74l-58 33-58-33V37z" fill="#17181C" stroke="#2C2F35" stroke-width="2"/>
+        <path d="M66 14l49 28v64l-49 28-49-28V42z" fill="none" stroke="#B7E35B" stroke-width="1.5" stroke-opacity=".5"/>
+        <rect x="22" y="46" width="88" height="4" rx="2" fill="#A2A6AF"/>
+        <rect x="24" y="38" width="7" height="20" rx="2" fill="#B7E35B"/><rect x="101" y="38" width="7" height="20" rx="2" fill="#B7E35B"/>
+        <circle cx="66" cy="34" r="9" fill="#F3F4F6"/>
+        <path d="M46 52h40l-6 36H52z" fill="#F3F4F6"/>
+        <path d="M46 52l-6-4M86 52l6-4" stroke="#F3F4F6" stroke-width="6" stroke-linecap="round"/>
+        <path d="M54 88l-4 34M78 88l4 34" stroke="#F3F4F6" stroke-width="8" stroke-linecap="round"/>
+        <rect x="52" y="86" width="28" height="6" rx="2" fill="#B7E35B"/>
+      </svg>
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <span class="lbl">Ранг</span>
+        <span class="num" style="font-size:28px;font-weight:800;line-height:1">Практик</span>
+        <span class="num" style="font-size:15px;font-weight:700">Уровень 7</span>
+        <span style="height:6px;border-radius:3px;background:#2C2F35;display:block"><span style="display:block;width:89%;height:6px;border-radius:3px;background:#B7E35B"></span></span>
+        <span class="num" style="font-size:12px;color:#A2A6AF">1780 / 2000 XP</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;gap:4px">
+        <span class="rk" style="background:#B7E35B"></span><span class="rk" style="background:#B7E35B"></span><span class="rk" style="background:#B7E35B;opacity:.55"></span><span class="rk"></span><span class="rk"></span><span class="rk"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#A2A6AF;font-weight:600"><span>Новичок</span><span>Любитель</span><span style="color:#F3F4F6">Практик</span><span>Атлет</span><span>Мастер</span><span>Эксперт</span></div>
+      <span style="font-size:12px;color:#A2A6AF;line-height:1.4">Ранг растёт от стажа и постоянства, а не от веса на штанге. «Атлет» — через 9 недель по плану.</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+      <div class="stat"><span class="num" style="font-size:22px;font-weight:800">34</span><span style="font-size:12px;font-weight:600">Сила</span><span style="font-size:10px;line-height:1.3;color:#A2A6AF">рост расчётного максимума</span></div>
+      <div class="stat"><span class="num" style="font-size:22px;font-weight:800">21</span><span style="font-size:12px;font-weight:600">Объём</span><span style="font-size:10px;line-height:1.3;color:#A2A6AF">подходы в целевом диапазоне</span></div>
+      <div class="stat"><span class="num" style="font-size:22px;font-weight:800">41</span><span style="font-size:12px;font-weight:600">Дисциплина</span><span style="font-size:10px;line-height:1.3;color:#A2A6AF">тренировки по плану</span></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700">Серия: 6 недель</span><span class="num" style="font-size:12px;color:#A2A6AF">рекорд 9</span></div>
+      <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px" role="img" aria-label="Последние 8 недель: 6 выполнены, 1 заморозка, текущая">
+        <span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;background:rgba(125,179,255,.35)"></span><span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;background:#B7E35B"></span><span style="height:24px;border-radius:6px;border:1.5px solid #B7E35B;box-sizing:border-box"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:#A2A6AF">Заморозки: 2 доступны · ставятся сами</span>
+        <a href="Missed.dc.html" style="font-size:13px;font-weight:600">Пауза</a>
+      </div>
+    </div>
+
+    <a href="Directions.dc.html" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35;color:#F3F4F6">
+      <span style="position:relative;width:40px;height:50px;border-radius:10px;background:#12171E;overflow:hidden;flex:none"><img src="/_blob/6017643218f31e0ceeada9db821dcc0e" alt="" style="position:absolute;max-width:none;left:-14px;top:-24px;width:208px;height:257px"><img src="/_blob/b6477069b3f1b880b56241a8f7c5c67e" alt="" style="position:absolute;max-width:none;left:-14px;top:-24px;width:208px;height:257px"></span>
+      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Направления: зал, бег</span><span style="font-size:12px;color:#A2A6AF">Акценты · план пересчитается</span></span>
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#A2A6AF" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+
+    <a href="Challenges.dc.html" style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35;color:#F3F4F6">
+      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">Задания и испытания</span><span style="font-size:12px;color:#A2A6AF">Испытание «12 недель по плану»: 6 / 12</span></span>
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#A2A6AF" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+  <nav style="display:flex;justify-content:space-around;padding:8px 8px 18px;border-top:1px solid #2C2F35;background:#0E0F11">
+    <a href="Today.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Сегодня</a>
+    <a href="Week.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Тренировки</a>
+    <a href="Nutrition.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8a2 2 0 002 2v8M11 3v8M7 7h4M17 3c-2 2-3 5-3 8h3v10"/></svg>Питание</a>
+    <a href="Progress.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>Прогресс</a>
+    <a href="Athlete.dc.html" class="tab" style="color:#B7E35B"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 8v8M9 11l3-3 3 3"/></svg>Атлет</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

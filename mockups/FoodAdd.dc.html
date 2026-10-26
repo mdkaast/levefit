@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Питание: добавить еду</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.m{flex:1;height:34px;border-radius:9px;border:0;background:transparent;color:#A2A6AF;font:600 13px Inter,sans-serif;cursor:pointer}
+.mon{flex:1;height:34px;border-radius:9px;border:0;background:#2C2F35;color:#F3F4F6;font:700 13px Inter,sans-serif;cursor:pointer}
+.p{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;box-sizing:border-box;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.pon{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;box-sizing:border-box;text-align:left;padding:10px 12px;border-radius:12px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.1);color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.st{width:44px;height:44px;border-radius:12px;border:1px solid #2C2F35;background:#202227;color:#F3F4F6;font:700 20px Inter,sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <a href="Nutrition.dc.html" style="font-size:14px;font-weight:600;color:#A2A6AF">Дневник</a>
+    <span class="lbl">Добавить еду</span>
+  </div>
+
+  <div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#17181C">
+    <sc-for list="{{meals}}" as="m" hint-placeholder-count="4"><button class="{{m.cls}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:12px;background:#17181C;border:1px solid #2C2F35">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#A2A6AF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <span style="flex:1;color:#6F737B;font-size:14px">Продукт, блюдо или штрихкод</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span class="lbl">Часто добавляете</span>
+    <sc-for list="{{foods}}" as="f" hint-placeholder-count="5">
+      <button class="{{f.cls}}" onClick="{{f.pick}}"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:14px">{{f.name}}</span><span style="font-size:11px;color:#A2A6AF">на 100 г: {{f.per}}</span></span><span class="num" style="font-size:13px;color:#A2A6AF">{{f.kcal}} ккал</span></button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700">{{cur}}</span><span class="num" style="font-size:20px;font-weight:800">{{totalKcal}} ккал</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:10px"><button class="st" aria-label="Меньше" onClick="{{minus}}">−</button><span class="num" style="min-width:76px;text-align:center;font-size:22px;font-weight:800">{{grams}} г</span><button class="st" aria-label="Больше" onClick="{{plus}}">+</button></span>
+      <span class="num" style="font-size:12px;color:#A2A6AF;line-height:1.5;text-align:right">Б {{p}} · Ж {{f}} · У {{c}}</span>
+    </div>
+  </div>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <a href="Nutrition.dc.html" style="height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif;display:flex;align-items:center;justify-content:center">{{addLabel}}</a>
+    <span style="font-size:11px;color:#6F737B;text-align:center;line-height:1.4">Значения приблизительные. Для точности взвешивайте продукты в сухом или сыром виде.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { meal: 2, food: 0, g: 200 }; }
+  renderVals() {
+    const mealsDef = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
+    const F = [
+      { n: 'Куриная грудка варёная', k: 137, p: 29.8, f: 1.8, c: 0 },
+      { n: 'Рис варёный', k: 130, p: 2.7, f: 0.3, c: 28 },
+      { n: 'Творог 5%', k: 121, p: 17, f: 5, c: 1.8 },
+      { n: 'Яйцо варёное', k: 155, p: 12.6, f: 10.6, c: 1.1 },
+      { n: 'Банан', k: 89, p: 1.1, f: 0.3, c: 22.8 }
+    ];
+    const s = this.state; const x = F[s.food]; const q = s.g / 100;
+    const r1 = (v) => (Math.round(v * q * 10) / 10).toString().replace('.', ',');
+    return {
+      meals: mealsDef.map((label, i) => ({ label, cls: s.meal === i ? 'mon' : 'm', pick: () => this.setState({ meal: i }) })),
+      foods: F.map((o, i) => ({ name: o.n, kcal: o.k, per: 'Б ' + String(o.p).replace('.', ',') + ' · Ж ' + String(o.f).replace('.', ',') + ' · У ' + String(o.c).replace('.', ','), cls: s.food === i ? 'pon' : 'p', pick: () => this.setState({ food: i }) })),
+      cur: x.n, grams: s.g, totalKcal: Math.round(x.k * q),
+      p: r1(x.p), f: r1(x.f), c: r1(x.c),
+      minus: () => this.setState({ g: Math.max(10, s.g - 10) }),
+      plus: () => this.setState({ g: Math.min(1000, s.g + 10) }),
+      addLabel: 'Добавить в ' + ['завтрак', 'обед', 'ужин', 'перекус'][s.meal]
+    };
+  }
+}
+</script>
+</body>
+</html>

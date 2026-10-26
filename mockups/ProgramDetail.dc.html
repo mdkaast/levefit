@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Программа: описание</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.seg{flex:1;height:34px;border-radius:9px;border:0;background:transparent;color:#A2A6AF;font:600 13px Inter,sans-serif;cursor:pointer}
+.segon{flex:1;height:34px;border-radius:9px;border:0;background:#2C2F35;color:#F3F4F6;font:700 13px Inter,sans-serif;cursor:pointer}
+.ex{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #23252A;font-size:14px}
+.bar{display:grid;grid-template-columns:92px 1fr 28px;gap:8px;align-items:center;font-size:12px}
+.tr{height:6px;border-radius:3px;background:#2C2F35;display:block}
+.mt{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:12px;background:#17181C;border:1px solid #2C2F35;flex:1}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <a href="Programs.dc.html" style="font-size:14px;font-weight:600;color:#A2A6AF">Назад</a>
+    <span class="lbl">T09 · масса / сила и масса</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <h1 class="num" style="margin:0;font-size:26px;font-weight:800;line-height:1.15">Фулбоди ×3: масса</h1>
+    <span style="font-size:13px;color:#A2A6AF;line-height:1.4">Каждая группа мышц нагружается три раза в неделю, прогресс по двойной прогрессии.</span>
+  </div>
+
+  <div style="display:flex;gap:6px">
+    <span class="mt"><span class="lbl">Дней</span><span class="num" style="font-weight:800;font-size:16px">3</span></span>
+    <span class="mt"><span class="lbl">Время</span><span class="num" style="font-weight:800;font-size:16px">60 мин</span></span>
+    <span class="mt"><span class="lbl">Уровень</span><span class="num" style="font-weight:800;font-size:16px">Н–С</span></span>
+    <span class="mt"><span class="lbl">Где</span><span class="num" style="font-weight:800;font-size:16px">Зал</span></span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:#17181C;border:1px solid #2C2F35">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">Подходов в неделю</span><span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#CFF07F"><span style="width:6px;height:6px;border-radius:3px;background:#B7E35B"></span>Акцент: грудные</span></div>
+    <sc-for list="{{vol}}" as="v" hint-placeholder-count="5">
+      <div class="bar"><span style="{{v.nameStyle}}">{{v.label}}</span><span class="tr"><span style="{{v.fill}}"></span></span><span class="num" style="text-align:right;font-weight:700">{{v.n}}</span></div>
+    </sc-for>
+    <span style="font-size:11px;color:#6F737B;line-height:1.4">Ориентир около 10–14 подходов на мышцу. Акцент добавляет 2 подхода, остальное остаётся в базе.</span>
+  </div>
+
+  <div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#17181C">
+    <sc-for list="{{days}}" as="d" hint-placeholder-count="3"><button class="{{d.cls}}" onClick="{{d.pick}}">{{d.label}}</button></sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column">
+    <sc-for list="{{exs}}" as="e" hint-placeholder-count="5">
+      <div class="ex"><span style="{{e.nameStyle}}">{{e.name}}</span><span class="num" style="{{e.setStyle}}">{{e.sets}}</span></div>
+    </sc-for>
+  </div>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <a href="On5-Plan.dc.html" style="height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Перейти на эту программу</a>
+    <span style="font-size:11px;color:#6F737B;text-align:center;line-height:1.4">Текущая неделя и серия сохранятся. Переход начнётся с понедельника.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { day: 0 }; }
+  renderVals() {
+    const volDef = [
+      ['Грудные', 14, true], ['Широчайшие', 11, false], ['Квадрицепсы', 12, false],
+      ['Ягодичные', 10, false], ['Дельтовидные', 10, false], ['Бицепсы', 8, false], ['Трицепсы', 9, false]
+    ];
+    const vol = volDef.map(([label, n, acc]) => ({
+      label, n,
+      nameStyle: acc ? 'color:#CFF07F;font-weight:700' : 'color:#D7D9DE',
+      fill: 'display:block;height:6px;border-radius:3px;width:' + Math.round(n / 16 * 100) + '%;background:' + (acc ? '#B7E35B' : '#6F737B')
+    }));
+    const days = [
+      [['Присед со штангой', '3 × 6–10'], ['Жим лёжа', '3 × 6–10', 'acc', '4 × 6–10'], ['Тяга штанги в наклоне', '3 × 8–12'], ['Сгибание ног лёжа', '2 × 10–15'], ['Махи гантелей в стороны', '2 × 12–20']],
+      [['Румынская тяга', '3 × 6–10'], ['Жим стоя', '3 × 8–10'], ['Подтягивания или тяга верхнего блока', '3 × 8–12'], ['Выпады', '2 × 10–12'], ['Разведение гантелей на грудь', '2 × 10–15', 'acc', 'добавлено']],
+      [['Жим ногами', '3 × 8–12'], ['Жим на наклонной скамье', '3 × 8–12', 'acc', '4 × 8–12'], ['Тяга сидя', '3 × 8–12'], ['Ягодичный мост со штангой', '2–3 × 8–12'], ['Разгибание ног', '2 × 10–15']]
+    ];
+    const t = this.state.day;
+    return {
+      vol,
+      days: ['День A', 'День B', 'День C'].map((label, i) => ({ label, cls: t === i ? 'segon' : 'seg', pick: () => this.setState({ day: i }) })),
+      exs: days[t].map(x => ({
+        name: x[0], sets: x[2] ? x[3] : x[1],
+        nameStyle: x[2] ? 'color:#CFF07F;font-weight:600' : 'color:#F3F4F6',
+        setStyle: x[2] ? 'color:#B7E35B;font-weight:700;font-size:13px' : 'color:#A2A6AF;font-size:13px'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

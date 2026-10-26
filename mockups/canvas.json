@@ -1,0 +1,357 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-25T12:45:00Z"
+ },
+ "title": "Макеты фитнес-приложения v2",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1360,
+   "h": 1640,
+   "title": "Дизайн-система v2"
+  },
+  "On1-Value.dc.html": {
+   "x": 0,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.1 Ценность",
+   "is_interactive": true
+  },
+  "On2-Consent.dc.html": {
+   "x": 470,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.2 Согласие на данные",
+   "is_interactive": true
+  },
+  "On3-Goal.dc.html": {
+   "x": 940,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.3 Цель и опыт",
+   "is_interactive": true
+  },
+  "On4-Weights.dc.html": {
+   "x": 2350,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.6 Рабочие веса",
+   "is_interactive": true
+  },
+  "On5-Plan.dc.html": {
+   "x": 2820,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.7 План готов",
+   "is_interactive": true
+  },
+  "Today.dc.html": {
+   "x": 0,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.1 Сегодня",
+   "is_interactive": true
+  },
+  "Ready.dc.html": {
+   "x": 470,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.2 Готовность",
+   "is_interactive": true
+  },
+  "Workout.dc.html": {
+   "x": 940,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.3 Тренировка (интерактив)",
+   "is_interactive": true
+  },
+  "Rest.dc.html": {
+   "x": 1410,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.4 Отдых",
+   "is_interactive": true
+  },
+  "Rate.dc.html": {
+   "x": 1880,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.5 Оценка упражнения",
+   "is_interactive": true
+  },
+  "Summary.dc.html": {
+   "x": 2350,
+   "y": 3240,
+   "w": 390,
+   "h": 844,
+   "title": "2.6 Итог и решение",
+   "is_interactive": true
+  },
+  "Week.dc.html": {
+   "x": 0,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.1 Тренировки · неделя",
+   "is_interactive": true
+  },
+  "Missed.dc.html": {
+   "x": 1880,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.5 Пропуск",
+   "is_interactive": true
+  },
+  "Progress.dc.html": {
+   "x": 2350,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.6 Прогресс",
+   "is_interactive": true
+  },
+  "Exercise.dc.html": {
+   "x": 2820,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.7 Карточка упражнения",
+   "is_interactive": true
+  },
+  "Athlete.dc.html": {
+   "x": 0,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.1 Атлет",
+   "is_interactive": true
+  },
+  "Challenges.dc.html": {
+   "x": 2350,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.6 Задания и испытания",
+   "is_interactive": true
+  },
+  "Pro.dc.html": {
+   "x": 2820,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.7 Pro",
+   "is_interactive": true
+  },
+  "OnSex.dc.html": {
+   "x": 1880,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.5 Пол и силуэт",
+   "is_interactive": true
+  },
+  "OnFocusF.dc.html": {
+   "x": 940,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.3 Акцент зала · женский силуэт",
+   "is_interactive": true
+  },
+  "OnFocusM.dc.html": {
+   "x": 1410,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.4 Акцент зала · мужской силуэт",
+   "is_interactive": true
+  },
+  "Programs.dc.html": {
+   "x": 470,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.2 Программы по направлениям",
+   "is_interactive": true
+  },
+  "ProgramDetail.dc.html": {
+   "x": 940,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.3 Программа: описание",
+   "is_interactive": true
+  },
+  "ExLib.dc.html": {
+   "x": 1410,
+   "y": 4520,
+   "w": 390,
+   "h": 844,
+   "title": "3.4 Упражнения по группам",
+   "is_interactive": true
+  },
+  "OnSport.dc.html": {
+   "x": 1410,
+   "y": 1960,
+   "w": 390,
+   "h": 844,
+   "title": "1.4 Направления",
+   "is_interactive": true
+  },
+  "Directions.dc.html": {
+   "x": 470,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.2 Профиль: направления",
+   "is_interactive": true
+  },
+  "FocusQual.dc.html": {
+   "x": 1880,
+   "y": 5800,
+   "w": 390,
+   "h": 844,
+   "title": "4.5 Акцент: бег, силовые виды, йога",
+   "is_interactive": true
+  },
+  "Nutrition.dc.html": {
+   "x": 0,
+   "y": 7080,
+   "w": 390,
+   "h": 844,
+   "title": "5.1 Дневник питания",
+   "is_interactive": true
+  },
+  "FoodAdd.dc.html": {
+   "x": 470,
+   "y": 7080,
+   "w": 390,
+   "h": 844,
+   "title": "5.2 Добавить еду",
+   "is_interactive": true
+  },
+  "Recipes.dc.html": {
+   "x": 940,
+   "y": 7080,
+   "w": 390,
+   "h": 844,
+   "title": "5.3 Рецепты под запрос",
+   "is_interactive": true
+  },
+  "RecipeDetail.dc.html": {
+   "x": 1410,
+   "y": 7080,
+   "w": 390,
+   "h": 844,
+   "title": "5.4 Рецепт",
+   "is_interactive": true
+  },
+  "NutritionGoal.dc.html": {
+   "x": 1880,
+   "y": 7080,
+   "w": 390,
+   "h": 844,
+   "title": "5.5 Цель питания",
+   "is_interactive": true
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "On1-Value.dc.html",
+  "On2-Consent.dc.html",
+  "On3-Goal.dc.html",
+  "OnSport.dc.html",
+  "OnSex.dc.html",
+  "On4-Weights.dc.html",
+  "On5-Plan.dc.html",
+  "Today.dc.html",
+  "Ready.dc.html",
+  "Workout.dc.html",
+  "Rest.dc.html",
+  "Rate.dc.html",
+  "Summary.dc.html",
+  "Week.dc.html",
+  "Programs.dc.html",
+  "ProgramDetail.dc.html",
+  "ExLib.dc.html",
+  "Missed.dc.html",
+  "Progress.dc.html",
+  "Exercise.dc.html",
+  "Athlete.dc.html",
+  "Directions.dc.html",
+  "OnFocusF.dc.html",
+  "OnFocusM.dc.html",
+  "FocusQual.dc.html",
+  "Challenges.dc.html",
+  "Pro.dc.html",
+  "Nutrition.dc.html",
+  "FoodAdd.dc.html",
+  "Recipes.dc.html",
+  "RecipeDetail.dc.html",
+  "NutritionGoal.dc.html"
+ ],
+ "notes": {
+  "t0": {
+   "x": 0,
+   "y": -300,
+   "text": "Дизайн-система v2 · графит и лайм",
+   "kind": "title1",
+   "maxW": 1360
+  },
+  "t1": {
+   "x": 0,
+   "y": 1660,
+   "text": "1 · Первый запуск",
+   "kind": "title1",
+   "maxW": 3210
+  },
+  "t2": {
+   "x": 0,
+   "y": 2940,
+   "text": "2 · Тренировочный цикл: план → факт → решение",
+   "kind": "title1",
+   "maxW": 2740
+  },
+  "t3": {
+   "x": 0,
+   "y": 4220,
+   "text": "3 · План и прогресс",
+   "kind": "title1",
+   "maxW": 3210
+  },
+  "t4": {
+   "x": 0,
+   "y": 5500,
+   "text": "4 · Атлет, задания и Pro",
+   "kind": "title1",
+   "maxW": 3210
+  },
+  "t5": {
+   "x": 0,
+   "y": 6780,
+   "text": "5 · Питание",
+   "kind": "title1",
+   "maxW": 2270
+  }
+ },
+ "designSystems": []
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Пропущенная тренировка</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.opt{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.on{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.1);color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.d{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#A2A6AF}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span class="lbl">Сообщение бота · ср, 20:30</span>
+    <div style="padding:12px 14px;border-radius:16px 16px 16px 4px;background:#202227;font-size:14px;line-height:1.5;max-width:300px">Тренировка «Низ» сегодня не отмечена. Перенести, засчитать отдых или поставить паузу?</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <h1 class="num" style="margin:0;font-size:24px;font-weight:800">Среда · Низ пропущен</h1>
+    <span style="font-size:14px;color:#A2A6AF">Пропуск — часть плана, а не провал.</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{opts}}" as="o" hint-placeholder-count="3">
+      <button class="{{o.cls}}" onClick="{{o.pick}}">
+        <span style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:15px">{{o.title}}</span><span style="font-size:11px;font-weight:700;color:#B7E35B">{{o.tag}}</span></span>
+        <span style="font-size:13px;color:#A2A6AF;line-height:1.4">{{o.hint}}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <span class="lbl">Как изменится неделя</span>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <div class="d"><span>{{d.name}}</span><span class="num" style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{d.bg}};color:{{d.fg}};border:{{d.border}}">{{d.mark}}</span></div>
+      </sc-for>
+    </div>
+    <span style="font-size:13px;line-height:1.45">{{note}}</span>
+  </div>
+
+  <a href="Week.dc.html" style="margin-top:auto;height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Применить</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { pick: 0 }; }
+  renderVals() {
+    const items = [
+      { title: 'Перенести на четверг', tag: 'РЕКОМЕНДУЕМ', hint: 'Пятница сдвинется на субботу, между тренировками останется 48 часов.' },
+      { title: 'Засчитать как отдых', tag: '', hint: 'Низ переносится на следующую неделю. Серия не прерывается.' },
+      { title: 'Пауза: болезнь или отпуск', tag: '', hint: 'Серия заморожена, напоминания выключены. Вернётесь — тренер снизит веса.' }
+    ];
+    const D = (name, mark, kind) => {
+      const st = { done: ['#B7E35B', '#0E0F11', '0'], plan: ['#202227', '#F3F4F6', '1.5px solid #B7E35B'], skip: ['transparent', '#6F737B', '1px dashed #2C2F35'], pause: ['rgba(125,179,255,.15)', '#7DB3FF', '0'], rest: ['transparent', '#6F737B', '0'] }[kind];
+      return { name, mark, bg: st[0], fg: st[1], border: st[2] === '0' ? '0' : st[2] };
+    };
+    const weeks = [
+      [D('Пн','A','done'), D('Вт','—','rest'), D('Ср','—','skip'), D('Чт','Н','plan'), D('Пт','—','rest'), D('Сб','B','plan'), D('Вс','—','rest')],
+      [D('Пн','A','done'), D('Вт','—','rest'), D('Ср','отд','rest'), D('Чт','—','rest'), D('Пт','B','plan'), D('Сб','—','rest'), D('Вс','—','rest')],
+      [D('Пн','A','done'), D('Вт','—','rest'), D('Ср','II','pause'), D('Чт','II','pause'), D('Пт','II','pause'), D('Сб','II','pause'), D('Вс','II','pause')]
+    ];
+    const notes = [
+      'План недели остаётся 3 из 3. Решения тренера по приседу не меняются.',
+      'План недели станет 2 из 2 — серия продолжится. Низ откроет следующую неделю.',
+      'Если пауза дольше 2 недель — первая тренировка после неё с весами примерно на 10% ниже и объяснением.'
+    ];
+    const p = this.state.pick;
+    return { opts: items.map((o, i) => ({ ...o, cls: p === i ? 'on' : 'opt', pick: () => this.setState({ pick: i }) })), days: weeks[p], note: notes[p] };
+  }
+}
+</script>
+</body>
+</html>

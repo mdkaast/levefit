@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Профиль: акцент по направлению</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.d{flex:none;height:34px;padding:0 13px;border-radius:17px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font:600 13px Inter,sans-serif;cursor:pointer}
+.don{flex:none;height:34px;padding:0 13px;border-radius:17px;border:0;background:#B7E35B;color:#0E0F11;font:700 13px Inter,sans-serif;cursor:pointer}
+.q{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.qon{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.1);color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <a href="Directions.dc.html" style="font-size:14px;font-weight:600;color:#A2A6AF">Направления</a>
+    <span class="lbl">Профиль · акцент</span>
+  </div>
+
+  <div style="display:flex;gap:6px;overflow:hidden;margin:0 -20px;padding:0 20px">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <h1 class="num" style="margin:0;font-size:25px;font-weight:800;line-height:1.15">{{title}}</h1>
+    <span style="font-size:13px;color:#A2A6AF;line-height:1.4">{{sub}}</span>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{opts}}" as="o" hint-placeholder-count="5">
+      <button class="{{o.cls}}" onClick="{{o.pick}}">
+        <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:14px">{{o.label}}</span><span style="font-size:12px;color:#A2A6AF;line-height:1.35">{{o.hint}}</span></span>
+        <span style="{{o.dot}}">{{o.mark}}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:#17181C;border:1px solid #2C2F35">
+    <span class="num" style="font-weight:700;font-size:15px">{{effTitle}}</span>
+    <span style="font-size:12px;line-height:1.5;color:#D7D9DE">{{effText}}</span>
+  </div>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <sc-if value="{{notApplied}}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{apply}}" style="height:52px;border-radius:14px;border:0;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif;cursor:pointer">Применить с понедельника</button>
+    </sc-if>
+    <sc-if value="{{applied}}" hint-placeholder-val="{{ false }}">
+      <a href="Week.dc.html" style="height:52px;border-radius:14px;border:1.5px solid #B7E35B;color:#CFF07F;font:700 16px Inter,sans-serif;display:flex;align-items:center;justify-content:center">План обновлён · открыть неделю</a>
+    </sc-if>
+    <span style="font-size:11px;line-height:1.4;color:#6F737B;text-align:center">Выберите до двух качеств. Текущая неделя не меняется, серия сохраняется.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { dir: 'run', sel: { run: ['base'], pl: ['squat'], cf: ['gym'], yoga: ['flex', 'posture'], fn: ['pull'], home: ['legs'] }, applied: false }; }
+  renderVals() {
+    const D = {
+      run: { tab: 'Бег', title: 'Какие качества развивать в беге?', sub: 'От выбора зависит, какие тренировки и сколько их будет на неделе.', max: 2, o: [
+        ['base', 'Аэробная база', 'Лёгкие пробежки, когда можно говорить, и одна длинная', 'Большая часть пробежек в лёгком темпе, одна длинная в неделю. Интервалы не чаще раза в неделю.'],
+        ['tempo', 'Темповая выносливость', 'Ровный темп чуть ниже порога', 'Раз в неделю темповая пробежка, объём растёт на 5–10% в неделю.'],
+        ['speed', 'Скорость', 'Короткие интервалы и ускорения', 'Одна интервальная тренировка в неделю, перед ней и после лёгкий день. Ноги в зале в этот день не ставятся.'],
+        ['force', 'Сила и устойчивость', 'Силовая для ног и кора, меньше травм', 'Две короткие силовые в неделю: выпады, румынская тяга, подъёмы на носки, кор.'],
+        ['tech', 'Техника и экономичность', 'Беговые упражнения, частота шага', 'Разминочные упражнения перед пробежками и 2–3 ускорения по 20 секунд.']
+      ] },
+      pl: { tab: 'Пауэрлифтинг', title: 'Какое движение подтянуть?', sub: 'Тренер добавит вариации и подсобку на выбранный лифт.', max: 2, o: [
+        ['squat', 'Присед', 'Вариации с паузой, фронтальный, подсобка на ноги', 'Присед 2 раза в неделю: тяжёлый и объёмный день, плюс подсобка.'],
+        ['bench', 'Жим лёжа', 'Жим с паузой, узкий хват, трицепс и плечи', 'Жим 2–3 раза в неделю с разной интенсивностью, плюс трицепс и верх спины.'],
+        ['dead', 'Становая тяга', 'Тяга с дефицита, румынская, спина', 'Тяга 1–2 раза в неделю: объём распределяется, чтобы хватало на восстановление.'],
+        ['weak', 'Слабое звено', 'Тренер найдёт его по застою и оценкам', 'Подсобка подбирается по тому, где стоит прогресс.']
+      ] },
+      cf: { tab: 'Кроссфит', title: 'Какое качество усилить?', sub: 'Комплексы и силовая часть смещаются в выбранную сторону.', max: 2, o: [
+        ['gym', 'Гимнастика', 'Подтягивания, брусья, стойка на руках', 'Гимнастические навыки идут в начале тренировки, пока свежие силы.'],
+        ['lift', 'Тяжёлая атлетика', 'Рывок, толчок, приседы', 'Штанга 2 раза в неделю, техника в начале сессии, лёгкие веса.'],
+        ['met', 'Метаболическая выносливость', 'Короткие и длинные комплексы', 'Комплексы разной длительности, один тяжёлый день в неделю.'],
+        ['str', 'Базовая сила', 'Присед, жим, тяга отдельным блоком', 'Силовой блок перед комплексом, объём как в силовом плане.']
+      ] },
+      yoga: { tab: 'Йога', title: 'Что вам важнее в йоге?', sub: 'От выбора зависят комплексы и их длительность.', max: 2, o: [
+        ['flex', 'Гибкость', 'Растяжка бёдер, спины, плеч', 'Комплексы на раскрытие бёдер и задней поверхности, 20–30 минут.'],
+        ['bal', 'Баланс', 'Стойки на одной ноге, концентрация', 'Позы на равновесие в середине занятия.'],
+        ['pow', 'Сила', 'Планка, поза воина, статические удержания', 'Удержание поз по 30–60 секунд, больше работы для кора и ног.'],
+        ['breath', 'Дыхание и расслабление', 'Спокойный вечерний комплекс', 'Короткие занятия на 10–15 минут вечером и дыхательные практики.'],
+        ['posture', 'Спина и осанка', 'Мобильность груди и таза', 'Комплексы для сидячей работы, мягкая работа с позвоночником.']
+      ] },
+      fn: { tab: 'Функциональный', title: 'Какие движения усилить?', sub: 'Тренер усиливает выбранные базовые паттерны.', max: 2, o: [
+        ['push', 'Толчок', 'Отжимания, жимы', 'Больше работы на жимовые движения, варианты по уровню.'],
+        ['pull', 'Тяга', 'Подтягивания, тяги, кольца', 'Тяговые движения в каждой тренировке, ставим вертикальную и горизонтальную.'],
+        ['sq', 'Приседание и выпад', 'Присед, выпады, шаги на платформу', 'Движения ногами идут с односторонними вариантами для баланса.'],
+        ['core', 'Кор и ротация', 'Антиротация, планки, повороты', 'Короткий блок на кор в конце каждой тренировки.'],
+        ['carry', 'Перенос и ходьба с весом', 'Фермерская прогулка, гири', 'Переносы вес-в-руках 1–2 раза в неделю.']
+      ] },
+      home: { tab: 'Дом', title: 'Что тренировать дома?', sub: 'Без инвентаря или с гантелями и резиной.', max: 2, o: [
+        ['upper', 'Верх тела', 'Отжимания, тяги резиной, гантели', 'Отжимания и тяга резиной с лестницей усложнений.'],
+        ['legs', 'Ноги и ягодицы', 'Приседы, выпады, мосты', 'Приседы, выпады и мосты с прогрессией по повторам.'],
+        ['core', 'Кор', 'Планки, подъёмы ног', 'Короткие блоки на кор в конце тренировок.'],
+        ['cardio', 'Кондиция', 'Круговые и интервалы без бега', 'Два коротких круговых занятия в неделю.']
+      ] }
+    };
+    const dirs = ['run', 'pl', 'cf', 'yoga', 'fn', 'home'];
+    const cur = this.state.dir; const d = D[cur]; const sel = this.state.sel[cur];
+    const toggle = (k) => {
+      let n = sel.includes(k) ? sel.filter(x => x !== k) : [...sel, k];
+      if (n.length > d.max) n = n.slice(n.length - d.max);
+      this.setState({ sel: { ...this.state.sel, [cur]: n }, applied: false });
+    };
+    const opts = d.o.map(o => {
+      const on = sel.includes(o[0]);
+      return { label: o[1], hint: o[2], cls: on ? 'qon' : 'q', pick: () => toggle(o[0]), mark: on ? '✓' : '',
+        dot: 'flex:none;width:22px;height:22px;border-radius:11px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;' + (on ? 'background:#B7E35B;color:#0E0F11' : 'border:1.5px solid #2C2F35') };
+    });
+    const chosen = d.o.filter(o => sel.includes(o[0]));
+    return {
+      tabs: dirs.map(k => ({ label: D[k].tab, cls: cur === k ? 'don' : 'd', pick: () => this.setState({ dir: k, applied: false }) })),
+      title: d.title, sub: d.sub, opts,
+      effTitle: chosen.length === 0 ? 'Без акцента' : (chosen.length === 1 ? 'Акцент: ' + chosen[0][1].toLowerCase() : 'Акцент на два качества'),
+      effText: chosen.length === 0 ? 'Тренировки распределяются равномерно.' : chosen.map(c => c[3]).join(' '),
+      notApplied: !this.state.applied, applied: this.state.applied,
+      apply: () => this.setState({ applied: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

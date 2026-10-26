@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Карточка упражнения</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.seg{flex:1;height:36px;border-radius:9px;border:0;background:transparent;color:#A2A6AF;font:600 13px Inter,sans-serif;cursor:pointer}
+.segon{flex:1;height:36px;border-radius:9px;border:0;background:#2C2F35;color:#F3F4F6;font:700 13px Inter,sans-serif;cursor:pointer}
+.h{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #23252A;font-size:13px}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span style="display:flex;align-items:center;gap:8px"><span style="position:relative;width:30px;height:36px;border-radius:8px;background:#12171E;overflow:hidden;flex:none"><img src="/_blob/6017643218f31e0ceeada9db821dcc0e" alt="" style="position:absolute;max-width:none;left:-9px;top:-17px;width:150px;height:185px"><img src="/_blob/b6477069b3f1b880b56241a8f7c5c67e" alt="" style="position:absolute;max-width:none;left:-9px;top:-17px;width:150px;height:185px"></span><span class="lbl">Грудь · штанга · база · ваш акцент</span></span>
+      <h1 class="num" style="margin:0;font-size:28px;font-weight:800">Жим лёжа</h1>
+    </div>
+    <span style="display:flex;flex-direction:column;align-items:flex-end"><span class="num" style="font-size:22px;font-weight:800">101 кг</span><span style="font-size:11px;color:#A2A6AF">расчётный максимум</span></span>
+  </div>
+
+  <div style="padding:12px 12px 6px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <svg width="342" height="120" viewBox="0 0 342 120" role="img" aria-label="Расчётный максимум за 12 недель: с 94 до 101 кг">
+      <line x1="30" y1="10" x2="342" y2="10" stroke="#23252A"/><line x1="30" y1="55" x2="342" y2="55" stroke="#23252A"/><line x1="30" y1="100" x2="342" y2="100" stroke="#23252A"/>
+      <text x="0" y="14" fill="#A2A6AF" font-size="10" font-family="Inter">102</text><text x="0" y="59" fill="#A2A6AF" font-size="10" font-family="Inter">98</text><text x="0" y="104" fill="#A2A6AF" font-size="10" font-family="Inter">94</text>
+      <polyline points="34,100 62,89 90,89 118,77 146,66 174,66 202,55 230,55 258,44 286,32 314,32 338,21" fill="none" stroke="#B7E35B" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="338" cy="21" r="4.5" fill="#B7E35B"/>
+      <text x="34" y="117" fill="#A2A6AF" font-size="10" font-family="Inter">10 авг</text><text x="300" y="117" fill="#A2A6AF" font-size="10" font-family="Inter">26 окт</text>
+    </svg>
+  </div>
+
+  <div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#17181C">
+    <sc-for list="{{segs}}" as="s" hint-placeholder-count="3"><button class="{{s.cls}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for>
+  </div>
+
+  <sc-if value="{{isHist}}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column">
+      <div class="h" style="border-top:0;color:#A2A6AF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em"><span>Дата</span><span>План → факт</span><span>Оценка</span></div>
+      <div class="h num"><span>26 окт</span><span>80 × 8/8/8 → <b style="color:#F2B35B">8/7/6</b></span><span style="font-family:Inter,sans-serif">Тяжело</span></div>
+      <div class="h num"><span>19 окт</span><span>77,5 × 8/8/8 → <b style="color:#B7E35B">8/8/8</b></span><span style="font-family:Inter,sans-serif">Норм.</span></div>
+      <div class="h num"><span>12 окт</span><span>77,5 × 8/8/8 → <b>8/8/7</b></span><span style="font-family:Inter,sans-serif">Норм.</span></div>
+      <div class="h num"><span>5 окт</span><span>77,5 × 8/8/8 → <b>8/7/7</b></span><span style="font-family:Inter,sans-serif">Тяжело</span></div>
+      <div class="h num"><span>28 сен</span><span>75 × 8/8/8 → <b style="color:#B7E35B">8/8/8</b></span><span style="font-family:Inter,sans-serif">Легко</span></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isDec}}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:12px;padding:12px;border-radius:14px;background:#17181C"><span style="width:4px;border-radius:2px;background:#7DB3FF;flex:none"></span><span style="display:flex;flex-direction:column;gap:3px"><span class="num" style="font-weight:700">26 окт · оставить 80, цель 8/8/7</span><span style="font-size:12px;color:#A2A6AF;line-height:1.4">Падение ≤ 2 в подходе, «Тяжело» · принято</span></span></div>
+      <div style="display:flex;gap:12px;padding:12px;border-radius:14px;background:#17181C"><span style="width:4px;border-radius:2px;background:#B7E35B;flex:none"></span><span style="display:flex;flex-direction:column;gap:3px"><span class="num" style="font-weight:700">19 окт · +2,5 → 80 кг</span><span style="font-size:12px;color:#A2A6AF;line-height:1.4">Все подходы на верхней границе · принято</span></span></div>
+      <div style="display:flex;gap:12px;padding:12px;border-radius:14px;background:#17181C"><span style="width:4px;border-radius:2px;background:#7DB3FF;flex:none"></span><span style="display:flex;flex-direction:column;gap:3px"><span class="num" style="font-weight:700">5 окт · оставить 77,5</span><span style="font-size:12px;color:#A2A6AF;line-height:1.4">Добираем повторы · изменено вами: «плохо спал»</span></span></div>
+      <span style="font-size:12px;color:#A2A6AF;line-height:1.45">Вес не рос 3 недели из-за двух «тяжёлых» тренировок — это ожидаемо при лестнице повторов.</span>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isTech}}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button style="height:150px;border-radius:16px;border:1px dashed #2C2F35;background:#17181C;color:#A2A6AF;font:600 14px Inter,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="#A2A6AF"><path d="M8 5v14l11-7z"/></svg>[ВИДЕО ТЕХНИКИ] · загрузится по нажатию</button>
+      <span style="font-size:14px;line-height:1.5">Лопатки сведены, стопы в пол, гриф опускается к низу груди. Локти под углом около 45°.</span>
+    </div>
+  </sc-if>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <span class="lbl">Замена с тем же решением тренера</span>
+    <div style="display:flex;gap:8px">
+      <a href="Workout.dc.html" style="flex:1;height:44px;border-radius:12px;border:1px solid #2C2F35;color:#F3F4F6;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center">Жим гантелей лёжа</a>
+      <a href="Workout.dc.html" style="flex:1;height:44px;border-radius:12px;border:1px solid #2C2F35;color:#F3F4F6;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center">Жим в Смите</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { tab: 0 }; }
+  renderVals() {
+    const t = this.state.tab;
+    return {
+      segs: ['История', 'Решения', 'Техника'].map((label, i) => ({ label, cls: t === i ? 'segon' : 'seg', pick: () => this.setState({ tab: i }) })),
+      isHist: t === 0, isDec: t === 1, isTech: t === 2
+    };
+  }
+}
+</script>
+</body>
+</html>

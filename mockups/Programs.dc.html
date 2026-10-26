@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Программы</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#A2A6AF;min-width:64px;min-height:44px;justify-content:center}
+.dir{flex:none;height:34px;padding:0 14px;border-radius:17px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font:600 13px Inter,sans-serif;cursor:pointer}
+.diron{flex:none;height:34px;padding:0 14px;border-radius:17px;border:0;background:#B7E35B;color:#0E0F11;font:700 13px Inter,sans-serif;cursor:pointer}
+.pc{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35;color:#F3F4F6}
+.tg{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:#202227;color:#D7D9DE;font-size:11px;font-weight:600}
+.tgfit{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:rgba(183,227,91,.14);color:#CFF07F;font-size:11px;font-weight:700}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column">
+  <div style="flex:1;padding:24px 20px 12px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="lbl">Библиотека · 22 программы</span>
+      <h1 class="num" style="margin:0;font-size:28px;font-weight:800">Тренировки</h1>
+    </div>
+
+    <div style="display:flex;gap:4px;padding:4px;border-radius:12px;background:#17181C">
+      <a href="Week.dc.html" style="flex:1;height:34px;border-radius:9px;color:#A2A6AF;font:600 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Неделя</a>
+      <span style="flex:1;height:34px;border-radius:9px;background:#2C2F35;color:#F3F4F6;font:700 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Программы</span>
+      <a href="ExLib.dc.html" style="flex:1;height:34px;border-radius:9px;color:#A2A6AF;font:600 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center">Упражнения</a>
+    </div>
+
+    <div style="display:flex;gap:6px;overflow:hidden;margin:0 -20px;padding:0 20px">
+      <sc-for list="{{dirs}}" as="d" hint-placeholder-count="5"><button class="{{d.cls}}" onClick="{{d.pick}}">{{d.label}}</button></sc-for>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span style="font-size:12px;color:#A2A6AF;line-height:1.4;flex:1">{{hint}}</span>
+      <a href="Directions.dc.html" style="display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;background:rgba(183,227,91,.14);color:#CFF07F;font-size:12px;font-weight:700;flex:none"><span style="width:6px;height:6px;border-radius:3px;background:#B7E35B"></span>Зал · Бег</a>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{cards}}" as="p" hint-placeholder-count="4">
+        <a href="ProgramDetail.dc.html" class="pc">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span class="num" style="font-weight:700;font-size:15px">{{p.name}}</span><span style="font-size:11px;color:#6F737B;font-weight:600">{{p.code}}</span></div>
+          <span style="font-size:12px;color:#A2A6AF">{{p.meta}}</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="{{p.tagCls}}">{{p.tag}}</span><span class="tg">{{p.level}}</span></div>
+        </a>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{hasHidden}}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{toggleAll}}" style="height:40px;border-radius:12px;border:1px dashed #2C2F35;background:transparent;color:#A2A6AF;font:600 13px Inter,sans-serif;cursor:pointer">{{allLabel}}</button>
+    </sc-if>
+  </div>
+
+  <nav style="display:flex;justify-content:space-around;padding:8px 8px 18px;border-top:1px solid #2C2F35;background:#0E0F11">
+    <a href="Today.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Сегодня</a>
+    <a href="Week.dc.html" class="tab" style="color:#B7E35B"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Тренировки</a>
+    <a href="Nutrition.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8a2 2 0 002 2v8M11 3v8M7 7h4M17 3c-2 2-3 5-3 8h3v10"/></svg>Питание</a>
+    <a href="Progress.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>Прогресс</a>
+    <a href="Athlete.dc.html" class="tab"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 8v8M9 11l3-3 3 3"/></svg>Атлет</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { dir: 'you', all: false }; }
+  renderVals() {
+    const dirsDef = [
+      { k: 'you', label: 'Для вас' },
+      { k: 'str', label: 'Сила' },
+      { k: 'mass', label: 'Масса' },
+      { k: 'cut', label: 'Похудение' },
+      { k: 'home', label: 'Дом' },
+      { k: 'back', label: 'Возвращение' }
+    ];
+    const P = [
+      { name: 'Верх / низ · 3 дня', code: 'Ваша', meta: 'Сила и масса · зал · 55 мин · собрана тренером', tag: 'Текущая · неделя 3 из 4', fit: true, level: 'Средний', dirs: ['you','str','mass'] },
+      { name: 'Фулбоди ×3: масса', code: 'T09', meta: '3 дня · зал или домашняя штанга · 60 мин', tag: 'Подходит · грудь 2 раза в неделю', fit: true, level: 'Н–С', dirs: ['you','mass','home'] },
+      { name: 'Тиры T1/T2/T3', code: 'T03', meta: '3–4 дня · зал или штанга + турник · 60–75 мин', tag: 'Подходит · сила и масса', fit: true, level: 'Н → С', dirs: ['you','str','mass'] },
+      { name: 'Волны 5-3-1: базовый', code: 'T04', meta: '3 дня · штанга · 60 мин', tag: 'Для силы', fit: false, level: 'Средний', dirs: ['str'] },
+      { name: 'Верх/низ: масса', code: 'T08', meta: '4 дня · зал · 60 мин', tag: 'На день больше', fit: false, level: 'Н–С', dirs: ['mass'] },
+      { name: 'Похудение: удержать силу', code: 'T18', meta: '2–4 силовых дня + 2–3 кардио · любой инвентарь', tag: 'Для цели «Похудение»', fit: false, level: 'Любой', dirs: ['cut'] },
+      { name: 'Гантели дома A/B', code: 'T15', meta: '3 дня · гантели · 45 мин', tag: 'Дом · гантели', fit: false, level: 'Н–С', dirs: ['home'] },
+      { name: 'Минимум: 2 × 30 минут', code: 'T13', meta: '2 дня · любой инвентарь · 30 мин', tag: 'Когда времени мало', fit: false, level: 'Любой', dirs: ['home','back'] },
+      { name: 'Возвращение', code: 'T14', meta: '2–3 дня фулбоди · 2–6 недель, затем цель', tag: 'После перерыва', fit: false, level: 'Любой', dirs: ['back'] }
+    ];
+    const d = this.state.dir;
+    let list = P.filter(p => p.dirs.includes(d));
+    if (this.state.all) list = P;
+    const hint = this.state.all
+      ? 'Показаны все программы. Те, что не подходят по дням, цели или инвентарю, отмечены серым.'
+      : (d === 'you' ? 'Подобрано под вас: сила и масса, 3 дня, зал, акцент на грудь. Остальное скрыто.' : 'Направление: ' + dirsDef.find(x => x.k === d).label.toLowerCase() + '. Подходящие вам — сверху.');
+    return {
+      dirs: dirsDef.map(x => ({ label: x.label, cls: d === x.k ? 'diron' : 'dir', pick: () => this.setState({ dir: x.k, all: false }) })),
+      hint,
+      cards: list.map(p => ({ name: p.name, code: p.code, meta: p.meta, tag: p.tag, tagCls: p.fit ? 'tgfit' : 'tg', level: p.level })),
+      hasHidden: true,
+      allLabel: this.state.all ? 'Свернуть до подходящих' : 'Показать все 22 программы',
+      toggleAll: () => this.setState({ all: !this.state.all })
+    };
+  }
+}
+</script>
+</body>
+</html>

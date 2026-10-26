@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Онбординг: направления</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.t{display:flex;flex-direction:column;gap:3px;text-align:left;padding:12px;border-radius:14px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer;min-height:76px;position:relative}
+.ton{display:flex;flex-direction:column;gap:3px;text-align:left;padding:12px;border-radius:14px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.1);color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer;min-height:76px;position:relative}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:24px 20px 24px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:16px">
+  <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
+    <span style="height:4px;border-radius:2px;background:#B7E35B"></span><span style="height:4px;border-radius:2px;background:#B7E35B"></span><span style="height:4px;border-radius:2px;background:#B7E35B"></span><span style="height:4px;border-radius:2px;background:#2C2F35"></span><span style="height:4px;border-radius:2px;background:#2C2F35"></span><span style="height:4px;border-radius:2px;background:#2C2F35"></span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span class="lbl">Шаг 3 из 6</span>
+    <h1 class="num" style="margin:0;font-size:28px;line-height:1.15;font-weight:800">Чем занимаетесь?</h1>
+    <span style="font-size:14px;color:#A2A6AF;line-height:1.45">Выберите одно или несколько направлений. Планы и упражнения подберутся только под них.</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+    <sc-for list="{{tiles}}" as="t" hint-placeholder-count="6">
+      <button class="{{t.cls}}" onClick="{{t.pick}}">
+        <span style="font-weight:700;font-size:14px;padding-right:22px">{{t.title}}</span>
+        <span style="font-size:11px;line-height:1.35;color:#A2A6AF">{{t.sub}}</span>
+        <span style="{{t.dot}}">{{t.mark}}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:14px;background:#202227">
+    <span style="font-weight:700;font-size:14px">{{sumTitle}}</span>
+    <span style="font-size:12px;line-height:1.5;color:#D7D9DE">{{sumText}}</span>
+  </div>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <a href="OnSex.dc.html" style="height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Дальше</a>
+    <span style="font-size:11px;color:#6F737B;text-align:center;line-height:1.4">Направления можно добавлять и убирать в профиле. Акценты по мышцам и качествам настраиваются там же.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { sel: ['gym', 'run'] }; }
+  renderVals() {
+    const defs = [
+      { k: 'gym', title: 'Силовой зал', sub: 'Масса, сила, форма: акцент по группам мышц' },
+      { k: 'pl', title: 'Пауэрлифтинг', sub: 'Присед, жим, тяга и подсобка' },
+      { k: 'cf', title: 'Кроссфит', sub: 'Гимнастика, штанга, выносливость' },
+      { k: 'fn', title: 'Функциональный', sub: 'Движения, баланс, кор, мобильность' },
+      { k: 'run', title: 'Бег', sub: 'База, темп, интервалы, силовая для бегуна' },
+      { k: 'yoga', title: 'Йога', sub: 'Гибкость, баланс, дыхание, осанка' },
+      { k: 'home', title: 'Дом: общая форма', sub: 'Без инвентаря или с гантелями и резиной' },
+      { k: 'mix', title: 'Универсальный', sub: 'Тренер сам распределяет неделю между выбранным' }
+    ];
+    const sel = this.state.sel;
+    const toggle = (k) => this.setState({ sel: sel.includes(k) ? sel.filter(x => x !== k) : [...sel, k] });
+    const tiles = defs.map(d => {
+      const on = sel.includes(d.k);
+      return { title: d.title, sub: d.sub, cls: on ? 'ton' : 't', pick: () => toggle(d.k),
+        mark: on ? '✓' : '',
+        dot: 'position:absolute;right:10px;top:10px;width:20px;height:20px;border-radius:10px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;' + (on ? 'background:#B7E35B;color:#0E0F11' : 'border:1.5px solid #2C2F35;color:transparent') };
+    });
+    const named = defs.filter(d => sel.includes(d.k) && d.k !== 'mix').map(d => d.title.toLowerCase());
+    const mix = sel.includes('mix');
+    let sumTitle, sumText;
+    if (named.length === 0 && !mix) { sumTitle = 'Ничего не выбрано'; sumText = 'Выберите хотя бы одно направление, чтобы мы показали подходящие планы.'; }
+    else if (mix && named.length < 2) { sumTitle = 'Универсальный режим'; sumText = 'Отметьте направления, которые совмещаете, и тренер разложит их по дням недели.'; }
+    else if (named.length <= 1 && !mix) { sumTitle = 'Одно направление'; sumText = 'Вся неделя строится под него. Остальные планы и упражнения скрыты.'; }
+    else { sumTitle = 'Совмещение: ' + named.length + ' ' + (named.length < 5 ? 'направления' : 'направлений'); sumText = 'Дни недели делятся между направлениями. Тяжёлые ноги и интервальный бег не ставятся в соседние дни.'; }
+    return { tiles, sumTitle, sumText };
+  }
+}
+</script>
+</body>
+</html>

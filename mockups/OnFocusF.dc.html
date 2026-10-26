@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Профиль: акцент (Ж)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 2px rgba(183,227,91,.7))}50%{filter:drop-shadow(0 0 12px rgba(207,240,127,1))}}
+@keyframes sweep{0%{transform:translateY(0);opacity:0}15%{opacity:.9}85%{opacity:.9}100%{transform:translateY(330px);opacity:0}}
+.pt{position:absolute;left:0;top:0;pointer-events:none;transition:opacity .45s ease}
+.pon{opacity:1;animation:pulse 1.8s ease-in-out infinite}
+.poff{opacity:0}
+.hs{position:absolute;border:0;background:transparent;padding:0;cursor:pointer;border-radius:10px}
+.hs:hover{background:rgba(183,227,91,.12)}
+.chip{height:36px;border-radius:10px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font:600 12px Inter,sans-serif;padding:0 2px;cursor:pointer}
+.chipon{height:36px;border-radius:10px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.14);color:#CFF07F;font:700 12px Inter,sans-serif;padding:0 2px;cursor:pointer}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:20px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <a href="Directions.dc.html" style="font-size:14px;font-weight:600;color:#A2A6AF">Направления</a>
+    <span class="lbl">Силовой зал · акцент</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <h1 class="num" style="margin:0;font-size:25px;font-weight:800;line-height:1.15">Какую группу мышц усилить?</h1>
+    <span style="font-size:13px;color:#A2A6AF;line-height:1.4">Выберите до двух групп. План и подбор упражнений пересчитаются, прогресс и серия сохранятся.</span>
+  </div>
+
+  <div style="position:relative;height:330px;border-radius:18px;background:#12171E;border:1px solid #23252A;overflow:hidden;display:flex;justify-content:center">
+    <div style="position:relative;width:195px;height:330px">
+      <img src="/_blob/7c0327db44d9aed2e53869483a5e7819" alt="Женский силуэт, вид спереди и сзади" style="position:absolute;left:0;top:0;width:195px;height:330px">
+      <sc-for list="{{parts}}" as="p" hint-placeholder-count="3">
+        <img src="{{p.src}}" alt="" class="{{p.cls}}" style="width:195px;height:330px">
+      </sc-for>
+      <sc-for list="{{parts}}" as="p" hint-placeholder-count="3">
+        <button class="hs" style="{{p.hs}}" aria-label="{{p.name}}" onClick="{{p.pick}}"></button>
+      </sc-for>
+      <span style="position:absolute;left:0;top:0;width:195px;height:2px;background:linear-gradient(90deg,transparent,#B7E35B,transparent);animation:sweep 3.6s ease-in-out infinite;pointer-events:none"></span>
+    </div>
+    <span style="position:absolute;left:12px;top:10px;font-size:10px;font-weight:600;color:#6F737B;letter-spacing:.08em">СПЕРЕДИ</span>
+    <span style="position:absolute;right:12px;top:10px;font-size:10px;font-weight:600;color:#6F737B;letter-spacing:.08em">СЗАДИ</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px">
+    <sc-for list="{{chips}}" as="c" hint-placeholder-count="8"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+  </div>
+  <button class="{{noneCls}}" onClick="{{pickNone}}" style="width:100%">Без акцента · равномерно</button>
+
+  <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:#17181C;border:1px solid #2C2F35">
+    <span class="num" style="font-weight:700;font-size:15px">{{effTitle}}</span>
+    <span style="font-size:12px;line-height:1.5;color:#D7D9DE">{{effText}}</span>
+    <span style="font-size:12px;line-height:1.5;color:#CFF07F;font-weight:600">{{planLine}}</span>
+  </div>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <sc-if value="{{notApplied}}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{apply}}" style="height:52px;border-radius:14px;border:0;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif;cursor:pointer">Применить с понедельника</button>
+    </sc-if>
+    <sc-if value="{{applied}}" hint-placeholder-val="{{ false }}">
+      <a href="Week.dc.html" style="height:52px;border-radius:14px;border:1.5px solid #B7E35B;color:#CFF07F;font:700 16px Inter,sans-serif;display:flex;align-items:center;justify-content:center">План обновлён · открыть неделю</a>
+    </sc-if>
+    <span style="font-size:11px;line-height:1.4;color:#6F737B;text-align:center">Задняя поверхность бедра, икры и трапеции входят в базовый объём. Акцент можно менять в любой момент.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { applied: false, sel: ['glutes'] }; }
+  renderVals() {
+    const S = 330 / 501;
+    const defs = [
+      { k: 'chest', label: 'Грудные', id: 'a36b8f3d4c9f8c862dcfbb00847fc0e5', box: [30,115,111,171], text: 'Больше жимов и разводок на грудь, на 2–3 подхода в неделю сверх базы (около 14 вместо 10–12). Остальные группы — поддерживающий объём.' },
+      { k: 'biceps', label: 'Бицепсы', id: '39cc3dfe872bf204f2c65ad7d939cee4', box: [17,124,126,189], text: 'Сгибания идут после тяг, чтобы не уставать заранее. До 12–14 подходов в неделю, базовые тяги остаются.' },
+      { k: 'triceps', label: 'Трицепсы', id: '53baa0b3291d662c0a7d3c345f483e7d', box: [170,139,282,191], text: 'Жимы уже грузят трицепс, поэтому добавляем 1–2 изолирующих упражнения. Лишнее не предлагаем.' },
+      { k: 'delts', label: 'Дельты', id: 'bb034213e066936a4816b383dc7c1407', box: [15,110,279,168], text: 'Жимы над головой и махи на средний пучок, частота 2–3 раза в неделю. Тяжёлые жимы и махи не ставим в один день подряд.' },
+      { k: 'abs', label: 'Пресс', id: 'd462fde357e0bc29f6da795f3dabde04', box: [44,162,96,225], text: 'Короткие блоки на пресс в конце тренировок, 2–3 раза в неделю. Базовые приседы и тяги тоже его работают.' },
+      { k: 'lats', label: 'Широчайшие', id: '1175ef834ca3f4ab6c8b60bcf55f6be4', box: [189,135,261,208], text: 'Больше вертикальных тяг: подтягивания, тяга блока. Объём около 14 подходов в неделю; горизонтальные тяги остаются.' },
+      { k: 'glutes', label: 'Ягодичные', id: '52fd5298d199af6e1519cbaac2238fa9', box: [183,211,271,265], text: 'Ягодичный мост, румынская тяга и выпады раньше в тренировке, 2–3 раза в неделю. Около 12–16 подходов, остальные группы — на базовом уровне.' },
+      { k: 'quads', label: 'Квадрицепсы', id: '7114afd15f961c662e49de83a2b1ee16', box: [27,232,114,335], text: 'Приседания и жимы ногами идут первыми в тренировке, 2 раза в неделю. Добавляем не больше 2 подходов за цикл и только если рост остановился.' }
+    ];
+    const sel = this.state.sel;
+    const toggle = (k) => {
+      let n = sel.includes(k) ? sel.filter(x => x !== k) : [...sel, k];
+      if (n.length > 2) n = n.slice(n.length - 2);
+      this.setState({ sel: n, applied: false });
+    };
+    const parts = defs.map(d => ({
+      name: d.label,
+      src: '/_blob/' + d.id,
+      cls: 'pt ' + (sel.includes(d.k) ? 'pon' : 'poff'),
+      hs: `left:${Math.round(d.box[0]*S)-2}px;top:${Math.round(d.box[1]*S)-2}px;width:${Math.round((d.box[2]-d.box[0])*S)+4}px;height:${Math.round((d.box[3]-d.box[1])*S)+4}px`,
+      pick: () => toggle(d.k)
+    }));
+    const chips = defs.map(d => ({ label: d.label, cls: sel.includes(d.k) ? 'chipon' : 'chip', pick: () => toggle(d.k) }));
+    let effTitle, effText;
+    if (sel.length === 0) {
+      effTitle = 'Без акцента';
+      effText = 'Объём распределяется равномерно: 10–12 подходов на крупную группу в неделю, каждая группа 2 раза в неделю.';
+    } else if (sel.length === 1) {
+      const d = defs.find(x => x.k === sel[0]);
+      effTitle = 'Акцент: ' + d.label.toLowerCase();
+      effText = d.text;
+    } else {
+      effTitle = 'Акцент на две группы';
+      effText = 'Объём делится между ними, остальное остаётся на поддержке. Если нагрузка не восстанавливается, тренер сам вернёт одну группу в базу.';
+    }
+    const names = sel.map(k => defs.find(x => x.k === k).label.toLowerCase()).join(' и ');
+    const planLine = sel.length === 0 ? 'В плане: равномерный объём, без добавок. Текущая неделя не меняется.' : 'В плане: +2 подхода на ' + names + ' в 2 из 3 тренировок. Текущая неделя не меняется.';
+    return { planLine, notApplied: !this.state.applied, applied: this.state.applied, apply: () => this.setState({ applied: true }), parts, chips, effTitle, effText, noneCls: sel.length === 0 ? 'chipon' : 'chip', pickNone: () => this.setState({ sel: [], applied: false }) };
+  }
+}
+</script>
+</body>
+</html>

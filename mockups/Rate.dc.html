@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Оценка упражнения</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1px solid #2C2F35;background:#202227;color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+.on{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.12);color:#F3F4F6;font-family:Inter,sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;position:relative;overflow:hidden">
+  <div style="padding:20px;display:flex;flex-direction:column;gap:10px;opacity:.35" aria-hidden="true">
+    <span class="lbl">Верх A · упражнение 1 из 5</span>
+    <span class="num" style="font-size:26px;font-weight:800">Жим лёжа</span>
+    <div style="height:56px;border-radius:14px;background:#17181C;display:flex;align-items:center;padding:0 14px" class="num">1 · 80 × 8</div>
+    <div style="height:56px;border-radius:14px;background:#17181C;display:flex;align-items:center;padding:0 14px" class="num">2 · 80 × 7</div>
+    <div style="height:56px;border-radius:14px;background:#17181C;display:flex;align-items:center;padding:0 14px" class="num">3 · 80 × 6</div>
+  </div>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.55)"></div>
+
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 20px 20px;border-radius:24px 24px 0 0;background:#17181C;border-top:1px solid #2C2F35;display:flex;flex-direction:column;gap:14px">
+    <span style="width:40px;height:4px;border-radius:2px;background:#2C2F35;align-self:center"></span>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span class="lbl">Жим лёжа · 80 × 8 / 7 / 6</span>
+      <h1 class="num" style="margin:0;font-size:24px;font-weight:800">Как прошло упражнение?</h1>
+      <span style="font-size:13px;color:#A2A6AF">Одна оценка на всё упражнение, без RPE на каждый подход.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{opts}}" as="o" hint-placeholder-count="3">
+        <button class="{{o.cls}}" onClick="{{o.pick}}">
+          <span class="num" style="width:36px;height:36px;border-radius:10px;background:#2C2F35;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:none">{{o.mark}}</span>
+          <span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:700;font-size:16px">{{o.title}}</span><span style="font-size:13px;color:#A2A6AF">{{o.hint}}</span></span>
+        </button>
+      </sc-for>
+    </div>
+    <button style="height:44px;border-radius:12px;border:1px solid #F2B35B;background:transparent;color:#F3D3A3;font:600 14px Inter,sans-serif">Была боль или дискомфорт</button>
+    <a href="Summary.dc.html" style="height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Сохранить · следующее упражнение</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { pick: 2 }; }
+  renderVals() {
+    const items = [
+      { mark: '3+', title: 'Легко', hint: 'Мог бы ещё 3 и больше повторов' },
+      { mark: '1–2', title: 'Нормально', hint: 'Осталось 1–2 повтора в запасе' },
+      { mark: '0', title: 'Тяжело', hint: 'На пределе или техника поплыла' }
+    ];
+    return { opts: items.map((o, i) => ({ ...o, cls: this.state.pick === i ? 'on' : 'opt', pick: () => this.setState({ pick: i }) })) };
+  }
+}
+</script>
+</body>
+</html>

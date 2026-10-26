@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Дизайн-система v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.sw{display:flex;flex-direction:column;gap:8px}
+.chip{height:44px;min-width:56px;padding:0 16px;border-radius:12px;border:1px solid #2C2F35;background:#202227;color:#F3F4F6;font:600 16px Inter,sans-serif;display:inline-flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width:1360px;height:1640px;box-sizing:border-box;padding:64px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:48px">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid #2C2F35;padding-bottom:32px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="lbl">Telegram Mini App · ядро на вебе</div>
+      <h1 class="num" style="margin:0;font-size:56px;line-height:1;font-weight:800;letter-spacing:-.02em">Графит и лайм</h1>
+      <p style="margin:0;font-size:18px;color:#A2A6AF;max-width:720px;line-height:1.5">Строгий спортивный инструмент. Один акцент — только для действия и успеха. Цифры крупные и табличные. Игровой слой спокойный и деловой.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <span style="padding:8px 14px;border-radius:999px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:13px">Тёмная · по умолчанию</span>
+      <span style="padding:8px 14px;border-radius:999px;border:1px solid #2C2F35;color:#A2A6AF;font-weight:600;font-size:13px">Светлая · по themeParams</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px">
+    <section style="display:flex;flex-direction:column;gap:20px">
+      <div class="lbl">Цвет · тёмная тема</div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#0E0F11;border:1px solid #2C2F35"></div><div style="font-size:13px;font-weight:600">Фон</div><div class="num" style="font-size:12px;color:#A2A6AF">#0E0F11</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#17181C;border:1px solid #2C2F35"></div><div style="font-size:13px;font-weight:600">Поверхность</div><div class="num" style="font-size:12px;color:#A2A6AF">#17181C</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#202227"></div><div style="font-size:13px;font-weight:600">Поверхность 2</div><div class="num" style="font-size:12px;color:#A2A6AF">#202227</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#2C2F35"></div><div style="font-size:13px;font-weight:600">Линия</div><div class="num" style="font-size:12px;color:#A2A6AF">#2C2F35</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#F3F4F6"></div><div style="font-size:13px;font-weight:600">Текст</div><div class="num" style="font-size:12px;color:#A2A6AF">#F3F4F6 · 17:1</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#A2A6AF"></div><div style="font-size:13px;font-weight:600">Текст 2</div><div class="num" style="font-size:12px;color:#A2A6AF">#A2A6AF · 7.3:1</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#B7E35B"></div><div style="font-size:13px;font-weight:600">Акцент</div><div class="num" style="font-size:12px;color:#A2A6AF">#B7E35B · 11.5:1</div></div>
+        <div class="sw"><div style="height:64px;border-radius:14px;background:#B7E35B;display:flex;align-items:center;justify-content:center;color:#0E0F11;font-weight:800" class="num">Аа</div><div style="font-size:13px;font-weight:600">Текст на акценте</div><div class="num" style="font-size:12px;color:#A2A6AF">только #0E0F11</div></div>
+      </div>
+      <div class="lbl" style="margin-top:8px">Сигналы решений тренера</div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+        <div style="padding:16px;border-radius:14px;background:#17181C;border:1px solid #2C2F35;display:flex;flex-direction:column;gap:8px"><span style="width:28px;height:6px;border-radius:3px;background:#B7E35B"></span><span style="font-weight:600">Повысить</span><span class="num" style="font-size:12px;color:#A2A6AF">#B7E35B</span></div>
+        <div style="padding:16px;border-radius:14px;background:#17181C;border:1px solid #2C2F35;display:flex;flex-direction:column;gap:8px"><span style="width:28px;height:6px;border-radius:3px;background:#7DB3FF"></span><span style="font-weight:600">Оставить</span><span class="num" style="font-size:12px;color:#A2A6AF">#7DB3FF</span></div>
+        <div style="padding:16px;border-radius:14px;background:#17181C;border:1px solid #2C2F35;display:flex;flex-direction:column;gap:8px"><span style="width:28px;height:6px;border-radius:3px;background:#F2B35B"></span><span style="font-weight:600">Снизить</span><span class="num" style="font-size:12px;color:#A2A6AF">#F2B35B</span></div>
+      </div>
+      <p style="margin:0;font-size:13px;color:#A2A6AF;line-height:1.5">Сигнал всегда дублируется словом и стрелкой: цвет не единственный носитель смысла.</p>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:20px">
+      <div class="lbl">Светлая тема · если пользователь в светлом Telegram</div>
+      <div style="padding:24px;border-radius:20px;background:#F5F6F2;color:#15171A;display:flex;flex-direction:column;gap:16px">
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+          <div class="sw"><div style="height:48px;border-radius:12px;background:#F5F6F2;border:1px solid #D9DBD3"></div><div style="font-size:12px;font-weight:600">Фон #F5F6F2</div></div>
+          <div class="sw"><div style="height:48px;border-radius:12px;background:#FFFFFF;border:1px solid #D9DBD3"></div><div style="font-size:12px;font-weight:600">Поверхность #FFF</div></div>
+          <div class="sw"><div style="height:48px;border-radius:12px;background:#4F6B12"></div><div style="font-size:12px;font-weight:600">Акцент #4F6B12</div></div>
+          <div class="sw"><div style="height:48px;border-radius:12px;background:#15171A"></div><div style="font-size:12px;font-weight:600">Текст #15171A</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="height:48px;padding:0 20px;border-radius:14px;background:#4F6B12;color:#FFFFFF;font-weight:700;display:inline-flex;align-items:center">Начать тренировку</span>
+          <span style="font-size:13px;color:#4A4E55;line-height:1.4">Лайм на белом даёт 1.48:1 и не читается. В светлой теме акцент — оливковый, 5.4:1.</span>
+        </div>
+      </div>
+
+      <div class="lbl" style="margin-top:8px">Типографика</div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:20px;background:#17181C;border:1px solid #2C2F35">
+        <div style="display:flex;align-items:baseline;gap:16px"><span class="num" style="font-size:56px;font-weight:700;line-height:1">1:47</span><span style="font-size:13px;color:#A2A6AF">Таймер · Inter Tight 56/700</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span class="num" style="font-size:28px;font-weight:700">80 кг × 8</span><span style="font-size:13px;color:#A2A6AF">Цифры подхода · 24–28, табличные</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span class="num" style="font-size:24px;font-weight:700">Итог и решение</span><span style="font-size:13px;color:#A2A6AF">Заголовок экрана · 24/700</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-size:16px">Повторы упали не больше чем на 2 — вес оставляем.</span><span style="font-size:13px;color:#A2A6AF">Текст · Inter 16</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span class="lbl">План недели</span><span style="font-size:13px;color:#A2A6AF">Метка · 12, капс</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+    <section style="display:flex;flex-direction:column;gap:16px">
+      <div class="lbl">Строка подхода · 1 тап «как в плане»</div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:20px;background:#17181C;border:1px solid #2C2F35">
+        <div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;border-radius:12px;background:#202227">
+          <span class="num" style="width:20px;color:#A2A6AF;font-weight:600">1</span>
+          <span class="num" style="flex:1;font-size:20px;font-weight:700">80 × 8</span>
+          <span style="font-size:13px;color:#B7E35B;font-weight:600">как в плане</span>
+          <span style="width:32px;height:32px;border-radius:10px;background:#B7E35B;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="#0E0F11" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;border-radius:12px;background:#202227">
+          <span class="num" style="width:20px;color:#A2A6AF;font-weight:600">2</span>
+          <span class="num" style="flex:1;font-size:20px;font-weight:700">80 × 7</span>
+          <span class="num" style="font-size:13px;color:#F2B35B;font-weight:600">−1 к плану</span>
+          <span style="width:32px;height:32px;border-radius:10px;background:#2C2F35;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="#F3F4F6" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:12px;border:1.5px solid #B7E35B">
+          <div style="display:flex;align-items:center;gap:12px"><span class="num" style="width:20px;color:#B7E35B;font-weight:700">3</span><span style="flex:1;font-size:13px;color:#A2A6AF">Цель</span><span class="num" style="font-size:20px;font-weight:700">80 × 8</span></div>
+          <button style="height:52px;border:0;border-radius:12px;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif">✓ Как в плане</button>
+          <div style="display:flex;gap:8px"><button class="chip" style="flex:1">−1</button><button class="chip" style="flex:1">−2</button><button class="chip" style="flex:1.4">Другое</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:16px">
+      <div class="lbl">Карточка решения тренера</div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:20px;background:#17181C;border:1px solid #2C2F35">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:17px">Жим лёжа</span><span style="font-size:12px;font-weight:700;color:#7DB3FF;padding:4px 10px;border-radius:999px;background:rgba(125,179,255,.12)">→ Оставить вес</span></div>
+        <div class="num" style="font-size:24px;font-weight:700">80 кг · цель 8 / 8 / 7</div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:12px;background:#202227">
+          <span class="lbl" style="font-size:11px">Почему</span>
+          <span style="font-size:14px;line-height:1.45">Повторы упали, но не больше чем на 2 в подходе → вес не повышаем, добираем повторы.</span>
+        </div>
+        <div style="font-size:13px;color:#A2A6AF;line-height:1.45">Учтено: оценка «Тяжело», вторая тренировка с этим весом.</div>
+        <div style="display:flex;gap:8px"><button style="flex:1;height:44px;border:0;border-radius:12px;background:#F3F4F6;color:#0E0F11;font:700 15px Inter,sans-serif">Принять</button><button style="flex:1;height:44px;border-radius:12px;border:1px solid #2C2F35;background:transparent;color:#F3F4F6;font:600 15px Inter,sans-serif">Изменить</button></div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:16px">
+      <div class="lbl">Кнопки, индикаторы, навигация</div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:20px;background:#17181C;border:1px solid #2C2F35">
+        <button style="height:52px;border:0;border-radius:14px;background:#B7E35B;color:#0E0F11;font:700 17px Inter,sans-serif">Основное действие · MainButton</button>
+        <button style="height:52px;border-radius:14px;border:1px solid #2C2F35;background:#202227;color:#F3F4F6;font:600 16px Inter,sans-serif">Второстепенное · SecondaryButton</button>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+          <div style="padding:12px;border-radius:14px;background:#202227;display:flex;flex-direction:column;gap:4px"><span class="num" style="font-size:22px;font-weight:700">2/3</span><span style="font-size:11px;color:#A2A6AF">план недели</span></div>
+          <div style="padding:12px;border-radius:14px;background:#202227;display:flex;flex-direction:column;gap:4px"><span class="num" style="font-size:22px;font-weight:700">6 нед</span><span style="font-size:11px;color:#A2A6AF">серия</span></div>
+          <div style="padding:12px;border-radius:14px;background:#202227;display:flex;flex-direction:column;gap:4px"><span class="num" style="font-size:22px;font-weight:700">Ур. 7</span><span style="font-size:11px;color:#A2A6AF">Практик</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-around;padding:10px 0 4px;border-top:1px solid #2C2F35">
+          <span style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#B7E35B;font-size:11px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Сегодня</span>
+          <span style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#A2A6AF;font-size:11px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>План</span>
+          <span style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#A2A6AF;font-size:11px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>Прогресс</span>
+          <span style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#A2A6AF;font-size:11px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 8v8M9 11l3-3 3 3"/></svg>Атлет</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding:28px;border-radius:20px;background:#17181C;border:1px solid #2C2F35">
+    <div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Отступы и формы</span><span class="num" style="font-size:15px;line-height:1.6">Шаг 4 · 8 · 12 · 16 · 24 · 32<br>Радиусы 10 · 14 · 20<br>Зона тапа ≥ 44, в тренировке 52</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Навигация</span><span style="font-size:15px;line-height:1.6">4 таба. Тренировка, онбординг и решения — модальные потоки с BackButton Telegram, не глубже двух уровней.</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Игровой слой</span><span style="font-size:15px;line-height:1.6">Под решением тренера, не над ним. XP за выполнение плана. Серия недельная. Уровень не отнимается.</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Отклик</span><span style="font-size:15px;line-height:1.6">Haptic light на подходе, success на ПР и конце отдыха. Анимации отключаются при reduced motion.</span></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

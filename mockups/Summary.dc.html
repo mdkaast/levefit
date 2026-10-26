@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Итог и решение тренера</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.tr{display:grid;grid-template-columns:1fr 78px 78px;gap:8px;font-size:13px;padding:5px 0;border-top:1px solid #23252A}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:18px 20px 18px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="lbl">Верх A · 54 мин · 15 подходов</span>
+      <h1 class="num" style="margin:0;font-size:24px;font-weight:800">Итог и решение</h1>
+    </div>
+    <span class="num" style="font-size:13px;font-weight:700;color:#B7E35B">план 93%</span>
+  </div>
+
+  <div style="padding:10px 14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <div class="tr" style="border-top:0;color:#A2A6AF;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase"><span>Упражнение</span><span>План</span><span>Факт</span></div>
+    <div class="tr num"><span style="font-family:Inter,sans-serif">Жим лёжа · 80</span><span>8/8/8</span><span style="color:#F2B35B;font-weight:700">8/7/6</span></div>
+    <div class="tr num"><span style="font-family:Inter,sans-serif">Тяга в наклоне · 70</span><span>10/10/10</span><span style="color:#B7E35B;font-weight:700">10/10/10</span></div>
+    <div class="tr num"><span style="font-family:Inter,sans-serif">Жим гантелей · 22</span><span>10/10/10</span><span style="font-weight:700">10/10/9</span></div>
+    <div class="tr num"><span style="font-family:Inter,sans-serif">Подтягивания</span><span>6/6/6</span><span style="color:#B7E35B;font-weight:700">7/6/6</span></div>
+    <div class="tr num"><span style="font-family:Inter,sans-serif">Сгибания · 14</span><span>12/12</span><span style="font-weight:700">12/12</span></div>
+  </div>
+
+  <span class="lbl">Решения тренера · 3 изменения</span>
+
+  <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:18px;background:#17181C;border:1px solid #2C2F35">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700">Жим лёжа</span><span style="font-size:12px;font-weight:700;color:#7DB3FF;padding:3px 10px;border-radius:999px;background:rgba(125,179,255,.12)">→ Оставить вес</span></div>
+    <span class="num" style="font-size:22px;font-weight:800">80 кг · цель 8 / 8 / 7</span>
+    <span style="font-size:13px;line-height:1.45;color:#D7D9DE"><b style="color:#F3F4F6">Почему:</b> повторы упали, но не больше чем на 2 в подходе → вес не повышаем, добираем повторы. Учтено: оценка «Тяжело».</span>
+    <span style="font-size:12px;color:#A2A6AF">Пересмотр: 8/8/8 → +2,5 кг · два провала подряд → 75 кг</span>
+    <div style="display:flex;gap:8px">
+      <sc-if value="{{benchOpen}}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{acceptBench}}" style="flex:1;height:44px;border:0;border-radius:12px;background:#F3F4F6;color:#0E0F11;font:700 15px Inter,sans-serif;cursor:pointer">Принять</button>
+        <a href="Exercise.dc.html" style="flex:1;height:44px;border-radius:12px;border:1px solid #2C2F35;color:#F3F4F6;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Изменить</a>
+      </sc-if>
+      <sc-if value="{{benchDone}}" hint-placeholder-val="{{ false }}">
+        <span style="flex:1;height:44px;border-radius:12px;background:#202227;color:#B7E35B;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">✓ В плане на следующий Верх A</span>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <span style="font-size:12px;font-weight:800;color:#0E0F11;background:#B7E35B;padding:3px 8px;border-radius:8px">↑</span>
+    <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span class="num" style="font-weight:700">Тяга · 72,5 кг × 10</span><span style="font-size:12px;color:#A2A6AF">Все подходы на верхней границе, «Нормально»</span></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <span style="font-size:12px;font-weight:800;color:#0E0F11;background:#B7E35B;padding:3px 8px;border-radius:8px">↑</span>
+    <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span class="num" style="font-weight:700">Подтягивания · цель 7 / 7 / 6</span><span style="font-size:12px;color:#A2A6AF">Первый подход выше плана — +1 повтор</span></span>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#202227">
+    <span class="num" style="font-size:20px;font-weight:800;color:#B7E35B">+120 XP</span>
+    <span style="flex:1;font-size:12px;line-height:1.4;color:#A2A6AF">За тренировку по плану. Неделя 1 из 3 · уровень 7: 1780 / 2000</span>
+  </div>
+
+  <a href="Today.dc.html" style="margin-top:auto;height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Принять все и завершить</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { bench: false }; }
+  renderVals() {
+    return { benchOpen: !this.state.bench, benchDone: this.state.bench, acceptBench: () => this.setState({ bench: true }) };
+  }
+}
+</script>
+</body>
+</html>

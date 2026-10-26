@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Готовность перед тренировкой</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#B7E35B;text-decoration:none}a:hover{color:#CFF07F}
+.num{font-family:'Inter Tight',Inter,sans-serif;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A2A6AF;font-weight:600}
+.opt{flex:1;height:48px;border-radius:12px;border:1px solid #2C2F35;background:#17181C;color:#F3F4F6;font:600 14px Inter,sans-serif;cursor:pointer}
+.on{flex:1;height:48px;border-radius:12px;border:1.5px solid #B7E35B;background:rgba(183,227,91,.14);color:#F3F4F6;font:700 14px Inter,sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;padding:24px 20px 24px;background:#0E0F11;color:#F3F4F6;font-family:Inter,sans-serif;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span class="lbl">Верх A · перед стартом</span>
+    <h1 class="num" style="margin:0;font-size:28px;font-weight:800">Как вы сегодня?</h1>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:#A2A6AF">Необязательно. Ответ меняет план — и вы увидите, как именно.</p>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <span style="font-weight:600">Сон</span>
+    <div style="display:flex;gap:8px">
+      <sc-for list="{{sleepOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <span style="font-weight:600">Самочувствие</span>
+    <div style="display:flex;gap:8px">
+      <sc-for list="{{feelOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <span style="font-weight:600">Есть боль?</span>
+    <div style="display:flex;gap:8px">
+      <sc-for list="{{painOpts}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for>
+    </div>
+  </section>
+
+  <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;background:#17181C;border:1px solid #2C2F35">
+    <span class="lbl" style="color:{{effectColor}}">{{effectTitle}}</span>
+    <span style="font-size:15px;line-height:1.5">{{effectText}}</span>
+  </div>
+
+  <sc-if value="{{pain}}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px;border-radius:16px;border:1px solid #F2B35B;font-size:13px;line-height:1.5;color:#F3D3A3">Острая или нарастающая боль — повод прекратить и обратиться к врачу. Тренер не оценивает травмы.</div>
+  </sc-if>
+
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+    <a href="Workout.dc.html" style="height:52px;border-radius:14px;background:#B7E35B;color:#0E0F11;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Начать тренировку</a>
+    <a href="Workout.dc.html" style="text-align:center;font-size:14px;font-weight:600;color:#A2A6AF">Пропустить вопрос</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { sleep: 1, feel: 1, pain: 0 }; }
+  renderVals() {
+    const s = this.state;
+    const mk = (labels, key) => labels.map((label, i) => ({ label, cls: s[key] === i ? 'on' : 'opt', pick: () => this.setState({ [key]: i }) }));
+    const bad = s.sleep === 0 || s.feel === 0;
+    let title = 'План без изменений', text = 'Жим лёжа 80 × 8 × 3 — как решил тренер после прошлой тренировки.', color = '#B7E35B';
+    if (bad) { title = 'План изменится'; text = 'В базовых упражнениях −1 подход, вес остаётся 80 кг. Это не засчитается как провал при следующем решении.'; color = '#7DB3FF'; }
+    if (s.pain === 1) { title = 'План изменится'; text = 'Упражнения на больную зону будут заменены или убраны. Остальное — по плану.'; color = '#F2B35B'; }
+    return {
+      sleepOpts: mk(['Плохо', 'Нормально', 'Хорошо'], 'sleep'),
+      feelOpts: mk(['Разбит', 'Обычно', 'Бодро'], 'feel'),
+      painOpts: mk(['Нет', 'Да'], 'pain'),
+      pain: s.pain === 1, effectTitle: title, effectText: text, effectColor: color
+    };
+  }
+}
+</script>
+</body>
+</html>
