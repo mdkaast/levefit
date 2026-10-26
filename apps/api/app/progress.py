@@ -148,7 +148,57 @@ def exercise_progress(
 
 
 def starter_plan(db: Session, user: User) -> list[NextExercise]:
-    """План первой тренировки по профилю, без ИИ: упражнения на целевые мышцы, вес подбирается."""
+    """План первой тренировки: первый день рекомендованного шаблона (без каталога — запасной)."""
+    if user.character is None:
+        return []
+    from_catalog = _starter_from_template(db, user)
+    return from_catalog if from_catalog else _legacy_starter_plan(db, user)
+
+
+def _starter_from_template(db: Session, user: User) -> list[NextExercise]:
+    from app import programs  # локально: programs зависит от моделей и каталога
+
+    rec = programs.recommend_for(db, user)
+    if rec is None:
+        return []
+    usable, _ = programs.usable_template(db, rec["primary"])
+    try:
+        result = programs.resolve_for_user(db, usable, rec["profile"])
+    except KeyError:
+        return []
+    slugs = [s["slug"] for d in result["resolved"]["days"][:1] for s in d["slots"] if s["slug"]]
+    by_slug = {
+        e.slug: e
+        for e in db.scalars(
+            select(Exercise).where(Exercise.slug.in_(slugs), Exercise.category == "strength")
+        )
+    }
+    plan: list[NextExercise] = []
+    for item in result["resolved"]["days"][0]["slots"]:
+        slot, slug = item["slot"], item["slug"]
+        exercise = by_slug.get(slug) if slug else None
+        if (
+            exercise is None
+            or slot["progression"] in ("time", "warmup")
+            or exercise.load_type == "isometric_time"
+        ):
+            continue
+        plan.append(
+            NextExercise(
+                exercise_id=exercise.id,
+                name=exercise.name,
+                target_weight_kg=None,
+                sets=slot["sets"][0],
+                reps=slot["reps"][1],
+            )
+        )
+        if len(plan) >= rules.STARTER_MAX_EXERCISES:
+            break
+    return plan
+
+
+def _legacy_starter_plan(db: Session, user: User) -> list[NextExercise]:
+    """План по целевым мышцам из прежнего справочника (если каталог ещё не загружен)."""
     character = user.character
     if character is None:
         return []

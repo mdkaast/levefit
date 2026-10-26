@@ -1,0 +1,108 @@
+"""Мышцы и группы для интерфейса (data/data_schema.md, 2.4): слой 1 — мышцы, слой 2 — группы UI."""
+
+# Группы UI: ключ → русское название (по ним фильтруется библиотека и считается объём)
+UI_GROUPS: dict[str, str] = {
+    "chest": "Грудь",
+    "back_width": "Спина: ширина",
+    "back_thickness": "Спина: толщина",
+    "traps": "Трапеции",
+    "lower_back": "Поясница",
+    "front_delts": "Передняя дельта",
+    "side_delts": "Средняя дельта",
+    "rear_delts": "Задняя дельта",
+    "biceps": "Бицепс",
+    "triceps": "Трицепс",
+    "forearms": "Предплечья",
+    "quads": "Квадрицепс",
+    "hamstrings": "Задняя поверхность бедра",
+    "glutes": "Ягодичные",
+    "adductors": "Приводящие",
+    "calves": "Икры",
+    "abs": "Пресс и кор",
+    "serratus": "Зубчатая",
+}
+
+# Мышца: (русское название, группа UI)
+MUSCLES: dict[str, tuple[str, str]] = {
+    "pectorals": ("Грудные", "chest"),
+    "lats": ("Широчайшие", "back_width"),
+    "teres_major": ("Большая круглая", "back_width"),
+    "rhomboids": ("Ромбовидные", "back_thickness"),
+    "upper_back": ("Верх спины", "back_thickness"),
+    "traps": ("Трапеции", "traps"),
+    "erector_spinae": ("Разгибатели спины", "lower_back"),
+    "quadratus_lumborum": ("Квадратная мышца поясницы", "lower_back"),
+    "front_delt": ("Передняя дельта", "front_delts"),
+    "side_delt": ("Средняя дельта", "side_delts"),
+    "rear_delt": ("Задняя дельта", "rear_delts"),
+    "rotator_cuff": ("Вращательная манжета", "rear_delts"),
+    "biceps": ("Бицепс", "biceps"),
+    "brachialis": ("Плечевая", "biceps"),
+    "triceps": ("Трицепс", "triceps"),
+    "brachioradialis": ("Плечелучевая", "forearms"),
+    "forearms": ("Предплечья", "forearms"),
+    "quadriceps": ("Квадрицепс", "quads"),
+    "hamstrings": ("Задняя поверхность бедра", "hamstrings"),
+    "glute_max": ("Большая ягодичная", "glutes"),
+    "glute_med_min": ("Средняя и малая ягодичные", "glutes"),
+    "adductors": ("Приводящие", "adductors"),
+    "gastrocnemius": ("Икроножная", "calves"),
+    "soleus": ("Камбаловидная", "calves"),
+    "tibialis_anterior": ("Передняя большеберцовая", "calves"),
+    "rectus_abdominis": ("Прямая мышца живота", "abs"),
+    "obliques": ("Косые мышцы живота", "abs"),
+    "transverse_abdominis": ("Поперечная мышца живота", "abs"),
+    "hip_flexors": ("Сгибатели бедра", "abs"),
+    "core": ("Кор", "abs"),
+    "serratus": ("Зубчатая", "serratus"),
+}
+
+PATTERN_NAMES: dict[str, str] = {
+    "squat": "Присед", "hinge": "Наклон (тяга)", "lunge": "Выпады и работа на одной ноге",
+    "hip_extension": "Ягодичные", "knee_extension": "Разгибание колена", "knee_flexion": "Сгибание колена",
+    "calf_raise": "Икры", "hip_adduction": "Приведение бедра", "hip_abduction": "Отведение бедра",
+    "horizontal_push": "Горизонтальный жим", "vertical_push": "Вертикальный жим",
+    "chest_isolation": "Изоляция груди", "shoulder_isolation": "Изоляция дельт",
+    "elbow_extension": "Трицепс", "vertical_pull": "Вертикальная тяга", "horizontal_pull": "Горизонтальная тяга",
+    "scapular": "Трапеции и лопатки", "rear_delt": "Задняя дельта", "elbow_flexion": "Бицепс",
+    "grip_forearm": "Хват и предплечья", "core_anti_extension": "Кор: антиразгибание",
+    "core_anti_rotation": "Кор: антиротация", "core_flexion": "Кор: сгибание", "core_rotation": "Кор: вращение",
+    "core_extension": "Кор: разгибание", "carry": "Переноски", "kb_skill": "Гиревые навыки",
+    "plyometric": "Плиометрика", "conditioning": "Кондиция", "warmup": "Разминка", "mobility": "Мобильность",
+}
+
+FLAG_NAMES: dict[str, str] = {
+    "axial_spinal_load": "Осевая нагрузка на позвоночник",
+    "lumbar_flexion_load": "Сгибание поясницы под нагрузкой",
+    "lumbar_extension_load": "Переразгибание поясницы под нагрузкой",
+    "deep_knee_flexion": "Глубокое сгибание колена",
+    "knee_pain": "Нагрузка на колено",
+    "patellofemoral_sensitive": "Нагрузка на надколенник",
+    "hip_impingement_deep_flexion": "Глубокое сгибание в тазобедренном",
+    "ankle_mobility_required": "Нужна подвижность голеностопа",
+    "balance_demand": "Требует баланса",
+    "grip_limited": "Хват может закончиться раньше мышц",
+    "hernia_valsalva": "Натуживание, давление в животе",
+    "pregnancy_supine_caution": "Положение лёжа на спине",
+    "high_eccentric_doms": "Сильная крепатура после эксцентрики",
+    "impingement_position": "Отведение с внутренней ротацией плеча",
+    "shoulder_end_range": "Крайние положения плеча",
+    "neck_strain": "Нагрузка на шею",
+    "fall_risk": "Риск падения",
+    "door_equipment": "Самодельная опора (дверь, стол)",
+    "band_snap": "Риск разрыва резины",
+    "swing_cheat": "Склонность к раскачке",
+    "high_impact": "Ударная нагрузка",
+    "inverted": "Перевёрнутое положение",
+}
+
+EQUIPMENT_NAMES: dict[str, str] = {
+    "barbell": "штанга", "ez_bar": "EZ-гриф", "dumbbell": "гантели", "kettlebell": "гиря", "cable": "блок",
+    "machine_stack": "тренажёр с блоками", "plate_machine": "рычажный тренажёр", "smith": "машина Смита",
+    "rack": "стойки", "bench": "скамья", "landmine": "лендмайн", "trap_bar": "трэп-гриф",
+    "pullup_bar": "турник", "dip_bars": "брусья", "rings": "кольца", "band": "резина",
+    "assist_machine": "гравитрон", "bodyweight": "свой вес", "ghd": "тренажёр GHD", "plates": "блины",
+    "jump_rope": "скакалка", "sled": "сани", "cardio_machine": "кардиотренажёр", "special_bar": "специальный гриф",
+}
+
+LEVEL_NAMES = {"beginner": "новичок", "intermediate": "средний", "advanced": "продвинутый"}

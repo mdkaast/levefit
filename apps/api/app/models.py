@@ -94,6 +94,28 @@ class Exercise(Base):
     owner_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    # Каталог (фаза 2): поля заполняются импортом из data/exercises.json; у пользовательских пусты.
+    slug: Mapped[str | None] = mapped_column(String(64), unique=True)
+    name_en: Mapped[str | None] = mapped_column(String(120))
+    pattern: Mapped[str | None] = mapped_column(String(32), index=True)
+    pattern_secondary: Mapped[list | None] = mapped_column(JSON)
+    level: Mapped[str | None] = mapped_column(String(16))
+    unilateral: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Альтернативы инвентаря: [[«barbell», «rack»], [«dumbbell»]] — хватит любой одной целиком.
+    equipment: Mapped[list | None] = mapped_column(JSON)
+    load_type: Mapped[str | None] = mapped_column(String(24))
+    load_increment_kg: Mapped[float | None] = mapped_column(Float)
+    load_increment_beginner_kg: Mapped[float | None] = mapped_column(Float)
+    e1rm: Mapped[str | None] = mapped_column(String(8))  # yes | partial | no
+    caution_flags: Mapped[list | None] = mapped_column(JSON)
+    subs: Mapped[dict | None] = mapped_column(JSON)  # сценарий замены → список slug
+    aliases: Mapped[list | None] = mapped_column(JSON)
+    variant_of: Mapped[str | None] = mapped_column(String(64))
+    ui_groups: Mapped[list | None] = mapped_column(JSON)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # false — данные не вычитаны методистом или помечены в каталоге как неустоявшиеся
+    verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    source: Mapped[str | None] = mapped_column(String(16))  # catalog | legacy | user
 
 
 class Workout(Base):
@@ -303,3 +325,63 @@ class SkippedSession(Base):
     day: Mapped[date] = mapped_column(Date)
     kind: Mapped[str] = mapped_column(String(8))  # move (перенести) | rest (засчитать как отдых)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class Muscle(Base):
+    __tablename__ = "muscles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(32), unique=True)
+    name_ru: Mapped[str] = mapped_column(String(80))
+    ui_group: Mapped[str] = mapped_column(String(24), index=True)
+
+
+class ExerciseMuscle(Base):
+    """Мышца упражнения: роль и вклад в недельный объём (основная 1,0, вспомогательная 0,5)."""
+
+    __tablename__ = "exercise_muscles"
+    __table_args__ = (UniqueConstraint("exercise_id", "muscle_id", name="uq_exercise_muscle"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    exercise_id: Mapped[int] = mapped_column(
+        ForeignKey("exercises.id", ondelete="CASCADE"), index=True
+    )
+    muscle_id: Mapped[int] = mapped_column(ForeignKey("muscles.id"))
+    role: Mapped[str] = mapped_column(String(12))  # primary | secondary | stabilizer
+    volume_weight: Mapped[float] = mapped_column(Float)
+
+
+class ProgramTemplate(Base):
+    """Шаблон программы T01–T22: дни и слоты лежат в `spec`, фильтры вынесены в колонки."""
+
+    __tablename__ = "program_templates"
+
+    id: Mapped[str] = mapped_column(String(8), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    summary: Mapped[str] = mapped_column(Text)
+    goals: Mapped[list] = mapped_column(JSON)
+    levels: Mapped[list] = mapped_column(JSON)
+    days_min: Mapped[int] = mapped_column(Integer)
+    days_max: Mapped[int] = mapped_column(Integer)
+    inventory: Mapped[list] = mapped_column(JSON)
+    progression: Mapped[str] = mapped_column(String(16))
+    engine_ready: Mapped[bool] = mapped_column(Boolean, default=False)
+    fallback: Mapped[str | None] = mapped_column(String(8))
+    verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    spec: Mapped[dict] = mapped_column(JSON)
+
+
+class TemplateMatrix(Base):
+    """Матрица выбора: цель × дни × уровень × инвентарь → шаблоны; строки с condition — поправки."""
+
+    __tablename__ = "template_matrix"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    goal: Mapped[str | None] = mapped_column(String(16), index=True)
+    days: Mapped[int | None] = mapped_column(Integer)
+    level: Mapped[str | None] = mapped_column(String(16))
+    inventory: Mapped[str | None] = mapped_column(String(16))
+    condition: Mapped[str | None] = mapped_column(String(16), index=True)
+    mode: Mapped[str] = mapped_column(String(8))  # base | prefix | replace
+    templates: Mapped[list] = mapped_column(JSON)
+    note: Mapped[str | None] = mapped_column(Text)

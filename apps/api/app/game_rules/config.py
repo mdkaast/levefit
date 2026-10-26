@@ -1,7 +1,7 @@
 """Единый конфиг игровых констант. Стартовые значения, подлежат подтверждению владельцем."""
 
 APPEARANCES = ("warrior", "runner", "sage")
-GOALS = ("mass", "strength", "shape", "weight_loss")
+GOALS = ("strength", "strength_mass", "mass", "return", "weight_loss", "general", "shape")
 EQUIPMENT = ("gym", "home", "none")
 
 DEFAULT_WORKOUTS_PER_WEEK = 3
@@ -135,7 +135,15 @@ PROGRESS_POINTS = 20  # точек на графике прогрессии по
 LOW_READINESS_MAX = 2
 # Стартовый план первой тренировки.
 STARTER_SETS = 3
-STARTER_REPS = {"strength": 5, "mass": 8, "shape": 10, "weight_loss": 12}
+STARTER_REPS = {
+    "strength": 5,
+    "strength_mass": 6,
+    "mass": 8,
+    "return": 10,
+    "weight_loss": 12,
+    "general": 10,
+    "shape": 10,
+}
 STARTER_DEFAULT_REPS = 10
 STARTER_MAX_EXERCISES = 5
 STARTER_DEFAULT_MUSCLES = ("legs", "chest", "back", "shoulders", "core")

@@ -9,7 +9,15 @@ RULES_VERSION = "1.0"
 
 # --- Двойная прогрессия [К/П] ---
 DOUBLE_PROGRESSION_SPAN = 2  # диапазон повторений: [верх − 2 … верх]
-DEFAULT_TOP_REPS = {"strength": 5, "mass": 10, "shape": 10, "weight_loss": 12}
+DEFAULT_TOP_REPS = {
+    "strength": 5,
+    "strength_mass": 6,
+    "mass": 10,
+    "return": 10,
+    "weight_loss": 12,
+    "general": 12,
+    "shape": 10,
+}
 DEFAULT_TOP_REPS_FALLBACK = 10
 BODYWEIGHT_TOP_CAP = 30
 

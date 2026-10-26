@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.adjust import router as adjust_router
 from app.admin import router as admin_router
+from app.catalog import router as catalog_router
 from app.coach import router as coach_router
 from app.config import settings
 from app.cycle import router as cycle_router
@@ -26,6 +27,7 @@ app.include_router(workouts_router)
 app.include_router(metrics_router)
 app.include_router(adjust_router)
 app.include_router(coach_router)
+app.include_router(catalog_router)
 app.include_router(cycle_router)
 app.include_router(admin_router)
 app.include_router(progress_router)
