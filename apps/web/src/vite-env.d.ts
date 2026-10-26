@@ -6,5 +6,13 @@ interface ImportMetaEnv {
 }
 
 interface Window {
-  Telegram?: { WebApp?: { HapticFeedback?: { selectionChanged: () => void } } };
+  Telegram?: {
+    WebApp?: {
+      HapticFeedback?: {
+        selectionChanged: () => void;
+        impactOccurred?: (style: string) => void;
+        notificationOccurred?: (type: string) => void;
+      };
+    };
+  };
 }

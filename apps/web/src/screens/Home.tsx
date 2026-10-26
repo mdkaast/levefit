@@ -10,6 +10,7 @@ import {
   type Streak,
   type Task,
 } from "../api";
+import { capitalizeName } from "../format";
 import { Icon } from "../icons";
 import { t } from "../i18n";
 import { targetLine } from "../messages";
@@ -63,11 +64,11 @@ export function Home({ character: initial, onOpenWorkout }: Props) {
       <p className="brand">{t.appTitle}</p>
       <header className="card hero">
         <div className="avatar" aria-hidden="true">
-          {character.name.trim().charAt(0).toUpperCase()}
+          {capitalizeName(character.name).charAt(0)}
           <i className="lvl">{character.level}</i>
         </div>
         <div>
-          <h1>{character.name}</h1>
+          <h1>{capitalizeName(character.name)}</h1>
           <p className="muted">
             {rankName} · {t.home.level} {character.level}
           </p>

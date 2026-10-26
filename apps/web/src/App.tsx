@@ -2,21 +2,25 @@ import { useEffect, useState } from "react";
 import { getMe, login, patchMe, type Character } from "./api";
 import { Icon, type IconName } from "./icons";
 import { t } from "./i18n";
-import { Admin } from "./screens/Admin";
+import { Athlete } from "./screens/Athlete";
 import { Home } from "./screens/Home";
+import { Nutrition } from "./screens/Nutrition";
 import { Onboarding } from "./screens/Onboarding";
-import { Profile } from "./screens/Profile";
 import { Progress } from "./screens/Progress";
 import { WorkoutScreen } from "./screens/WorkoutScreen";
+import { Workouts } from "./screens/Workouts";
 import { getInitData } from "./telegram";
 
-type Tab = "home" | "progress" | "profile" | "admin";
+/** Пять вкладок из макетов: Сегодня, Тренировки, Питание, Прогресс, Атлет. */
+const TABS = ["today", "workouts", "nutrition", "progress", "athlete"] as const;
+type Tab = (typeof TABS)[number];
 
 const NAV_ICONS: Record<Tab, IconName> = {
-  home: "home",
+  today: "sun",
+  workouts: "calendar",
+  nutrition: "fork",
   progress: "chart",
-  profile: "user",
-  admin: "gear",
+  athlete: "athlete",
 };
 
 type State =
@@ -47,7 +51,7 @@ export function App() {
         }
         setState(
           me.character
-            ? { kind: "tabs", character: me.character, tab: "home", admin: me.is_admin }
+            ? { kind: "tabs", character: me.character, tab: "today", admin: me.is_admin }
             : { kind: "create" },
         );
       })
@@ -64,7 +68,9 @@ export function App() {
     case "create":
       return (
         <Onboarding
-          onCreated={(character) => setState({ kind: "tabs", character, tab: "home", admin: false })}
+          onCreated={(character) =>
+            setState({ kind: "tabs", character, tab: "today", admin: false })
+          }
         />
       );
     case "workout":
@@ -72,23 +78,30 @@ export function App() {
         <WorkoutScreen
           workoutId={state.workoutId}
           onClose={() =>
-            setState({ kind: "tabs", character: state.character, tab: state.back, admin: state.admin })
+            setState({
+              kind: "tabs",
+              character: state.character,
+              tab: state.back,
+              admin: state.admin,
+            })
           }
         />
       );
     case "tabs": {
       const { character, tab, admin } = state;
-      const names: Tab[] = admin ? ["home", "progress", "profile", "admin"] : ["home", "progress", "profile"];
       const open = (workoutId: number) =>
         setState({ kind: "workout", character, workoutId, back: tab, admin });
       return (
         <>
-          {tab === "home" && <Home character={character} onOpenWorkout={open} />}
-          {tab === "progress" && <Progress onOpenWorkout={open} />}
-          {tab === "profile" && <Profile onDeleted={() => setState({ kind: "deleted" })} />}
-          {tab === "admin" && admin && <Admin />}
-          <nav>
-            {names.map((name) => (
+          {tab === "today" && <Home character={character} onOpenWorkout={open} />}
+          {tab === "workouts" && <Workouts onOpenWorkout={open} />}
+          {tab === "nutrition" && <Nutrition />}
+          {tab === "progress" && <Progress />}
+          {tab === "athlete" && (
+            <Athlete isAdmin={admin} onDeleted={() => setState({ kind: "deleted" })} />
+          )}
+          <nav aria-label={t.nav.label}>
+            {TABS.map((name) => (
               <button
                 key={name}
                 type="button"

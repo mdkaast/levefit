@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { createCharacter, type Character } from "../api";
 import { NeonAthlete } from "../components/NeonAthlete";
-import { Silhouette } from "../components/Silhouette";
 import { WheelPicker } from "../components/WheelPicker";
+import { capitalizeName, formatWeight } from "../format";
 import { Icon } from "../icons";
 import { t } from "../i18n";
 import { NAME_MAX_LEN, parseAge, parseHeight, parseWeight, validateName } from "../validation";
@@ -18,7 +18,6 @@ const STEPS = [
   "experience",
   "lifestyle",
   "schedule",
-  "muscles",
 ] as const;
 type Step = (typeof STEPS)[number];
 
@@ -27,7 +26,6 @@ const GOALS = ["mass", "strength", "shape", "weight_loss"] as const;
 const LEVELS = ["beginner", "intermediate", "advanced"] as const;
 const LIFESTYLES = ["sedentary", "light", "active", "very_active"] as const;
 const EQUIPMENT = ["gym", "home", "none"] as const;
-const MUSCLES = ["chest", "back", "shoulders", "arms", "legs", "core"] as const;
 
 type Values = {
   name: string;
@@ -40,7 +38,6 @@ type Values = {
   lifestyle: string;
   perWeek: number;
   equipment: string;
-  muscles: string[];
 };
 
 const INITIAL: Values = {
@@ -54,7 +51,6 @@ const INITIAL: Values = {
   lifestyle: "",
   perWeek: 3,
   equipment: "gym",
-  muscles: [],
 };
 
 function canContinue(step: Step, v: Values): boolean {
@@ -75,8 +71,6 @@ function canContinue(step: Step, v: Values): boolean {
       return v.lifestyle !== "";
     case "schedule":
       return v.perWeek >= 1 && v.perWeek <= 7 && v.equipment !== "";
-    case "muscles":
-      return v.muscles.length > 0;
   }
 }
 
@@ -179,7 +173,7 @@ export function Onboarding({ onCreated }: Props) {
     setError(null);
     try {
       const character = await createCharacter({
-        name: values.name.trim(),
+        name: capitalizeName(values.name),
         goal: values.goal,
         workouts_per_week: values.perWeek,
         equipment: values.equipment,
@@ -189,7 +183,7 @@ export function Onboarding({ onCreated }: Props) {
         weight_kg: parseWeight(values.weight),
         experience: values.experience,
         lifestyle: values.lifestyle,
-        target_muscles: values.muscles,
+        target_muscles: [], // акцент на мышцы выбирается в профиле (B5)
       });
       onCreated(character);
     } catch {
@@ -203,14 +197,6 @@ export function Onboarding({ onCreated }: Props) {
     if (last) void submit();
     else setIndex(index + 1);
   }
-
-  const toggleMuscle = (muscle: string) =>
-    set(
-      "muscles",
-      values.muscles.includes(muscle)
-        ? values.muscles.filter((m) => m !== muscle)
-        : [...values.muscles, muscle],
-    );
 
   return (
     <div className="onboarding">
@@ -265,7 +251,12 @@ export function Onboarding({ onCreated }: Props) {
         )}
 
         {step === "body" && (
-          <div className="wheels three">
+          <>
+          <p className="wheel-readout" aria-live="polite">
+            {formatWeight(values.weight)}
+            <small>{t.onboarding.kg}</small>
+          </p>
+          <div className="wheels weight">
             <WheelPicker
               label={t.onboarding.height}
               min={120}
@@ -281,6 +272,9 @@ export function Onboarding({ onCreated }: Props) {
               value={Math.floor(Number(values.weight)) || 70}
               onChange={(v) => setWeightPart("whole", v)}
             />
+            <span className="wheel-comma" aria-hidden="true">
+              ,
+            </span>
             <WheelPicker
               label={`${t.onboarding.weight}, 0,1`}
               min={0}
@@ -290,6 +284,7 @@ export function Onboarding({ onCreated }: Props) {
               onChange={(v) => setWeightPart("tenth", v)}
             />
           </div>
+          </>
         )}
 
         {step === "goal" && (
@@ -348,25 +343,6 @@ export function Onboarding({ onCreated }: Props) {
               onPick={(item) => set("equipment", item)}
             />
           </>
-        )}
-
-        {step === "muscles" && (
-          <div className="muscles-pick">
-            <div className="options multi">
-              {MUSCLES.map((muscle) => (
-                <button
-                  key={muscle}
-                  type="button"
-                  className="option"
-                  aria-pressed={values.muscles.includes(muscle)}
-                  onClick={() => toggleMuscle(muscle)}
-                >
-                  {t.onboarding.muscles[muscle]}
-                </button>
-              ))}
-            </div>
-            <Silhouette selected={values.muscles} onToggle={toggleMuscle} />
-          </div>
         )}
 
         {error && <p role="alert">{error}</p>}

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { haptic } from "../prefs";
 
 const ITEM_H = 48; // высота строки, px; совпадает с --wheel-item в styles.css
 const VISIBLE = 5; // сколько строк видно; центральная — выбранная
@@ -12,14 +13,6 @@ type Props = {
   unit?: string;
   onChange: (value: number) => void;
 };
-
-function haptic() {
-  try {
-    window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
-  } catch {
-    // вне Telegram вибрации нет
-  }
-}
 
 /** Колесо выбора числа: прокрутка с привязкой к строкам, соседние значения уменьшаются и тускнеют. */
 export function WheelPicker({ label, min, max, value, unit, onChange }: Props) {
@@ -58,7 +51,7 @@ export function WheelPicker({ label, min, max, value, unit, onChange }: Props) {
       const next = min + index;
       if (next !== current.current) {
         current.current = next;
-        haptic();
+        haptic("select");
         onChange(next);
       }
     });

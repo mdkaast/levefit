@@ -129,3 +129,35 @@ def test_onboarding_validation(client, auth_headers):
         {"target_muscles": ["wings"]},
     ):
         assert client.post("/characters", json={**base, **bad}, headers=headers).status_code == 422
+
+
+def test_target_muscles_can_be_changed_in_profile(client, auth_headers):
+    headers = auth_headers()
+    assert (
+        client.patch(
+            "/me/character", json={"target_muscles": ["legs"]}, headers=headers
+        ).status_code
+        == 404
+    )
+    assert client.post("/characters", json={"name": "Бодрый"}, headers=headers).status_code == 201
+    done = client.patch(
+        "/me/character", json={"target_muscles": ["legs", "core", "legs"]}, headers=headers
+    )
+    assert done.status_code == 200 and done.json()["target_muscles"] == ["legs", "core"]
+    assert client.get("/me", headers=headers).json()["character"]["target_muscles"] == [
+        "legs",
+        "core",
+    ]
+    assert (
+        client.patch(
+            "/me/character", json={"target_muscles": ["wings"]}, headers=headers
+        ).status_code
+        == 422
+    )
+    assert (
+        client.patch("/me/character", json={"target_muscles": []}, headers=headers).json()[
+            "target_muscles"
+        ]
+        == []
+    )
+    assert client.patch("/me/character", json={"target_muscles": ["legs"]}).status_code == 401

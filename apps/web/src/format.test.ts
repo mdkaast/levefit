@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { WorkoutSet } from "./api";
-import { formatSet } from "./format";
+import { capitalizeName, formatSet, formatWeight } from "./format";
 
 const base: WorkoutSet = {
   id: 1,
@@ -23,4 +23,17 @@ test("кардио: время и дистанция", () => {
 
 test("повторы без веса", () => {
   expect(formatSet({ ...base, reps: 15 })).toBe("× 15");
+});
+
+
+test("имя пишется с заглавной буквы", () => {
+  expect(capitalizeName("  бодрый ")).toBe("Бодрый");
+  expect(capitalizeName("АП")).toBe("АП");
+  expect(capitalizeName("   ")).toBe("");
+});
+
+test("вес показывается с запятой и одной десятой", () => {
+  expect(formatWeight("82.5")).toBe("82,5");
+  expect(formatWeight(70)).toBe("70,0");
+  expect(formatWeight("abc")).toBe("");
 });

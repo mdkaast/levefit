@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { getWeights, listWorkouts, saveWeight, type WorkoutSummary } from "../api";
+import { getWeights, saveWeight } from "../api";
 import { buildChart, type WeightPoint } from "../chart";
 import { t } from "../i18n";
-
-type Props = { onOpenWorkout: (id: number) => void };
 
 const PERIODS = [30, 90, 365] as const;
 const W = 320;
@@ -13,10 +11,9 @@ function isoDaysAgo(days: number): string {
   return new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
 }
 
-export function Progress({ onOpenWorkout }: Props) {
+export function Progress() {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>(90);
   const [points, setPoints] = useState<WeightPoint[]>([]);
-  const [history, setHistory] = useState<WorkoutSummary[] | null>(null);
   const [weight, setWeight] = useState("");
   const [message, setMessage] = useState<string | null>(null);
 
@@ -27,11 +24,6 @@ export function Progress({ onOpenWorkout }: Props) {
   }, [period]);
 
   useEffect(loadWeights, [loadWeights]);
-  useEffect(() => {
-    listWorkouts()
-      .then(setHistory)
-      .catch(() => setHistory([]));
-  }, []);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -109,19 +101,6 @@ export function Progress({ onOpenWorkout }: Props) {
           </figcaption>
         </figure>
       )}
-
-      <h3>{t.home.history}</h3>
-      {history && history.length === 0 && <p>{t.home.historyEmpty}</p>}
-      <ul className="list history">
-        {history?.map((w) => (
-          <li key={w.id}>
-            <button type="button" onClick={() => onOpenWorkout(w.id)} className="ghost" style={{ width: "100%" }}>
-              {w.date} · {w.title} · {w.sets_count} {t.home.sets}
-              {w.status !== "finished" && ` · ${t.home.inProgress}`}
-            </button>
-          </li>
-        ))}
-      </ul>
     </main>
   );
 }

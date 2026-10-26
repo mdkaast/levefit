@@ -62,6 +62,17 @@ class CharacterCreate(BaseModel):
         return list(dict.fromkeys(value))
 
 
+class CharacterPatch(BaseModel):
+    """Изменение профиля персонажа после регистрации: пока только акцент на мышцы (B5)."""
+
+    target_muscles: list[Muscle] = Field(max_length=len(rules.TARGET_MUSCLES))
+
+    @field_validator("target_muscles")
+    @classmethod
+    def muscles_unique(cls, value: list[str]) -> list[str]:
+        return list(dict.fromkeys(value))
+
+
 class CharacterOut(BaseModel):
     model_config = {"from_attributes": True}
 

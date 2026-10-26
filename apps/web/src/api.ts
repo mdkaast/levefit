@@ -269,3 +269,9 @@ export type RecentAdjustment = {
 
 export const getAdminStats = () => request<AdminStats>("/admin/stats");
 export const getRecentAdjustments = () => request<RecentAdjustment[]>("/admin/ai/recent");
+
+export const patchCharacter = (targetMuscles: string[]) =>
+  request<Character>("/me/character", {
+    method: "PATCH",
+    body: JSON.stringify({ target_muscles: targetMuscles }),
+  });

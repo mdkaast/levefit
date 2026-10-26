@@ -13,6 +13,7 @@ from app.schemas import (
     AuthRequest,
     CharacterCreate,
     CharacterOut,
+    CharacterPatch,
     MeOut,
     StreakOut,
     TokenResponse,
@@ -112,3 +113,15 @@ def create_character(
         db.add(BodyMetric(user_id=user.id, date=now.date(), weight_kg=body.weight_kg))
     db.commit()
     return character
+
+
+@router.patch("/me/character", response_model=CharacterOut)
+def patch_character(
+    body: CharacterPatch, user: User = Depends(current_user), db: Session = Depends(get_db)
+) -> Character:
+    """Акцент на мышцы меняется в профиле в любое время; план учтёт его со следующей недели."""
+    if user.character is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "character not found")
+    user.character.target_muscles = body.target_muscles
+    db.commit()
+    return user.character

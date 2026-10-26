@@ -6,7 +6,11 @@ test("пустое имя отклоняется", () => {
 });
 
 test("слишком длинное имя отклоняется", () => {
-  expect(validateName("а".repeat(31))).not.toBeNull();
+  expect(validateName("а".repeat(21))).not.toBeNull();
+});
+
+test("слишком короткое имя отклоняется", () => {
+  expect(validateName(" а ")).not.toBeNull();
 });
 
 test("нормальное имя принимается", () => {

@@ -1,18 +1,39 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   deleteMe,
   getAchievements,
   getMe,
+  patchCharacter,
   patchMe,
   type Achievement,
   type Character,
 } from "../api";
+import { Silhouette } from "../components/Silhouette";
+import { capitalizeName } from "../format";
 import { t } from "../i18n";
+import { loadPrefs, savePrefs } from "../prefs";
+import { Chip } from "../ui/ui";
 
 type Props = { onDeleted: () => void };
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const STATS = ["strength", "endurance", "agility", "discipline"] as const;
+const MUSCLES = ["chest", "back", "shoulders", "arms", "legs", "core"] as const;
+
+/** Смещение пояса от UTC: «GMT+10»; если браузер не умеет, показываем только название. */
+function zoneOffset(zone: string): string {
+  try {
+    const parts = new Intl.DateTimeFormat("ru", { timeZone: zone, timeZoneName: "shortOffset" }).formatToParts(new Date());
+    return parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function listZones(current: string, device: string): string[] {
+  const all = (Intl as { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf?.("timeZone") ?? [];
+  return Array.from(new Set([device, current, ...all].filter(Boolean)));
+}
 
 export function Profile({ onDeleted }: Props) {
   const [character, setCharacter] = useState<Character | null>(null);
@@ -21,6 +42,10 @@ export function Profile({ onDeleted }: Props) {
   const [enabled, setEnabled] = useState(true);
   const [time, setTime] = useState("19:00");
   const [timezone, setTimezone] = useState("");
+  const [muscles, setMuscles] = useState<string[]>([]);
+  const [prefs, setPrefs] = useState(loadPrefs());
+  const device = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const zones = useMemo(() => listZones(timezone, device), [timezone, device]);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +53,7 @@ export function Profile({ onDeleted }: Props) {
     getMe()
       .then(({ user, character: me }) => {
         setCharacter(me);
+        setMuscles(me?.target_muscles ?? []);
         setPaused(user.mode === "paused");
         setEnabled(user.reminders_enabled);
         setTime(user.reminder_time);
@@ -63,6 +89,27 @@ export function Profile({ onDeleted }: Props) {
     }
   }
 
+  async function toggleMuscle(muscle: string) {
+    const previous = muscles;
+    // не больше двух групп: новая заменяет самую раннюю выбранную
+    const next = muscles.includes(muscle) ? muscles.filter((m) => m !== muscle) : [...muscles, muscle].slice(-2);
+    setMuscles(next);
+    setMessage(null);
+    try {
+      await patchCharacter(next);
+      setMessage(t.profile.accentSaved);
+    } catch {
+      setMuscles(previous);
+      setError(t.profile.error);
+    }
+  }
+
+  function changePrefs(change: Partial<typeof prefs>) {
+    const next = { ...prefs, ...change };
+    setPrefs(next);
+    savePrefs(next);
+  }
+
   async function remove() {
     if (!window.confirm(t.profile.confirmDelete)) return;
     try {
@@ -83,7 +130,7 @@ export function Profile({ onDeleted }: Props) {
       {character && (
         <section>
           <div className="row">
-            <h2>{character.name}</h2>
+            <h2>{capitalizeName(character.name)}</h2>
             <span className="muted">
               {rank} · {t.home.level} {character.level}
             </span>
@@ -149,17 +196,56 @@ export function Profile({ onDeleted }: Props) {
         </label>
         <label>
           {t.profile.time}
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} style={field} />
+          <input type="time" step={900} value={time} onChange={(e) => setTime(e.target.value)} style={field} />
         </label>
         <label>
           {t.profile.timezone}
-          <input value={timezone} onChange={(e) => setTimezone(e.target.value)} style={field} />
+          <select value={timezone} onChange={(e) => setTimezone(e.target.value)} style={field}>
+            {zones.map((zone) => (
+              <option key={zone} value={zone}>
+                {zone.replace("_", " ")} {zoneOffset(zone)}
+              </option>
+            ))}
+          </select>
         </label>
+        {timezone && device !== timezone && (
+          <p className="muted">
+            {t.profile.timezoneDevice}: {device} {zoneOffset(device)}{" "}
+            <button type="button" className="ghost" onClick={() => setTimezone(device)}>
+              {t.profile.timezoneApply}
+            </button>
+          </p>
+        )}
         <button type="submit">{t.profile.save}</button>
       </form>
 
       {message && <p role="status">{message}</p>}
       {error && <p role="alert">{error}</p>}
+
+      <section>
+        <h2>{t.profile.accentTitle}</h2>
+        <p className="muted">{t.profile.accentHint}</p>
+        <div className="chips">
+          {MUSCLES.map((muscle) => (
+            <Chip key={muscle} selected={muscles.includes(muscle)} onClick={() => toggleMuscle(muscle)}>
+              {t.onboarding.muscles[muscle]}
+            </Chip>
+          ))}
+        </div>
+        <Silhouette selected={muscles} onToggle={toggleMuscle} />
+      </section>
+
+      <section>
+        <h2>{t.profile.lookTitle}</h2>
+        <label style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text)" }}>
+          <input type="checkbox" checked={prefs.reducedMotion} onChange={(e) => changePrefs({ reducedMotion: e.target.checked })} />
+          {t.profile.reducedMotion}
+        </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text)" }}>
+          <input type="checkbox" checked={prefs.haptics} onChange={(e) => changePrefs({ haptics: e.target.checked })} />
+          {t.profile.haptics}
+        </label>
+      </section>
 
       <section>
         <h2>{t.profile.dangerZone}</h2>

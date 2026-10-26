@@ -14,3 +14,15 @@ export function formatSet(set: WorkoutSet): string {
   if (set.rir !== null) parts.push(`RIR ${set.rir}`);
   return parts.join(" · ");
 }
+
+/** Имя с заглавной буквы: на главной и в профиле оно выглядит одинаково (B4). */
+export function capitalizeName(raw: string): string {
+  const name = raw.trim();
+  return name ? name.charAt(0).toLocaleUpperCase("ru") + name.slice(1) : name;
+}
+
+/** «82,5» из «82.5»: запятая как десятичный разделитель, всегда одна десятая. */
+export function formatWeight(raw: string | number): string {
+  const value = Number(String(raw).replace(",", "."));
+  return Number.isFinite(value) ? value.toFixed(1).replace(".", ",") : "";
+}
