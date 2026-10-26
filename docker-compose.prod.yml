@@ -44,7 +44,8 @@ services:
     restart: unless-stopped
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
-      WEBAPP_URL: https://${DOMAIN}
+      # Версия в адресе сбрасывает кэш мобильного Telegram; при следующем сбросе меняйте номер.
+      WEBAPP_URL: https://${DOMAIN}/?v=2
       API_URL: http://api:8000
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
     depends_on:
